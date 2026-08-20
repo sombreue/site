@@ -1,0 +1,343 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #111;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+
+/* CABEÇALHO */
+
+header {
+    text-align: center;
+    padding: 45px 20px;
+    background-color: #181818;
+}
+
+header h1 {
+    margin: 0;
+    color: #ff3333;
+    font-size: 32px;
+}
+
+header p {
+    color: #aaa;
+    margin-bottom: 0;
+}
+
+
+/* CONTEÚDO */
+
+main {
+    max-width: 900px;
+    margin: 35px auto;
+    padding: 0 20px;
+}
+
+
+/* FILTRO */
+
+.filtro {
+    background-color: #1a1a1a;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filtro label {
+    font-size: 17px;
+}
+
+input[type="date"],
+input[type="text"],
+input[type="file"],
+textarea {
+    background-color: #111;
+    color: white;
+
+    border: 1px solid #444;
+    border-radius: 7px;
+
+    padding: 10px;
+    font-size: 15px;
+}
+
+button {
+    background-color: #ff3333;
+    color: white;
+
+    border: none;
+    border-radius: 7px;
+
+    padding: 10px 15px;
+
+    font-size: 15px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #e32626;
+}
+
+
+/* BOTÃO ADICIONAR */
+
+.area-adicionar {
+    margin-bottom: 30px;
+}
+
+.botao-adicionar {
+    width: 100%;
+    padding: 14px;
+
+    font-size: 16px;
+}
+
+
+/* FORMULÁRIO */
+
+.formulario {
+    display: none;
+
+    background-color: #1a1a1a;
+
+    border-radius: 12px;
+
+    padding: 25px;
+
+    margin-bottom: 35px;
+}
+
+.formulario h2 {
+    margin-top: 0;
+    color: #ff4444;
+}
+
+.formulario label {
+    display: block;
+
+    margin-top: 18px;
+    margin-bottom: 7px;
+
+    color: #ddd;
+}
+
+.formulario input,
+.formulario textarea {
+    width: 100%;
+}
+
+.formulario textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+input[type="file"] {
+    cursor: pointer;
+}
+
+
+/* BOTÕES DO FORMULÁRIO */
+
+.botoes-formulario {
+    display: flex;
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+.cancelar {
+    background-color: #444;
+}
+
+.cancelar:hover {
+    background-color: #555;
+}
+
+
+/* DIA */
+
+.dia {
+    margin-bottom: 45px;
+}
+
+.dia h2 {
+    font-size: 22px;
+
+    border-bottom: 2px solid #ff3333;
+
+    padding-bottom: 10px;
+}
+
+
+/* TAREFAS */
+
+.tarefas {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(250px, 1fr));
+
+    gap: 15px;
+}
+
+
+/* CARD */
+
+.tarefa {
+    background-color: #1c1c1c;
+
+    border-radius: 12px;
+
+    padding: 20px;
+
+    transition:
+        transform 0.15s,
+        background-color 0.15s;
+}
+
+.tarefa:hover {
+    transform: translateY(-3px);
+
+    background-color: #222;
+}
+
+.tarefa h3 {
+    margin-top: 0;
+
+    color: #ff4444;
+
+    font-size: 19px;
+}
+
+.tarefa p {
+    color: #ccc;
+
+    line-height: 1.5;
+
+    margin-bottom: 15px;
+}
+
+
+/* ARQUIVO */
+
+.arquivo {
+    display: inline-block;
+
+    color: #ff5555;
+
+    text-decoration: none;
+
+    font-size: 14px;
+}
+
+.arquivo:hover {
+    text-decoration: underline;
+}
+/* =========================
+   MODAL ALTERAR SENHA
+========================= */
+
+.modal-senha {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.65);
+
+    justify-content: center;
+
+    align-items: center;
+
+    z-index: 1000;
+
+}
+
+
+.conteudo-modal {
+
+    background: #1e1e1e;
+
+    padding: 30px;
+
+    border-radius: 12px;
+
+    width: 90%;
+
+    max-width: 400px;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+
+}
+
+
+.conteudo-modal h2 {
+
+    margin-top: 0;
+
+}
+
+
+#usuario-senha {
+
+    margin-bottom: 20px;
+
+    opacity: 0.8;
+
+}
+
+
+#senha-alterada {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 12px;
+
+    margin-bottom: 20px;
+
+    border-radius: 6px;
+
+    border: 1px solid #444;
+
+    background: #2a2a2a;
+
+    color: white;
+
+}
+
+
+.botoes-modal {
+
+    display: flex;
+
+    gap: 10px;
+
+}
+
+
+.botoes-modal button {
+
+    flex: 1;
+
+}
+
+
+.botoes-modal .cancelar {
+
+    background: #555;
+
+}

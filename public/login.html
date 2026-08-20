@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Login - Tarefas da Turma</title>
+
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+
+<body>
+
+    <main class="login-container">
+
+        <section class="login-box">
+
+            <h1>Tarefas da Turma</h1>
+
+            <p>Entre para acessar as tarefas.</p>
+
+
+            <form id="form-login">
+
+                <label for="usuario">
+                    Usuário
+                </label>
+
+                <input
+                    type="text"
+                    id="usuario"
+                    autocomplete="username"
+                    required
+                >
+
+
+                <label for="senha">
+                    Senha
+                </label>
+
+                <input
+                    type="password"
+                    id="senha"
+                    autocomplete="current-password"
+                    required
+                >
+
+
+                <button type="submit">
+                    Entrar
+                </button>
+
+
+                <p
+                    id="mensagem-login"
+                    class="mensagem-login"
+                ></p>
+
+            </form>
+
+        </section>
+
+    </main>
+
+
+    <script>
+
+        document
+            .getElementById("form-login")
+            .addEventListener("submit", async (evento) => {
+
+                evento.preventDefault();
+
+
+                const usuario =
+                    document.getElementById("usuario").value;
+
+                const senha =
+                    document.getElementById("senha").value;
+
+                const mensagem =
+                    document.getElementById("mensagem-login");
+
+
+                mensagem.textContent = "Entrando...";
+
+
+                try {
+
+                    const resposta = await fetch(
+                        "/api/login",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                usuario: usuario,
+                                senha: senha
+                            })
+                        }
+                    );
+
+
+                    const dados =
+                        await resposta.json();
+
+
+                    if (!dados.sucesso) {
+
+                        mensagem.textContent =
+                            dados.mensagem;
+
+                        return;
+                    }
+
+
+                    // Login realizado.
+
+                    window.location.href = "/";
+
+                } catch (erro) {
+
+                    console.error(erro);
+
+                    mensagem.textContent =
+                        "Erro ao conectar ao servidor.";
+
+                }
+
+            });
+
+    </script>
+
+</body>
+
+</html>

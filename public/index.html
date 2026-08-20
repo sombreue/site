@@ -1,0 +1,276 @@
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Agenda auruda</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>Tarefas da Turma</h1>
+
+    <p>
+        Consulte as tarefas passadas em cada dia.
+    </p>
+
+
+    <div id="usuario-logado"></div>
+
+
+    <button
+        id="botao-logout"
+        onclick="logout()"
+    >
+        Sair
+    </button>
+
+</header>
+
+
+
+<!-- =========================
+     PAINEL ADMIN
+========================= -->
+
+<section
+    id="painel-admin"
+    class="painel-admin"
+    style="display: none;"
+>
+
+    <h2>Administração</h2>
+
+
+    <h3>Criar usuário</h3>
+
+
+    <input
+        type="text"
+        id="novo-usuario"
+        placeholder="Nome de usuário"
+    >
+
+
+    <input
+        type="password"
+        id="nova-senha"
+        placeholder="Senha"
+    >
+
+
+    <button onclick="criarUsuario()">
+        Criar conta
+    </button>
+
+
+    <h3>Usuários cadastrados</h3>
+
+
+    <div id="lista-usuarios"></div>
+
+</section>
+
+
+
+<main>
+
+
+    <!-- =========================
+         FILTRO
+    ========================= -->
+
+    <section class="filtro">
+
+        <label for="data">
+            Pesquisar por data:
+        </label>
+
+
+        <input
+            type="date"
+            id="data"
+            onchange="filtrarPorData()"
+        >
+
+
+        <button onclick="limparFiltro()">
+            Mostrar todas
+        </button>
+
+    </section>
+
+
+
+    <!-- =========================
+         BOTÃO ADICIONAR
+    ========================= -->
+
+    <div
+        class="area-adicionar"
+        id="area-adicionar"
+        style="display: none;"
+    >
+
+        <button
+            class="botao-adicionar"
+            onclick="abrirFormulario()"
+        >
+            + Adicionar tarefas
+        </button>
+
+    </div>
+
+
+
+    <!-- =========================
+         FORMULÁRIO
+    ========================= -->
+
+    <section
+        id="formulario"
+        class="formulario"
+        style="display: none;"
+    >
+
+        <h2>
+            Adicionar tarefas
+        </h2>
+
+
+        <label for="nova-data">
+            Data:
+        </label>
+
+
+        <input
+            type="date"
+            id="nova-data"
+            onchange="mostrarMateriasDoDia()"
+            <div id="lista-materias-formulario"></div>
+        >
+
+
+        <!--
+            As matérias serão criadas
+            automaticamente pelo JavaScript
+        -->
+
+        <div
+            id="lista-materias-formulario"
+        ></div>
+
+
+        <div class="botoes-formulario">
+
+
+            <button
+                onclick="adicionarTarefasDoDia()"
+            >
+                Adicionar tarefas
+            </button>
+
+
+            <button
+                class="cancelar"
+                onclick="fecharFormulario()"
+            >
+                Cancelar
+            </button>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =========================
+         LISTA DE TAREFAS
+    ========================= -->
+
+    <section id="lista-tarefas">
+
+    </section>
+
+
+
+    <!-- =========================
+         MODAL ALTERAR SENHA
+    ========================= -->
+
+    <section
+        id="modal-senha"
+        class="modal-senha"
+    >
+
+        <div class="conteudo-modal">
+
+            <h2>
+                Alterar senha
+            </h2>
+
+
+            <p id="usuario-senha"></p>
+
+
+            <input
+                type="password"
+                id="senha-alterada"
+                placeholder="Digite a nova senha"
+            >
+
+
+            <div class="botoes-modal">
+
+
+                <button
+                    onclick="confirmarAlteracaoSenha()"
+                >
+                    Alterar senha
+                </button>
+
+
+                <button
+                    class="cancelar"
+                    onclick="fecharModalSenha()"
+                >
+                    Cancelar
+                </button>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<script src="script.js"></script>
+
+
+</body>
+</html>
+```
