@@ -723,23 +723,37 @@ async function carregarTarefas() {
         lista.innerHTML = "";
 
 
-        dados.tarefas.forEach(
-            tarefa => {
+        dados.tarefas
+    .sort((a, b) => {
 
-                criarTarefa(
+        // Datas mais recentes primeiro
+        const comparacaoData =
+            b.data.localeCompare(a.data);
 
-                    tarefa.id,
+        // Se forem do mesmo dia,
+        // tarefas adicionadas mais recentemente primeiro
+        if (comparacaoData !== 0) {
+            return comparacaoData;
+        }
 
-                    tarefa.data,
+        return b.id - a.id;
 
-                    tarefa.materia,
+    })
+    .forEach(tarefa => {
 
-                    tarefa.descricao
+        criarTarefa(
 
-                );
+            tarefa.id,
 
-            }
+            tarefa.data,
+
+            tarefa.materia,
+
+            tarefa.descricao
+
         );
+
+    });
 
 
     } catch (erro) {
