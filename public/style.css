@@ -28,6 +28,10 @@ header p {
     color: #aaa;
     margin-bottom: 0;
 }
+.foto {
+    width: 300px;
+    height: auto;
+}
 
 
 /* CONTEÚDO */
