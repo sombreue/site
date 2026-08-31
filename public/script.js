@@ -567,9 +567,9 @@ function criarTarefa(
         }
 
 
-        listaTarefas.prepend(
-            dia
-        );
+        listaTarefas.appendChild(
+    dia
+);
 
     }
 
