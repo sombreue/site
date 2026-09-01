@@ -83,23 +83,26 @@ async function carregarEquipes(tipoUsuario) {
                     <strong>Integrantes:</strong>
                     ${equipe.integrantes || "Não informados"}
                 </p>
-
-                ${
-                    tipoUsuario === "admin"
-                    ? `
-                        <div class="equipe-acoes">
-                            <button onclick="editarEquipe(${equipe.id})">
-                                Editar
-                            </button>
-
-                            <button onclick="excluirEquipe(${equipe.id})">
-                                Excluir
-                            </button>
-                        </div>
-                    `
-                    : ""
-                }
             `;
+
+            if (tipoUsuario === "admin") {
+
+                const acoes = document.createElement("div");
+
+                acoes.className = "equipe-acoes";
+
+                acoes.innerHTML = `
+                    <button onclick="editarEquipe(${equipe.id})">
+                        Editar
+                    </button>
+
+                    <button onclick="excluirEquipe(${equipe.id})">
+                        Excluir
+                    </button>
+                `;
+
+                card.appendChild(acoes);
+            }
 
             lista.appendChild(card);
         });
