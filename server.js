@@ -966,7 +966,7 @@ app.get("/api/feira/equipes", exigirLogin, async (req, res) => {
 // Criar equipe
 app.post("/api/feira/equipes", exigirAdmin, async (req, res) => {
     try {
-        const { nome, tema, professor, integrantes } = req.body;
+        const { nome, tema, professor, lider, integrantes } = req.body;
 
         if (!nome || !tema) {
             return res.status(400).json({
