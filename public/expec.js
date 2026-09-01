@@ -55,7 +55,7 @@ async function carregarEquipes(tipoUsuario) {
             return;
         }
 
-        equipes.forEach(equipe => {
+        equipes.forEach(function(equipe) {
 
             const card = document.createElement("div");
 
