@@ -319,21 +319,43 @@ async function carregarContagem() {
         }
 
         const dataAlvo = new Date(dados.data);
+        const dataInicio = new Date();
+dataInicio.setHours(0, 0, 0, 0);
 
         function atualizarContador() {
 
             const agora = new Date();
 
-            const diferenca =
-                dataAlvo.getTime() - agora.getTime();
+const diferenca =
+    dataAlvo.getTime() - agora.getTime();
 
+const inicio = dataInicio.getTime();
+const fim = dataAlvo.getTime();
+const atual = agora.getTime();
+
+const progresso =
+    ((atual - inicio) / (fim - inicio)) * 100;
+
+const porcentagem = Math.min(
+    100,
+    Math.max(0, progresso)
+);
+
+document.getElementById("barraProgresso").style.width =
+    `${porcentagem}%`;
             if (diferenca <= 0) {
 
-                document.getElementById("contador").textContent =
-                    "É HOJE!";
+    document.getElementById("contador").textContent =
+        "É HOJE!";
 
-                return;
-            }
+    document.getElementById("barraProgresso").style.width =
+        "100%";
+
+    document.getElementById("dataApresentacao").textContent =
+        `Apresentações: ${dataAlvo.toLocaleString("pt-BR")}`;
+
+    return;
+}
 
             const segundosTotais =
                 Math.floor(diferenca / 1000);
