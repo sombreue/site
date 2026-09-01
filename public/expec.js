@@ -295,3 +295,82 @@ async function excluirEquipe(id) {
 // =========================
 
 verificarSessao();
+carregarContagem();
+
+// =========================
+// CONTAGEM REGRESSIVA
+// =========================
+
+async function carregarContagem() {
+
+    try {
+
+        const resposta = await fetch(
+            "/api/feira/contagem"
+        );
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+            throw new Error(dados.mensagem);
+        }
+
+        const dataAlvo = new Date(dados.data);
+
+        function atualizarContador() {
+
+            const agora = new Date();
+
+            const diferenca =
+                dataAlvo.getTime() - agora.getTime();
+
+            if (diferenca <= 0) {
+
+                document.getElementById("contador").textContent =
+                    "É HOJE!";
+
+                return;
+            }
+
+            const segundosTotais =
+                Math.floor(diferenca / 1000);
+
+            const dias =
+                Math.floor(segundosTotais / 86400);
+
+            const horas =
+                Math.floor(
+                    (segundosTotais % 86400) / 3600
+                );
+
+            const minutos =
+                Math.floor(
+                    (segundosTotais % 3600) / 60
+                );
+
+            const segundos =
+                segundosTotais % 60;
+
+            document.getElementById("contador").textContent =
+                `${dias}d ${String(horas).padStart(2, "0")}h ` +
+                `${String(minutos).padStart(2, "0")}m ` +
+                `${String(segundos).padStart(2, "0")}s`;
+
+            document.getElementById("dataApresentacao").textContent =
+                `Apresentações: ${dataAlvo.toLocaleString("pt-BR")}`;
+        }
+
+        atualizarContador();
+
+        setInterval(atualizarContador, 1000);
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        document.getElementById("contador").textContent =
+            "Erro ao carregar contador.";
+
+    }
+
+}
