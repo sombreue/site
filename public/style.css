@@ -627,3 +627,53 @@ input[type="file"] {
 .modal-botoes button[type="submit"]:hover {
     background-color: #dc2626;
 }
+
+/* =========================
+   CONTADOR DA FEIRA
+========================= */
+
+.contador-feira {
+    background-color: #1c1c1c;
+
+    border: 1px solid #2c2c2c;
+    border-radius: 14px;
+
+    padding: 30px;
+
+    margin-bottom: 30px;
+
+    text-align: center;
+}
+
+.contador-feira h2 {
+    margin: 0;
+
+    font-size: 24px;
+}
+
+.contador-subtitulo {
+    margin-top: 8px;
+    margin-bottom: 25px;
+
+    opacity: 0.6;
+}
+
+#contador {
+    font-size: 42px;
+
+    font-weight: 700;
+
+    letter-spacing: 2px;
+
+    margin: 20px 0;
+
+    font-variant-numeric: tabular-nums;
+}
+
+#dataApresentacao {
+    margin: 0;
+
+    opacity: 0.65;
+
+    font-size: 14px;
+}
