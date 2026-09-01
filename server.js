@@ -938,6 +938,159 @@ app.put(
 
 
 // =========================
+// FEIRA - EQUIPES
+// =========================
+
+// Listar equipes
+app.get("/api/feira/equipes", exigirLogin, async (req, res) => {
+    try {
+        const resultado = await pool.query(`
+            SELECT *
+            FROM feira_equipes
+            ORDER BY id ASC
+        `);
+
+        res.json(resultado.rows);
+
+    } catch (erro) {
+        console.error("Erro ao buscar equipes:", erro);
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao buscar equipes."
+        });
+    }
+});
+
+
+// Criar equipe
+app.post("/api/feira/equipes", exigirAdmin, async (req, res) => {
+    try {
+        const { nome, tema, professor, integrantes } = req.body;
+
+        if (!nome || !tema) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Nome e tema são obrigatórios."
+            });
+        }
+
+        const resultado = await pool.query(`
+            INSERT INTO feira_equipes
+            (nome, tema, professor, integrantes)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *
+        `, [
+            nome,
+            tema,
+            professor || "",
+            integrantes || ""
+        ]);
+
+        res.status(201).json({
+            sucesso: true,
+            equipe: resultado.rows[0]
+        });
+
+    } catch (erro) {
+        console.error("Erro ao criar equipe:", erro);
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao criar equipe."
+        });
+    }
+});
+
+
+// Editar equipe
+app.put("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { nome, tema, professor, integrantes } = req.body;
+
+        if (!nome || !tema) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Nome e tema são obrigatórios."
+            });
+        }
+
+        const resultado = await pool.query(`
+            UPDATE feira_equipes
+            SET
+                nome = $1,
+                tema = $2,
+                professor = $3,
+                integrantes = $4
+            WHERE id = $5
+            RETURNING *
+        `, [
+            nome,
+            tema,
+            professor || "",
+            integrantes || "",
+            id
+        ]);
+
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Equipe não encontrada."
+            });
+        }
+
+        res.json({
+            sucesso: true,
+            equipe: resultado.rows[0]
+        });
+
+    } catch (erro) {
+        console.error("Erro ao editar equipe:", erro);
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao editar equipe."
+        });
+    }
+});
+
+
+// Excluir equipe
+app.delete("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const resultado = await pool.query(`
+            DELETE FROM feira_equipes
+            WHERE id = $1
+            RETURNING *
+        `, [id]);
+
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Equipe não encontrada."
+            });
+        }
+
+        res.json({
+            sucesso: true,
+            mensagem: "Equipe excluída com sucesso."
+        });
+
+    } catch (erro) {
+        console.error("Erro ao excluir equipe:", erro);
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao excluir equipe."
+        });
+    }
+});
+
+
+// =========================
 // TAREFAS
 // =========================
 
