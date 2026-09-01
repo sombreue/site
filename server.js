@@ -982,7 +982,7 @@ app.post("/api/feira/equipes", exigirAdmin, async (req, res) => {
         const resultado = await pool.query(`
             INSERT INTO feira_equipes
             (nome, tema, professor, lider, integrantes)
-            VALUES ($1, $2, $3, $4)
+            VALUES ($1, $2, $3, $4, $5)
             RETURNING *
         `, [
             nome,
