@@ -171,9 +171,23 @@ await pool.query(`
         integrantes TEXT
     );
 `);
+
 await pool.query(`
     ALTER TABLE feira_equipes
     ADD COLUMN IF NOT EXISTS lider TEXT;
+`);
+await pool.query(`
+    CREATE TABLE IF NOT EXISTS feira_cronometro (
+        id SERIAL PRIMARY KEY,
+        tempo_total INTEGER NOT NULL DEFAULT 900,
+        iniciado BOOLEAN NOT NULL DEFAULT FALSE,
+        iniciado_em TIMESTAMP
+    );
+`);
+await pool.query(`
+    INSERT INTO feira_cronometro (id)
+    VALUES (1)
+    ON CONFLICT (id) DO NOTHING;
 `);
 }
 
@@ -1092,6 +1106,72 @@ app.delete("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
         res.status(500).json({
             sucesso: false,
             mensagem: "Erro ao excluir equipe."
+        });
+    }
+});
+
+
+// =========================
+// FEIRA - CRONÔMETRO
+// =========================
+
+// Buscar estado do cronômetro
+app.get("/api/feira/cronometro", exigirLogin, async (req, res) => {
+
+    try {
+
+        const resultado = await pool.query(`
+            SELECT *
+            FROM feira_cronometro
+            WHERE id = 1
+        `);
+
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Cronômetro não encontrado."
+            });
+        }
+
+        const cronometro = resultado.rows[0];
+
+        let tempoRestante = cronometro.tempo_total;
+
+        // Se estiver rodando, calcula quanto tempo passou
+        if (cronometro.iniciado && cronometro.iniciado_em) {
+
+            const agora = Date.now();
+
+            const inicio = new Date(
+                cronometro.iniciado_em
+            ).getTime();
+
+            const passado = Math.floor(
+                (agora - inicio) / 1000
+            );
+
+            tempoRestante = Math.max(
+                cronometro.tempo_total - passado,
+                0
+            );
+        }
+
+        res.json({
+            sucesso: true,
+            tempo: tempoRestante,
+            iniciado: cronometro.iniciado
+        });
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao buscar cronômetro:",
+            erro
+        );
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao buscar cronômetro."
         });
     }
 });
