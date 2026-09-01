@@ -977,13 +977,14 @@ app.post("/api/feira/equipes", exigirAdmin, async (req, res) => {
 
         const resultado = await pool.query(`
             INSERT INTO feira_equipes
-            (nome, tema, professor, integrantes)
+            (nome, tema, professor, lider, integrantes)
             VALUES ($1, $2, $3, $4)
             RETURNING *
         `, [
             nome,
             tema,
             professor || "",
+            lider || "",
             integrantes || ""
         ]);
 
@@ -1007,7 +1008,7 @@ app.post("/api/feira/equipes", exigirAdmin, async (req, res) => {
 app.put("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const { nome, tema, professor, integrantes } = req.body;
+        const { nome, tema, professor, lider, integrantes } = req.body;
 
         if (!nome || !tema) {
             return res.status(400).json({
@@ -1023,12 +1024,14 @@ app.put("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
                 tema = $2,
                 professor = $3,
                 integrantes = $4
-            WHERE id = $5
+                lider = $5
+            WHERE id = $6
             RETURNING *
         `, [
             nome,
             tema,
             professor || "",
+            lider || "",
             integrantes || "",
             id
         ]);
