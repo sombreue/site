@@ -463,3 +463,47 @@ document
         }
 
     });
+
+// =========================
+// VERIFICAR EXPEC
+// =========================
+
+async function verificarExpec() {
+
+    try {
+
+        const resposta =
+            await fetch("/api/feira/status");
+
+        if (!resposta.ok) {
+            return;
+        }
+
+        const dados =
+            await resposta.json();
+
+        const botao =
+            document.getElementById("botaoExpec");
+
+        if (!botao) {
+            return;
+        }
+
+        if (dados.ativa) {
+            botao.style.display = "block";
+        } else {
+            botao.style.display = "none";
+        }
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao verificar EXPEC:",
+            erro
+        );
+
+    }
+
+}
+
+verificarExpec();
