@@ -377,3 +377,67 @@ async function carregarContagem() {
     }
 
 }
+
+// =========================
+// CONFIGURAR CONTADOR
+// =========================
+
+document
+    .getElementById("btnSalvarData")
+    .addEventListener("click", async () => {
+
+        const data =
+            document.getElementById(
+                "novaDataApresentacao"
+            ).value;
+
+        if (!data) {
+            alert("Escolha uma data e horário.");
+            return;
+        }
+
+        try {
+
+            const resposta = await fetch(
+                "/api/feira/contagem",
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        data
+                    })
+                }
+            );
+
+            const resultado =
+                await resposta.json();
+
+            if (!resposta.ok) {
+
+                alert(
+                    resultado.mensagem ||
+                    "Erro ao salvar data."
+                );
+
+                return;
+            }
+
+            alert("Data da apresentação atualizada!");
+
+            carregarContagem();
+
+        } catch (erro) {
+
+            console.error(erro);
+
+            alert(
+                "Erro de conexão com o servidor."
+            );
+
+        }
+
+    });
