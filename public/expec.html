@@ -20,17 +20,90 @@
 
     <main>
 
-        <section class="feira-equipes">
+    <section class="feira-equipes">
 
-            <h2>Equipes</h2>
-
-            <div id="listaEquipes">
-                <p>Carregando equipes...</p>
+        <div class="secao-cabecalho">
+            <div>
+                <h2>Equipes</h2>
+                <p>Equipes participantes da Feira</p>
             </div>
 
-        </section>
+            <button id="btnCriarEquipe" style="display: none;">
+                + Criar equipe
+            </button>
+        </div>
 
-    </main>
+        <div id="listaEquipes">
+            <p>Carregando equipes...</p>
+        </div>
+
+    </section>
+
+    <!-- FORMULÁRIO -->
+    <div id="modalEquipe" class="modal" style="display: none;">
+
+        <div class="modal-conteudo">
+
+            <h2 id="tituloModal">Criar equipe</h2>
+
+            <form id="formEquipe">
+
+                <label>
+                    Nome da equipe
+                    <input
+                        type="text"
+                        id="nomeEquipe"
+                        placeholder="Ex: Equipe 1"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Tema
+                    <input
+                        type="text"
+                        id="temaEquipe"
+                        placeholder="Ex: Meio Ambiente"
+                        required
+                    >
+                </label>
+
+                <label>
+                    Professor
+                    <input
+                        type="text"
+                        id="professorEquipe"
+                        placeholder="Ex: Professor João"
+                    >
+                </label>
+
+                <label>
+                    Integrantes
+                    <textarea
+                        id="integrantesEquipe"
+                        placeholder="Ex: João, Maria, Pedro..."
+                    ></textarea>
+                </label>
+
+                <div class="modal-botoes">
+
+                    <button type="button" id="btnCancelar">
+                        Cancelar
+                    </button>
+
+                    <button type="submit">
+                        Salvar
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</main>
 
     <script src="feira.js"></script>
 
