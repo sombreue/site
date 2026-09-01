@@ -2,6 +2,9 @@
 let equipeEditando = null;
 
 
+let equipeEditando = null;
+
+
 // =========================
 // VERIFICAR SESSÃO
 // =========================
@@ -9,7 +12,6 @@ let equipeEditando = null;
 async function verificarSessao() {
 
     const resposta = await fetch("/api/sessao");
-
     const sessao = await resposta.json();
 
     if (!sessao.logado) {
@@ -17,7 +19,6 @@ async function verificarSessao() {
         return;
     }
 
-    // Apenas admin pode criar/editar/excluir
     if (sessao.tipo === "admin") {
         document.getElementById("btnCriarEquipe").style.display = "block";
     }
@@ -47,11 +48,7 @@ async function carregarEquipes(tipoUsuario) {
         lista.innerHTML = "";
 
         if (equipes.length === 0) {
-
-            lista.innerHTML = `
-                <p>Nenhuma equipe cadastrada ainda.</p>
-            `;
-
+            lista.innerHTML = "<p>Nenhuma equipe cadastrada ainda.</p>";
             return;
         }
 
@@ -61,29 +58,18 @@ async function carregarEquipes(tipoUsuario) {
 
             card.className = "equipe";
 
-            card.innerHTML = `
-                <h3>${equipe.nome}</h3>
+            const nome = equipe.nome || "";
+            const tema = equipe.tema || "";
+            const professor = equipe.professor || "Não informado";
+            const lider = equipe.lider || "Não informado";
+            const integrantes = equipe.integrantes || "Não informados";
 
-                <p>
-                    <strong>Tema:</strong>
-                    ${equipe.tema}
-                </p>
-
-                <p>
-                    <strong>Professor:</strong>
-                    ${equipe.professor || "Não informado"}
-                </p>
-
-                <p>
-                    <strong>Líder:</strong>
-                    ${equipe.lider || "Não informado"}
-                </p>
-
-                <p>
-                    <strong>Integrantes:</strong>
-                    ${equipe.integrantes || "Não informados"}
-                </p>
-            `;
+            card.innerHTML =
+                "<h3>" + nome + "</h3>" +
+                "<p><strong>Tema:</strong> " + tema + "</p>" +
+                "<p><strong>Professor:</strong> " + professor + "</p>" +
+                "<p><strong>Líder:</strong> " + lider + "</p>" +
+                "<p><strong>Integrantes:</strong> " + integrantes + "</p>";
 
             if (tipoUsuario === "admin") {
 
@@ -91,15 +77,9 @@ async function carregarEquipes(tipoUsuario) {
 
                 acoes.className = "equipe-acoes";
 
-                acoes.innerHTML = `
-                    <button onclick="editarEquipe(${equipe.id})">
-                        Editar
-                    </button>
-
-                    <button onclick="excluirEquipe(${equipe.id})">
-                        Excluir
-                    </button>
-                `;
+                acoes.innerHTML =
+                    '<button onclick="editarEquipe(' + equipe.id + ')">Editar</button>' +
+                    '<button onclick="excluirEquipe(' + equipe.id + ')">Excluir</button>';
 
                 card.appendChild(acoes);
             }
@@ -111,12 +91,10 @@ async function carregarEquipes(tipoUsuario) {
 
         console.error(erro);
 
-        document.getElementById("listaEquipes").innerHTML = `
-            <p>Não foi possível carregar as equipes.</p>
-        `;
+        document.getElementById("listaEquipes").innerHTML =
+            "<p>Não foi possível carregar as equipes.</p>";
     }
 }
-
 
 // =========================
 // ABRIR FORMULÁRIO
