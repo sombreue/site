@@ -162,7 +162,15 @@ async function criarTabelas() {
         );
 
     `);
-
+await pool.query(`
+    CREATE TABLE IF NOT EXISTS feira_equipes (
+        id SERIAL PRIMARY KEY,
+        nome TEXT NOT NULL,
+        tema TEXT NOT NULL,
+        professor TEXT,
+        integrantes TEXT
+    );
+`);
 }
 
 
