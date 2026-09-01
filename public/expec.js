@@ -1,7 +1,3 @@
-```js
-let equipeEditando = null;
-
-
 let equipeEditando = null;
 
 
@@ -11,19 +7,32 @@ let equipeEditando = null;
 
 async function verificarSessao() {
 
-    const resposta = await fetch("/api/sessao");
-    const sessao = await resposta.json();
+    try {
 
-    if (!sessao.logado) {
-        window.location.href = "/login.html";
-        return;
+        const resposta = await fetch("/api/sessao");
+        const sessao = await resposta.json();
+
+        if (!sessao.logado) {
+            window.location.href = "/login.html";
+            return;
+        }
+
+        if (sessao.tipo === "admin") {
+
+            const botaoCriar =
+                document.getElementById("btnCriarEquipe");
+
+            if (botaoCriar) {
+                botaoCriar.style.display = "block";
+            }
+        }
+
+        carregarEquipes(sessao.tipo);
+
+    } catch (erro) {
+
+        console.error("Erro ao verificar sessão:", erro);
     }
-
-    if (sessao.tipo === "admin") {
-        document.getElementById("btnCriarEquipe").style.display = "block";
-    }
-
-    carregarEquipes(sessao.tipo);
 }
 
 
@@ -35,51 +44,86 @@ async function carregarEquipes(tipoUsuario) {
 
     try {
 
-        const resposta = await fetch("/api/feira/equipes");
+        const resposta =
+            await fetch("/api/feira/equipes");
 
         if (!resposta.ok) {
             throw new Error("Erro ao buscar equipes.");
         }
 
-        const equipes = await resposta.json();
+        const equipes =
+            await resposta.json();
 
-        const lista = document.getElementById("listaEquipes");
+        const lista =
+            document.getElementById("listaEquipes");
+
+        if (!lista) {
+            return;
+        }
 
         lista.innerHTML = "";
 
         if (equipes.length === 0) {
-            lista.innerHTML = "<p>Nenhuma equipe cadastrada ainda.</p>";
+
+            lista.innerHTML =
+                "<p>Nenhuma equipe cadastrada ainda.</p>";
+
             return;
         }
 
         equipes.forEach(function(equipe) {
 
-            const card = document.createElement("div");
+            const card =
+                document.createElement("div");
 
             card.className = "equipe";
 
-            const nome = equipe.nome || "";
-            const tema = equipe.tema || "";
-            const professor = equipe.professor || "Não informado";
-            const lider = equipe.lider || "Não informado";
-            const integrantes = equipe.integrantes || "Não informados";
+            const nome =
+                equipe.nome || "";
+
+            const tema =
+                equipe.tema || "";
+
+            const professor =
+                equipe.professor || "Não informado";
+
+            const lider =
+                equipe.lider || "Não informado";
+
+            const integrantes =
+                equipe.integrantes || "Não informados";
 
             card.innerHTML =
                 "<h3>" + nome + "</h3>" +
-                "<p><strong>Tema:</strong> " + tema + "</p>" +
-                "<p><strong>Professor:</strong> " + professor + "</p>" +
-                "<p><strong>Líder:</strong> " + lider + "</p>" +
-                "<p><strong>Integrantes:</strong> " + integrantes + "</p>";
+                "<p><strong>Tema:</strong> " +
+                tema +
+                "</p>" +
+                "<p><strong>Professor:</strong> " +
+                professor +
+                "</p>" +
+                "<p><strong>Líder:</strong> " +
+                lider +
+                "</p>" +
+                "<p><strong>Integrantes:</strong> " +
+                integrantes +
+                "</p>";
 
             if (tipoUsuario === "admin") {
 
-                const acoes = document.createElement("div");
+                const acoes =
+                    document.createElement("div");
 
-                acoes.className = "equipe-acoes";
+                acoes.className =
+                    "equipe-acoes";
 
                 acoes.innerHTML =
-                    '<button onclick="editarEquipe(' + equipe.id + ')">Editar</button>' +
-                    '<button onclick="excluirEquipe(' + equipe.id + ')">Excluir</button>';
+                    '<button onclick="editarEquipe(' +
+                    equipe.id +
+                    ')">Editar</button>' +
+
+                    '<button onclick="excluirEquipe(' +
+                    equipe.id +
+                    ')">Excluir</button>';
 
                 card.appendChild(acoes);
             }
@@ -89,175 +133,304 @@ async function carregarEquipes(tipoUsuario) {
 
     } catch (erro) {
 
-        console.error(erro);
+        console.error(
+            "Erro ao carregar equipes:",
+            erro
+        );
 
-        document.getElementById("listaEquipes").innerHTML =
-            "<p>Não foi possível carregar as equipes.</p>";
+        const lista =
+            document.getElementById("listaEquipes");
+
+        if (lista) {
+
+            lista.innerHTML =
+                "<p>Não foi possível carregar as equipes.</p>";
+        }
     }
 }
+
 
 // =========================
 // ABRIR FORMULÁRIO
 // =========================
 
-document.getElementById("btnCriarEquipe").addEventListener("click", () => {
+const btnCriarEquipe =
+    document.getElementById("btnCriarEquipe");
 
-    equipeEditando = null;
+if (btnCriarEquipe) {
 
-    document.getElementById("tituloModal").textContent = "Criar equipe";
+    btnCriarEquipe.addEventListener(
+        "click",
+        function() {
 
-    document.getElementById("formEquipe").reset();
+            equipeEditando = null;
 
-    document.getElementById("modalEquipe").style.display = "flex";
-});
+            document.getElementById(
+                "tituloModal"
+            ).textContent = "Criar equipe";
+
+            document.getElementById(
+                "formEquipe"
+            ).reset();
+
+            document.getElementById(
+                "modalEquipe"
+            ).style.display = "flex";
+        }
+    );
+}
 
 
 // =========================
 // CANCELAR
 // =========================
 
-document.getElementById("btnCancelar").addEventListener("click", () => {
+const btnCancelar =
+    document.getElementById("btnCancelar");
 
-    document.getElementById("modalEquipe").style.display = "none";
+if (btnCancelar) {
 
-    equipeEditando = null;
-});
+    btnCancelar.addEventListener(
+        "click",
+        function() {
+
+            document.getElementById(
+                "modalEquipe"
+            ).style.display = "none";
+
+            equipeEditando = null;
+        }
+    );
+}
 
 
 // =========================
 // SALVAR / EDITAR
 // =========================
 
-document.getElementById("formEquipe").addEventListener("submit", async (evento) => {
+const formEquipe =
+    document.getElementById("formEquipe");
 
-    evento.preventDefault();
+if (formEquipe) {
 
-    const dados = {
-        nome: document.getElementById("nomeEquipe").value,
-        tema: document.getElementById("temaEquipe").value,
-        professor: document.getElementById("professorEquipe").value,
-        integrantes: document.getElementById("integrantesEquipe").value,
-        lider: document.getElementById("liderEquipe").value
-    };
+    formEquipe.addEventListener(
+        "submit",
+        async function(evento) {
 
-    try {
+            evento.preventDefault();
 
-        let resposta;
+            const dados = {
 
-        if (equipeEditando) {
+                nome:
+                    document.getElementById(
+                        "nomeEquipe"
+                    ).value,
 
-            resposta = await fetch(
-                `/api/feira/equipes/${equipeEditando}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(dados)
+                tema:
+                    document.getElementById(
+                        "temaEquipe"
+                    ).value,
+
+                professor:
+                    document.getElementById(
+                        "professorEquipe"
+                    ).value,
+
+                lider:
+                    document.getElementById(
+                        "liderEquipe"
+                    ).value,
+
+                integrantes:
+                    document.getElementById(
+                        "integrantesEquipe"
+                    ).value
+            };
+
+            try {
+
+                let resposta;
+
+                if (equipeEditando !== null) {
+
+                    resposta =
+                        await fetch(
+                            "/api/feira/equipes/" +
+                            equipeEditando,
+                            {
+                                method: "PUT",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(dados)
+                            }
+                        );
+
+                } else {
+
+                    resposta =
+                        await fetch(
+                            "/api/feira/equipes",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(dados)
+                            }
+                        );
                 }
-            );
 
-        } else {
+                const resultado =
+                    await resposta.json();
 
-            resposta = await fetch(
-                "/api/feira/equipes",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(dados)
+                if (!resposta.ok) {
+
+                    alert(
+                        resultado.mensagem ||
+                        "Erro ao salvar equipe."
+                    );
+
+                    return;
                 }
-            );
+
+                document.getElementById(
+                    "modalEquipe"
+                ).style.display = "none";
+
+                equipeEditando = null;
+
+                verificarSessao();
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao salvar equipe:",
+                    erro
+                );
+
+                alert(
+                    "Erro de conexão com o servidor."
+                );
+            }
         }
-
-        const resultado = await resposta.json();
-
-        if (!resposta.ok) {
-            alert(resultado.mensagem || "Erro ao salvar equipe.");
-            return;
-        }
-
-        document.getElementById("modalEquipe").style.display = "none";
-
-        equipeEditando = null;
-
-        verificarSessao();
-
-    } catch (erro) {
-
-        console.error(erro);
-
-        alert("Erro de conexão com o servidor.");
-    }
-});
-
-
-// =========================
-// EDITAR
-// =========================
-
-async function editarEquipe(id) {
-
-    const resposta = await fetch("/api/feira/equipes");
-
-    const equipes = await resposta.json();
-
-    const equipe = equipes.find(e => e.id === id);
-
-    if (!equipe) {
-        alert("Equipe não encontrada.");
-        return;
-    }
-
-    equipeEditando = id;
-
-    document.getElementById("tituloModal").textContent = "Editar equipe";
-
-    document.getElementById("nomeEquipe").value =
-        equipe.nome;
-
-    document.getElementById("temaEquipe").value =
-        equipe.tema;
-
-    document.getElementById("professorEquipe").value =
-        equipe.professor || "";
-
-    document.getElementById("integrantesEquipe").value =
-        equipe.integrantes || "";
-
-    document.getElementById("liderEquipe").value =
-        equipe.lider || "";
-
-    document.getElementById("modalEquipe").style.display = "flex";
+    );
 }
 
 
 // =========================
-// EXCLUIR
+// EDITAR EQUIPE
+// =========================
+
+async function editarEquipe(id) {
+
+    try {
+
+        const resposta =
+            await fetch("/api/feira/equipes");
+
+        const equipes =
+            await resposta.json();
+
+        const equipe =
+            equipes.find(
+                function(item) {
+                    return item.id === id;
+                }
+            );
+
+        if (!equipe) {
+
+            alert(
+                "Equipe não encontrada."
+            );
+
+            return;
+        }
+
+        equipeEditando = id;
+
+        document.getElementById(
+            "tituloModal"
+        ).textContent = "Editar equipe";
+
+        document.getElementById(
+            "nomeEquipe"
+        ).value = equipe.nome || "";
+
+        document.getElementById(
+            "temaEquipe"
+        ).value = equipe.tema || "";
+
+        document.getElementById(
+            "professorEquipe"
+        ).value = equipe.professor || "";
+
+        document.getElementById(
+            "liderEquipe"
+        ).value = equipe.lider || "";
+
+        document.getElementById(
+            "integrantesEquipe"
+        ).value = equipe.integrantes || "";
+
+        document.getElementById(
+            "modalEquipe"
+        ).style.display = "flex";
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao editar equipe:",
+            erro
+        );
+    }
+}
+
+
+// =========================
+// EXCLUIR EQUIPE
 // =========================
 
 async function excluirEquipe(id) {
 
-    const confirmar = confirm(
-        "Tem certeza que deseja excluir esta equipe?"
-    );
+    const confirmar =
+        confirm(
+            "Tem certeza que deseja excluir esta equipe?"
+        );
 
-    if (!confirmar) return;
+    if (!confirmar) {
+        return;
+    }
 
     try {
 
-        const resposta = await fetch(
-            `/api/feira/equipes/${id}`,
-            {
-                method: "DELETE"
-            }
-        );
+        const resposta =
+            await fetch(
+                "/api/feira/equipes/" + id,
+                {
+                    method: "DELETE"
+                }
+            );
 
-        const resultado = await resposta.json();
+        const resultado =
+            await resposta.json();
 
         if (!resposta.ok) {
-            alert(resultado.mensagem || "Erro ao excluir equipe.");
+
+            alert(
+                resultado.mensagem ||
+                "Erro ao excluir equipe."
+            );
+
             return;
         }
 
@@ -265,9 +438,14 @@ async function excluirEquipe(id) {
 
     } catch (erro) {
 
-        console.error(erro);
+        console.error(
+            "Erro ao excluir equipe:",
+            erro
+        );
 
-        alert("Erro de conexão com o servidor.");
+        alert(
+            "Erro de conexão com o servidor."
+        );
     }
 }
 
@@ -280,43 +458,55 @@ async function carregarContagem() {
 
     try {
 
-        const resposta = await fetch(
-            "/api/feira/contagem"
-        );
+        const resposta =
+            await fetch(
+                "/api/feira/contagem"
+            );
 
-        const dados = await resposta.json();
+        const dados =
+            await resposta.json();
 
         if (!resposta.ok) {
-            throw new Error(dados.mensagem);
+
+            throw new Error(
+                dados.mensagem ||
+                "Erro ao carregar contagem."
+            );
         }
 
-        // Mostrar configuração somente para admin
         if (dados.tipo === "admin") {
 
-            document.getElementById(
-                "configContador"
-            ).style.display = "block";
+            const config =
+                document.getElementById(
+                    "configContador"
+                );
+
+            if (config) {
+                config.style.display = "block";
+            }
         }
 
-        const dataAlvo = new Date(dados.data);
+        const dataAlvo =
+            new Date(dados.data);
 
-        // A barra começa hoje às 00:00
-        const dataInicio = new Date();
+        const dataInicio =
+            new Date();
 
-        dataInicio.setHours(0, 0, 0, 0);
-
+        dataInicio.setHours(
+            0,
+            0,
+            0,
+            0
+        );
 
         function atualizarContador() {
 
-            const agora = new Date();
+            const agora =
+                new Date();
 
             const diferenca =
-                dataAlvo.getTime() - agora.getTime();
-
-
-            // =========================
-            // BARRA DE PROGRESSO
-            // =========================
+                dataAlvo.getTime() -
+                agora.getTime();
 
             const inicio =
                 dataInicio.getTime();
@@ -327,52 +517,74 @@ async function carregarContagem() {
             const atual =
                 agora.getTime();
 
-            const progresso =
-                ((atual - inicio) / (fim - inicio)) * 100;
+            let progresso = 100;
+
+            if (fim > inicio) {
+
+                progresso =
+                    ((atual - inicio) /
+                    (fim - inicio)) *
+                    100;
+            }
 
             const porcentagem =
                 Math.min(
                     100,
-                    Math.max(0, progresso)
+                    Math.max(
+                        0,
+                        progresso
+                    )
                 );
 
-            document.getElementById(
-                "barraProgresso"
-            ).style.width =
-                `${porcentagem}%`;
+            const barra =
+                document.getElementById(
+                    "barraProgresso"
+                );
 
+            if (barra) {
 
-            // =========================
-            // APRESENTAÇÃO CHEGOU
-            // =========================
+                barra.style.width =
+                    porcentagem + "%";
+            }
+
+            const contador =
+                document.getElementById(
+                    "contador"
+                );
+
+            const dataTexto =
+                document.getElementById(
+                    "dataApresentacao"
+                );
 
             if (diferenca <= 0) {
 
-                document.getElementById(
-                    "contador"
-                ).textContent =
-                    "É HOJE!";
+                if (contador) {
+                    contador.textContent =
+                        "É HOJE!";
+                }
 
-                document.getElementById(
-                    "barraProgresso"
-                ).style.width =
-                    "100%";
+                if (barra) {
+                    barra.style.width =
+                        "100%";
+                }
 
-                document.getElementById(
-                    "dataApresentacao"
-                ).textContent =
-                    `Apresentações: ${dataAlvo.toLocaleString("pt-BR")}`;
+                if (dataTexto) {
+
+                    dataTexto.textContent =
+                        "Apresentações: " +
+                        dataAlvo.toLocaleString(
+                            "pt-BR"
+                        );
+                }
 
                 return;
             }
 
-
-            // =========================
-            // TEMPO RESTANTE
-            // =========================
-
             const segundosTotais =
-                Math.floor(diferenca / 1000);
+                Math.floor(
+                    diferenca / 1000
+                );
 
             const dias =
                 Math.floor(
@@ -381,32 +593,44 @@ async function carregarContagem() {
 
             const horas =
                 Math.floor(
-                    (segundosTotais % 86400) / 3600
+                    (segundosTotais % 86400) /
+                    3600
                 );
 
             const minutos =
                 Math.floor(
-                    (segundosTotais % 3600) / 60
+                    (segundosTotais % 3600) /
+                    60
                 );
 
             const segundos =
                 segundosTotais % 60;
 
+            if (contador) {
 
-            document.getElementById(
-                "contador"
-            ).textContent =
-                `${dias}d ${String(horas).padStart(2, "0")}h ` +
-                `${String(minutos).padStart(2, "0")}m ` +
-                `${String(segundos).padStart(2, "0")}s`;
+                contador.textContent =
+                    dias +
+                    "d " +
+                    String(horas)
+                        .padStart(2, "0") +
+                    "h " +
+                    String(minutos)
+                        .padStart(2, "0") +
+                    "m " +
+                    String(segundos)
+                        .padStart(2, "0") +
+                    "s";
+            }
 
+            if (dataTexto) {
 
-            document.getElementById(
-                "dataApresentacao"
-            ).textContent =
-                `Apresentações: ${dataAlvo.toLocaleString("pt-BR")}`;
+                dataTexto.textContent =
+                    "Apresentações: " +
+                    dataAlvo.toLocaleString(
+                        "pt-BR"
+                    );
+            }
         }
-
 
         atualizarContador();
 
@@ -417,90 +641,114 @@ async function carregarContagem() {
 
     } catch (erro) {
 
-        console.error(erro);
+        console.error(
+            "Erro no contador:",
+            erro
+        );
 
-        document.getElementById(
-            "contador"
-        ).textContent =
-            "Erro ao carregar contador.";
+        const contador =
+            document.getElementById(
+                "contador"
+            );
+
+        if (contador) {
+
+            contador.textContent =
+                "Erro ao carregar contador.";
+        }
     }
 }
 
 
 // =========================
-// CONFIGURAR CONTADOR
+// SALVAR DATA
 // =========================
 
-document
-    .getElementById("btnSalvarData")
-    .addEventListener("click", async () => {
+const btnSalvarData =
+    document.getElementById(
+        "btnSalvarData"
+    );
 
-        const data =
-            document.getElementById(
-                "novaDataApresentacao"
-            ).value;
+if (btnSalvarData) {
 
-        if (!data) {
+    btnSalvarData.addEventListener(
+        "click",
+        async function() {
 
-            alert(
-                "Escolha uma data e horário."
-            );
-
-            return;
-        }
-
-        try {
-
-            const resposta =
-                await fetch(
-                    "/api/feira/contagem",
-                    {
-                        method: "PUT",
-
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
-
-                        body: JSON.stringify({
-                            data
-                        })
-                    }
+            const campo =
+                document.getElementById(
+                    "novaDataApresentacao"
                 );
 
-            const resultado =
-                await resposta.json();
+            const data =
+                campo.value;
 
-            if (!resposta.ok) {
+            if (!data) {
 
                 alert(
-                    resultado.mensagem ||
-                    "Erro ao salvar data."
+                    "Escolha uma data e horário."
                 );
 
                 return;
             }
 
-            alert(
-                "Data da apresentação atualizada!"
-            );
+            try {
 
-            carregarContagem();
+                const resposta =
+                    await fetch(
+                        "/api/feira/contagem",
+                        {
+                            method: "PUT",
 
-        } catch (erro) {
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
 
-            console.error(erro);
+                            body:
+                                JSON.stringify({
+                                    data: data
+                                })
+                        }
+                    );
 
-            alert(
-                "Erro de conexão com o servidor."
-            );
+                const resultado =
+                    await resposta.json();
+
+                if (!resposta.ok) {
+
+                    alert(
+                        resultado.mensagem ||
+                        "Erro ao salvar data."
+                    );
+
+                    return;
+                }
+
+                alert(
+                    "Data da apresentação atualizada!"
+                );
+
+                carregarContagem();
+
+            } catch (erro) {
+
+                console.error(
+                    "Erro ao salvar data:",
+                    erro
+                );
+
+                alert(
+                    "Erro de conexão com o servidor."
+                );
+            }
         }
-
-    });
+    );
+}
 
 
 // =========================
-// CONTROLE DA EXPEC
+// STATUS DA EXPEC
 // =========================
 
 async function carregarStatusExpec() {
@@ -516,7 +764,11 @@ async function carregarStatusExpec() {
             await resposta.json();
 
         if (!resposta.ok) {
-            throw new Error(dados.mensagem);
+
+            throw new Error(
+                dados.mensagem ||
+                "Erro ao verificar EXPEC."
+            );
         }
 
         const status =
@@ -550,69 +802,84 @@ async function carregarStatusExpec() {
                 "Ativar EXPEC";
         }
 
+        botao.onclick =
+            async function() {
 
-        botao.onclick = async () => {
+                const novoStatus =
+                    !dados.ativa;
 
-            const novoStatus =
-                !dados.ativa;
+                const confirmar =
+                    confirm(
+                        novoStatus
+                            ? "Deseja ativar a EXPEC novamente?"
+                            : "Deseja desativar a EXPEC?"
+                    );
 
-            const confirmar =
-                confirm(
-                    novoStatus
-                        ? "Deseja ativar a EXPEC novamente?"
-                        : "Deseja desativar a EXPEC?"
-                );
+                if (!confirmar) {
+                    return;
+                }
 
-            if (!confirmar) {
-                return;
-            }
+                try {
 
+                    const resposta =
+                        await fetch(
+                            "/api/feira/status",
+                            {
+                                method: "PUT",
 
-            const resposta =
-                await fetch(
-                    "/api/feira/status",
-                    {
-                        method: "PUT",
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
 
-                        headers: {
-                            "Content-Type":
-                                "application/json"
-                        },
+                                body:
+                                    JSON.stringify({
+                                        ativa:
+                                            novoStatus
+                                    })
+                            }
+                        );
 
-                        body: JSON.stringify({
-                            ativa: novoStatus
-                        })
+                    const resultado =
+                        await resposta.json();
+
+                    if (!resposta.ok) {
+
+                        alert(
+                            resultado.mensagem ||
+                            "Erro ao alterar status da EXPEC."
+                        );
+
+                        return;
                     }
-                );
 
-            const resultado =
-                await resposta.json();
+                    alert(
+                        novoStatus
+                            ? "EXPEC ativada!"
+                            : "EXPEC desativada!"
+                    );
 
+                    carregarStatusExpec();
 
-            if (!resposta.ok) {
+                } catch (erro) {
 
-                alert(
-                    resultado.mensagem ||
-                    "Erro ao alterar status da EXPEC."
-                );
+                    console.error(
+                        "Erro ao alterar status:",
+                        erro
+                    );
 
-                return;
-            }
-
-
-            alert(
-                novoStatus
-                    ? "EXPEC ativada!"
-                    : "EXPEC desativada!"
-            );
-
-
-            carregarStatusExpec();
-        };
+                    alert(
+                        "Erro de conexão com o servidor."
+                    );
+                }
+            };
 
     } catch (erro) {
 
-        console.error(erro);
+        console.error(
+            "Erro ao carregar status:",
+            erro
+        );
 
         const status =
             document.getElementById(
@@ -637,4 +904,3 @@ verificarSessao();
 carregarContagem();
 
 carregarStatusExpec();
-```
