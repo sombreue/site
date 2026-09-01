@@ -310,6 +310,9 @@ async function carregarContagem() {
         );
 
         const dados = await resposta.json();
+        if (dados.tipo === "admin") {
+    document.getElementById("configContador").style.display = "block";
+}
 
         if (!resposta.ok) {
             throw new Error(dados.mensagem);
