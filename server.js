@@ -176,6 +176,17 @@ await pool.query(`
     ALTER TABLE feira_equipes
     ADD COLUMN IF NOT EXISTS lider TEXT;
 `);
+await pool.query(`
+    CREATE TABLE IF NOT EXISTS feira_config (
+        id SERIAL PRIMARY KEY,
+        data_apresentacao TIMESTAMP NOT NULL
+    );
+`);
+await pool.query(`
+    INSERT INTO feira_config (id, data_apresentacao)
+    VALUES (1, '2026-09-13 08:00:00')
+    ON CONFLICT (id) DO NOTHING;
+`);
 }
 
 
@@ -1095,6 +1106,51 @@ app.delete("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
             mensagem: "Erro ao excluir equipe."
         });
     }
+});
+
+// =========================
+// FEIRA - CONTAGEM REGRESSIVA
+// =========================
+
+// Buscar data da apresentação
+app.get("/api/feira/contagem", exigirLogin, async (req, res) => {
+
+    try {
+
+        const resultado = await pool.query(`
+            SELECT data_apresentacao
+            FROM feira_config
+            WHERE id = 1
+        `);
+
+        if (resultado.rows.length === 0) {
+
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Data da apresentação não configurada."
+            });
+
+        }
+
+        res.json({
+            sucesso: true,
+            data: resultado.rows[0].data_apresentacao
+        });
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao buscar data da apresentação:",
+            erro
+        );
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao buscar contagem regressiva."
+        });
+
+    }
+
 });
 
 
