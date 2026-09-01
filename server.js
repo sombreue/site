@@ -1212,7 +1212,46 @@ app.put("/api/feira/contagem", exigirAdmin, async (req, res) => {
     }
 
 });
+app.get("/api/feira/status", exigirLogin, async (req, res) => {
 
+    try {
+
+        const resultado = await pool.query(`
+            SELECT ativa
+            FROM feira_config
+            WHERE id = 1
+        `);
+
+        if (resultado.rows.length === 0) {
+
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Configuração da EXPEC não encontrada."
+            });
+
+        }
+
+        res.json({
+            sucesso: true,
+            ativa: resultado.rows[0].ativa,
+            tipo: req.session.usuario.tipo
+        });
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao verificar status da EXPEC:",
+            erro
+        );
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao verificar status da EXPEC."
+        });
+
+    }
+
+});
 
 // =========================
 // TAREFAS
