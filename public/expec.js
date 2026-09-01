@@ -154,7 +154,7 @@ document.getElementById("formEquipe").addEventListener("submit", async (evento) 
         nome: document.getElementById("nomeEquipe").value,
         tema: document.getElementById("temaEquipe").value,
         professor: document.getElementById("professorEquipe").value,
-        integrantes: document.getElementById("integrantesEquipe").value
+        integrantes: document.getElementById("integrantesEquipe").value,
         lider: document.getElementById("liderEquipe").value,
     };
 
