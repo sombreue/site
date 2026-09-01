@@ -1133,9 +1133,10 @@ app.get("/api/feira/contagem", exigirLogin, async (req, res) => {
         }
 
         res.json({
-            sucesso: true,
-            data: resultado.rows[0].data_apresentacao
-        });
+    sucesso: true,
+    data: resultado.rows[0].data_apresentacao,
+    tipo: req.session.usuario.tipo
+});
 
     } catch (erro) {
 
