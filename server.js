@@ -1252,6 +1252,47 @@ app.get("/api/feira/status", exigirLogin, async (req, res) => {
     }
 
 });
+app.put("/api/feira/status", exigirAdmin, async (req, res) => {
+
+    try {
+
+        const { ativa } = req.body;
+
+        if (typeof ativa !== "boolean") {
+
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "O status deve ser true ou false."
+            });
+
+        }
+
+        await pool.query(`
+            UPDATE feira_config
+            SET ativa = $1
+            WHERE id = 1
+        `, [ativa]);
+
+        res.json({
+            sucesso: true,
+            ativa
+        });
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao alterar status da EXPEC:",
+            erro
+        );
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao alterar status da EXPEC."
+        });
+
+    }
+
+});
 
 // =========================
 // TAREFAS
