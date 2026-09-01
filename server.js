@@ -183,9 +183,19 @@ await pool.query(`
     );
 `);
 await pool.query(`
+    ALTER TABLE feira_config
+    ADD COLUMN IF NOT EXISTS ativa BOOLEAN DEFAULT true;
+`);
+await pool.query(`
     INSERT INTO feira_config (id, data_apresentacao)
     VALUES (1, '2026-09-13 08:00:00')
     ON CONFLICT (id) DO NOTHING;
+`);
+await pool.query(`
+    UPDATE feira_config
+    SET ativa = true
+    WHERE id = 1
+      AND ativa IS NULL;
 `);
 }
 
