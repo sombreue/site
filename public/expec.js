@@ -239,6 +239,9 @@ async function editarEquipe(id) {
     document.getElementById("integrantesEquipe").value =
         equipe.integrantes || "";
 
+    document.getElementById("liderEquipe").value =
+    equipe.lider || "";
+
     document.getElementById("modalEquipe").style.display = "flex";
 }
 
