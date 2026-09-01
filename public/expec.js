@@ -74,6 +74,11 @@ async function carregarEquipes(tipoUsuario) {
                 </p>
 
                 <p>
+    <strong>Líder:</strong>
+    ${equipe.lider || "Não informado"}
+</p>
+
+                <p>
                     <strong>Integrantes:</strong>
                     ${equipe.integrantes || "Não informados"}
                 </p>
