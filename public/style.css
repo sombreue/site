@@ -229,6 +229,8 @@ input[type="file"] {
     line-height: 1.5;
 
     margin-bottom: 15px;
+
+     white-space: pre-line;
 }
 
 
