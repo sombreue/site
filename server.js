@@ -171,6 +171,10 @@ await pool.query(`
         integrantes TEXT
     );
 `);
+await pool.query(`
+    ALTER TABLE feira_equipes
+    ADD COLUMN IF NOT EXISTS lider TEXT;
+`);
 }
 
 
