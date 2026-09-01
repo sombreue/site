@@ -94,7 +94,36 @@ app.use(session({
 // =========================
 // ARQUIVOS DO SITE
 // =========================
+app.get("/expec.html", exigirLogin, async (req, res) => {
 
+    try {
+
+        const resultado = await pool.query(`
+            SELECT ativa
+            FROM feira_config
+            WHERE id = 1
+        `);
+
+        if (!resultado.rows[0]?.ativa) {
+            return res.redirect("/");
+        }
+
+        res.sendFile(
+            path.join(__dirname, "public", "expec.html")
+        );
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao verificar acesso à EXPEC:",
+            erro
+        );
+
+        res.redirect("/");
+
+    }
+
+});
 app.use(express.static("public", {
     index: false
 }));
