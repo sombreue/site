@@ -1153,6 +1153,55 @@ app.get("/api/feira/contagem", exigirLogin, async (req, res) => {
 
 });
 
+// Alterar data da apresentação
+app.put("/api/feira/contagem", exigirAdmin, async (req, res) => {
+
+    try {
+
+        const { data } = req.body;
+
+        if (!data) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Data da apresentação é obrigatória."
+            });
+        }
+
+        const resultado = await pool.query(`
+            UPDATE feira_config
+            SET data_apresentacao = $1
+            WHERE id = 1
+            RETURNING *
+        `, [data]);
+
+        if (resultado.rows.length === 0) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Configuração não encontrada."
+            });
+        }
+
+        res.json({
+            sucesso: true,
+            data: resultado.rows[0].data_apresentacao
+        });
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao alterar data da apresentação:",
+            erro
+        );
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao alterar data."
+        });
+
+    }
+
+});
+
 
 // =========================
 // TAREFAS
