@@ -728,3 +728,27 @@ input[type="file"] {
     background-color: #dc2626;
     transform: translateY(-2px);
 }
+.botao-imagem {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+
+    background-color: #1c1c1c;
+    color: white;
+
+    text-align: center;
+    text-decoration: none;
+
+    border-radius: 10px;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    transition: 0.15s;
+}
+
+.botao-imagem:hover {
+    background-color: #222;
+    transform: translateY(-2px);
+}
