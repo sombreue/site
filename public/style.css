@@ -752,3 +752,75 @@ input[type="file"] {
     background-color: #222;
     transform: translateY(-2px);
 }
+
+/* =========================
+   TABELA DE DECORAÇÃO
+========================= */
+
+.decoracao-feira {
+    background-color: #1c1c1c;
+    border: 1px solid #2c2c2c;
+    border-radius: 14px;
+    padding: 30px;
+    margin-bottom: 30px;
+}
+
+.decoracao-feira h2 {
+    margin: 0;
+}
+
+.tabela-container {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 20px;
+}
+
+.tabela-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela-container th,
+.tabela-container td {
+    padding: 14px;
+    border-bottom: 1px solid #333;
+    text-align: left;
+}
+
+.tabela-container th {
+    font-weight: 600;
+}
+
+.tabela-container th:nth-child(2),
+.tabela-container td:nth-child(2) {
+    text-align: right;
+}
+
+.tabela-container tfoot td {
+    border-top: 2px solid #444;
+    border-bottom: none;
+    font-size: 17px;
+}
+
+#totalDecoracao {
+    font-weight: 700;
+}
+
+.form-decoracao {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.form-decoracao input {
+    flex: 1;
+}
+
+.form-decoracao input[type="number"] {
+    max-width: 150px;
+}
+
+.tabela-container button {
+    margin-right: 5px;
+}
