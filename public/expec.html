@@ -77,7 +77,108 @@
 </div>
 
 </section>
+<section class="decoracao-feira">
 
+    <div class="secao-cabecalho">
+
+        <div>
+            <h2>Decoração da sala</h2>
+
+            <p>
+                Materiais e custos da decoração
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- FORMULÁRIO DO ADMIN -->
+
+    <div
+        id="formDecoracao"
+        class="form-decoracao"
+        style="display: none;"
+    >
+
+        <input
+            type="text"
+            id="descricaoDecoracao"
+            placeholder="Ex: Cartolina"
+        >
+
+        <input
+            type="number"
+            id="precoDecoracao"
+            placeholder="Preço"
+            min="0"
+            step="0.01"
+        >
+
+        <button id="btnAdicionarDecoracao">
+            Adicionar
+        </button>
+
+    </div>
+
+
+    <!-- TABELA -->
+
+    <div class="tabela-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Decoração</th>
+                    <th>Preço</th>
+                    <th
+                        id="colunaAcoes"
+                        style="display: none;"
+                    >
+                        Ações
+                    </th>
+                </tr>
+
+            </thead>
+
+            <tbody id="listaDecoracoes">
+
+                <tr>
+                    <td colspan="3">
+                        Carregando...
+                    </td>
+                </tr>
+
+            </tbody>
+
+            <tfoot>
+
+                <tr>
+
+                    <td>
+                        <strong>TOTAL</strong>
+                    </td>
+
+                    <td id="totalDecoracao">
+                        R$ 0,00
+                    </td>
+
+                    <td
+                        id="totalAcoes"
+                        style="display: none;"
+                    >
+                    </td>
+
+                </tr>
+
+            </tfoot>
+
+        </table>
+
+    </div>
+
+</section>
     <section class="feira-equipes">
 
         <div class="secao-cabecalho">
