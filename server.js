@@ -226,6 +226,13 @@ await pool.query(`
     WHERE id = 1
       AND ativa IS NULL;
 `);
+await pool.query(`
+    CREATE TABLE IF NOT EXISTS feira_decoracoes (
+        id SERIAL PRIMARY KEY,
+        descricao TEXT NOT NULL,
+        preco NUMERIC(10,2) NOT NULL
+    );
+`);
 }
 
 
