@@ -28,6 +28,7 @@ async function verificarSessao() {
         }
 
         carregarEquipes(sessao.tipo);
+        carregarDecoracoes(sessao.tipo);
 
     } catch (erro) {
 
