@@ -894,6 +894,403 @@ async function carregarStatusExpec() {
     }
 }
 
+// =========================
+// DECORAÇÕES
+// =========================
+
+let decoracaoEditando = null;
+
+
+// CARREGAR DECORAÇÕES
+
+async function carregarDecoracoes(tipoUsuario) {
+
+    try {
+
+        const resposta =
+            await fetch("/api/feira/decoracoes");
+
+        if (!resposta.ok) {
+            throw new Error("Erro ao buscar decorações.");
+        }
+
+        const decoracoes =
+            await resposta.json();
+
+        const lista =
+            document.getElementById(
+                "listaDecoracoes"
+            );
+
+        const colunaAcoes =
+            document.getElementById(
+                "colunaAcoes"
+            );
+
+        const totalAcoes =
+            document.getElementById(
+                "totalAcoes"
+            );
+
+        const form =
+            document.getElementById(
+                "formDecoracao"
+            );
+
+        if (!lista) {
+            return;
+        }
+
+        lista.innerHTML = "";
+
+
+        // MOSTRAR CONTROLES DO ADMIN
+
+        if (tipoUsuario === "admin") {
+
+            if (colunaAcoes) {
+                colunaAcoes.style.display = "table-cell";
+            }
+
+            if (totalAcoes) {
+                totalAcoes.style.display = "table-cell";
+            }
+
+            if (form) {
+                form.style.display = "flex";
+            }
+        }
+
+
+        let total = 0;
+
+
+        // NENHUMA DECORAÇÃO
+
+        if (decoracoes.length === 0) {
+
+            lista.innerHTML = `
+                <tr>
+                    <td colspan="3">
+                        Nenhuma decoração cadastrada.
+                    </td>
+                </tr>
+            `;
+
+        }
+
+
+        // LISTAR
+
+        decoracoes.forEach(function(decoracao) {
+
+            const preco =
+                Number(decoracao.preco);
+
+            total += preco;
+
+
+            const linha =
+                document.createElement("tr");
+
+
+            linha.innerHTML = `
+                <td>
+                    ${decoracao.descricao}
+                </td>
+
+                <td>
+                    ${preco.toLocaleString(
+                        "pt-BR",
+                        {
+                            style: "currency",
+                            currency: "BRL"
+                        }
+                    )}
+                </td>
+            `;
+
+
+            if (tipoUsuario === "admin") {
+
+                const acoes =
+                    document.createElement("td");
+
+                acoes.innerHTML = `
+                    <button
+                        onclick="editarDecoracao(${decoracao.id})"
+                    >
+                        Editar
+                    </button>
+
+                    <button
+                        onclick="excluirDecoracao(${decoracao.id})"
+                    >
+                        Excluir
+                    </button>
+                `;
+
+                linha.appendChild(acoes);
+            }
+
+
+            lista.appendChild(linha);
+
+        });
+
+
+        // TOTAL
+
+        document.getElementById(
+            "totalDecoracao"
+        ).textContent =
+            total.toLocaleString(
+                "pt-BR",
+                {
+                    style: "currency",
+                    currency: "BRL"
+                }
+            );
+
+
+    } catch (erro) {
+
+        console.error(
+            "Erro ao carregar decorações:",
+            erro
+        );
+
+    }
+}
+
+
+// ADICIONAR
+
+const btnAdicionarDecoracao =
+    document.getElementById(
+        "btnAdicionarDecoracao"
+    );
+
+if (btnAdicionarDecoracao) {
+
+    btnAdicionarDecoracao.addEventListener(
+        "click",
+        async function() {
+
+            const descricao =
+                document.getElementById(
+                    "descricaoDecoracao"
+                ).value.trim();
+
+            const preco =
+                document.getElementById(
+                    "precoDecoracao"
+                ).value;
+
+
+            if (!descricao || !preco) {
+
+                alert(
+                    "Preencha a descrição e o preço."
+                );
+
+                return;
+            }
+
+
+            try {
+
+                const resposta =
+                    await fetch(
+                        "/api/feira/decoracoes",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    descricao: descricao,
+                                    preco: preco
+                                })
+                        }
+                    );
+
+
+                const resultado =
+                    await resposta.json();
+
+
+                if (!resposta.ok) {
+
+                    alert(
+                        resultado.mensagem ||
+                        "Erro ao adicionar decoração."
+                    );
+
+                    return;
+                }
+
+
+                document.getElementById(
+                    "descricaoDecoracao"
+                ).value = "";
+
+                document.getElementById(
+                    "precoDecoracao"
+                ).value = "";
+
+
+                carregarDecoracoes("admin");
+
+            } catch (erro) {
+
+                console.error(erro);
+
+                alert(
+                    "Erro de conexão com o servidor."
+                );
+            }
+
+        }
+    );
+}
+
+
+// EDITAR
+
+async function editarDecoracao(id) {
+
+    const descricao =
+        prompt(
+            "Nova descrição:"
+        );
+
+    if (descricao === null) {
+        return;
+    }
+
+
+    const preco =
+        prompt(
+            "Novo preço:"
+        );
+
+    if (preco === null) {
+        return;
+    }
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                "/api/feira/decoracoes/" + id,
+                {
+                    method: "PUT",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            descricao:
+                                descricao,
+
+                            preco:
+                                preco
+                        })
+                }
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if (!resposta.ok) {
+
+            alert(
+                resultado.mensagem ||
+                "Erro ao editar decoração."
+            );
+
+            return;
+        }
+
+
+        carregarDecoracoes("admin");
+
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Erro de conexão com o servidor."
+        );
+    }
+}
+
+
+// EXCLUIR
+
+async function excluirDecoracao(id) {
+
+    const confirmar =
+        confirm(
+            "Tem certeza que deseja excluir esta decoração?"
+        );
+
+
+    if (!confirmar) {
+        return;
+    }
+
+
+    try {
+
+        const resposta =
+            await fetch(
+                "/api/feira/decoracoes/" + id,
+                {
+                    method: "DELETE"
+                }
+            );
+
+
+        const resultado =
+            await resposta.json();
+
+
+        if (!resposta.ok) {
+
+            alert(
+                resultado.mensagem ||
+                "Erro ao excluir decoração."
+            );
+
+            return;
+        }
+
+
+        carregarDecoracoes("admin");
+
+
+    } catch (erro) {
+
+        console.error(erro);
+
+        alert(
+            "Erro de conexão com o servidor."
+        );
+    }
+}
 
 // =========================
 // INICIAR
