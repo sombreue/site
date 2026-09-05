@@ -1154,6 +1154,169 @@ app.delete("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
     }
 });
 
+
+// =========================
+// DECORAÇÕES DA EXPEC
+// =========================
+
+// LISTAR DECORAÇÕES
+app.get("/api/feira/decoracoes", exigirLogin, async (req, res) => {
+
+    try {
+
+        const resultado = await pool.query(`
+            SELECT id, descricao, preco
+            FROM feira_decoracoes
+            ORDER BY id ASC
+        `);
+
+        res.json(resultado.rows);
+
+    } catch (erro) {
+
+        console.error("Erro ao buscar decorações:", erro);
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao buscar decorações."
+        });
+    }
+});
+
+
+// ADICIONAR DECORAÇÃO
+app.post("/api/feira/decoracoes", exigirAdmin, async (req, res) => {
+
+    try {
+
+        const { descricao, preco } = req.body;
+
+        if (!descricao || preco === undefined || preco === "") {
+
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Descrição e preço são obrigatórios."
+            });
+        }
+
+        const resultado = await pool.query(`
+            INSERT INTO feira_decoracoes
+            (descricao, preco)
+            VALUES ($1, $2)
+            RETURNING *
+        `, [
+            descricao,
+            preco
+        ]);
+
+        res.status(201).json({
+            sucesso: true,
+            decoracao: resultado.rows[0]
+        });
+
+    } catch (erro) {
+
+        console.error("Erro ao adicionar decoração:", erro);
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao adicionar decoração."
+        });
+    }
+});
+
+
+// EDITAR DECORAÇÃO
+app.put("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+        const { descricao, preco } = req.body;
+
+        if (!descricao || preco === undefined || preco === "") {
+
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Descrição e preço são obrigatórios."
+            });
+        }
+
+        const resultado = await pool.query(`
+            UPDATE feira_decoracoes
+            SET
+                descricao = $1,
+                preco = $2
+            WHERE id = $3
+            RETURNING *
+        `, [
+            descricao,
+            preco,
+            id
+        ]);
+
+        if (resultado.rows.length === 0) {
+
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Decoração não encontrada."
+            });
+        }
+
+        res.json({
+            sucesso: true,
+            decoracao: resultado.rows[0]
+        });
+
+    } catch (erro) {
+
+        console.error("Erro ao editar decoração:", erro);
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao editar decoração."
+        });
+    }
+});
+
+
+// EXCLUIR DECORAÇÃO
+app.delete("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
+
+    try {
+
+        const { id } = req.params;
+
+        const resultado = await pool.query(`
+            DELETE FROM feira_decoracoes
+            WHERE id = $1
+            RETURNING *
+        `, [id]);
+
+        if (resultado.rows.length === 0) {
+
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Decoração não encontrada."
+            });
+        }
+
+        res.json({
+            sucesso: true,
+            mensagem: "Decoração excluída."
+        });
+
+    } catch (erro) {
+
+        console.error("Erro ao excluir decoração:", erro);
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao excluir decoração."
+        });
+    }
+});
+
 // =========================
 // FEIRA - CONTAGEM REGRESSIVA
 // =========================
