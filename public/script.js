@@ -1069,6 +1069,32 @@ function formatarData(data) {
 }
 
 
+function nomeDoMes(numero) {
+
+    const meses = [
+
+        "janeiro",
+        "fevereiro",
+        "março",
+        "abril",
+        "maio",
+        "junho",
+        "julho",
+        "agosto",
+        "setembro",
+        "outubro",
+        "novembro",
+        "dezembro"
+
+    ];
+
+    return meses[
+        parseInt(numero) - 1
+    ];
+
+}
+
+
 /* =========================
    SESSÃO
 ========================= */
