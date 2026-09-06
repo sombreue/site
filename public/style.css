@@ -835,3 +835,19 @@ input[type="file"] {
 .alfinete {
     display: block;
 }
+
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+header .logo {
+    display: block;
+    margin: 0 auto;
+}
+
+header .alfinete {
+    display: block;
+}
