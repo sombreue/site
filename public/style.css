@@ -830,3 +830,8 @@ input[type="file"] {
     opacity: 0.55;
     font-size: 13px;
 }
+
+.logo,
+.alfinete {
+    display: block;
+}
