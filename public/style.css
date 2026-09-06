@@ -16,6 +16,25 @@ header {
     text-align: center;
     padding: 45px 20px;
     background-color: #181818;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    display: block;
+    margin: 0 auto;
+}
+
+.alfinete {
+    display: block;
+}
+
+.foto {
+    width: 300px;
+    height: auto;
 }
 
 header h1 {
@@ -833,21 +852,5 @@ input[type="file"] {
 
 .logo,
 .alfinete {
-    display: block;
-}
-
-header {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 15px;
-}
-
-header .logo {
-    display: block;
-    margin: 0 auto;
-}
-
-header .alfinete {
     display: block;
 }
