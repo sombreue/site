@@ -1058,35 +1058,13 @@ function formatarData(data) {
     const partes =
         data.split("-");
 
+    const numeroDia =
+        descobrirDiaDaSemana(data);
 
-    return `${partes[2]} de ${nomeDoMes(partes[1])} de ${partes[0]}`;
+    const diaDaSemana =
+        nomeDoDia(numeroDia);
 
-}
-
-
-function nomeDoMes(numero) {
-
-    const meses = [
-
-        "janeiro",
-        "fevereiro",
-        "março",
-        "abril",
-        "maio",
-        "junho",
-        "julho",
-        "agosto",
-        "setembro",
-        "outubro",
-        "novembro",
-        "dezembro"
-
-    ];
-
-
-    return meses[
-        parseInt(numero) - 1
-    ];
+    return `${diaDaSemana}, ${partes[2]} de ${nomeDoMes(partes[1])} de ${partes[0]}`;
 
 }
 
