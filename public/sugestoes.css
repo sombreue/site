@@ -1,0 +1,107 @@
+.sugestoes-secao {
+    width: min(100% - 24px, 900px);
+    margin: 24px auto;
+    border: 1px solid var(--borda, rgba(128, 128, 128, 0.35));
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--fundo-cartao, rgba(255, 255, 255, 0.06));
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.sugestoes-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+}
+
+.sugestoes-titulo h2 {
+    margin: 0;
+    font-size: 1.15rem;
+}
+
+.sugestoes-titulo p {
+    margin: 4px 0 0;
+    opacity: 0.75;
+    font-size: 0.9rem;
+}
+
+.botao-aba-sugestoes {
+    border: 0;
+    border-radius: 10px;
+    padding: 9px 13px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    background: var(--cor-primaria, #4f46e5);
+    color: #fff;
+}
+
+.sugestoes-conteudo {
+    padding: 0 18px 18px;
+}
+
+.sugestoes-formulario {
+    display: grid;
+    gap: 12px;
+}
+
+.sugestoes-formulario label {
+    font-weight: 700;
+}
+
+.sugestoes-formulario input,
+.sugestoes-formulario textarea {
+    width: 100%;
+    box-sizing: border-box;
+    border: 1px solid var(--borda, rgba(128, 128, 128, 0.4));
+    border-radius: 10px;
+    padding: 11px 12px;
+    font: inherit;
+    background: var(--fundo-input, transparent);
+    color: inherit;
+}
+
+.sugestoes-formulario textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.botao-enviar-sugestao {
+    justify-self: start;
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    background: var(--cor-primaria, #4f46e5);
+    color: #fff;
+}
+
+.sugestao-status {
+    min-height: 1.2em;
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.sugestoes-secao.minimizado .sugestoes-conteudo {
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .sugestoes-secao {
+        width: min(100% - 16px, 900px);
+        margin: 16px auto;
+    }
+
+    .sugestoes-cabecalho {
+        padding: 12px 14px;
+    }
+
+    .sugestoes-conteudo {
+        padding: 0 14px 14px;
+    }
+}
