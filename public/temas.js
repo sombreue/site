@@ -11,7 +11,8 @@
         { id: "violet-light", nome: "Violet Light", icone: "◆", cor: "#7c3dcc" },
         { id: "emerald-light", nome: "Emerald Light", icone: "●", cor: "#07935a" },
         { id: "amber-light", nome: "Amber Light", icone: "◆", cor: "#bd7900" },
-        { id: "ice-light", nome: "Ice Light", icone: "●", cor: "#089fc7" }
+        { id: "ice-light", nome: "Ice Light", icone: "●", cor: "#089fc7" },
+        { id: "turkey", nome: "Turkey", icone: "☾", cor: "#e30a17" }
     ];
 
     const chave = "agenda-auruda-tema";
@@ -67,7 +68,7 @@
             opcao.setAttribute("role", "menuitem");
             opcao.innerHTML = `
                 <span class="tema-bolinha" style="--cor-tema: ${tema.cor}"></span>
-                <span>${tema.nome}</span>
+                <span>${tema.icone} ${tema.nome}</span>
             `;
 
             opcao.addEventListener("click", () => {
