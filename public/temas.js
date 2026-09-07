@@ -32,6 +32,85 @@
     link.href = "themes.css";
     document.head.appendChild(link);
 
+    // Reforça os temas claros, principalmente no navegador mobile.
+    // O CSS principal possui algumas regras antigas com cores fixas; estas regras
+    // entram depois de themes.css e garantem que o modo claro seja realmente claro.
+    const reforco = document.createElement("style");
+    reforco.textContent = `
+        :root[data-theme$="-light"] {
+            color-scheme: light !important;
+        }
+
+        :root[data-theme$="-light"] body {
+            background: var(--theme-bg) !important;
+            color: var(--theme-text) !important;
+        }
+
+        :root[data-theme$="-light"] header {
+            background: linear-gradient(180deg, var(--theme-header), var(--theme-header-2)) !important;
+            color: var(--theme-text) !important;
+            border-color: var(--theme-border) !important;
+        }
+
+        :root[data-theme$="-light"] main,
+        :root[data-theme$="-light"] section,
+        :root[data-theme$="-light"] .filtro,
+        :root[data-theme$="-light"] .painel-admin,
+        :root[data-theme$="-light"] .formulario,
+        :root[data-theme$="-light"] .tarefa,
+        :root[data-theme$="-light"] .conteudo-modal,
+        :root[data-theme$="-light"] .contador-feira,
+        :root[data-theme$="-light"] .decoracao,
+        :root[data-theme$="-light"] .equipe,
+        :root[data-theme$="-light"] .card-equipe {
+            color: var(--theme-text) !important;
+            border-color: var(--theme-border) !important;
+        }
+
+        :root[data-theme$="-light"] input,
+        :root[data-theme$="-light"] textarea,
+        :root[data-theme$="-light"] select {
+            background: var(--theme-input) !important;
+            color: var(--theme-text) !important;
+            border-color: var(--theme-border) !important;
+            color-scheme: light !important;
+        }
+
+        :root[data-theme$="-light"] button:not(.seletor-tema-botao):not(.tema-opcao) {
+            color: #fff !important;
+        }
+
+        :root[data-theme$="-light"] .botao-imagem,
+        :root[data-theme$="-light"] .botao-voltar {
+            background: var(--theme-surface-2) !important;
+            color: var(--theme-text) !important;
+            border-color: var(--theme-border) !important;
+        }
+
+        :root[data-theme$="-light"] .seletor-tema-botao,
+        :root[data-theme$="-light"] .seletor-tema-lista {
+            background: var(--theme-surface) !important;
+            color: var(--theme-text) !important;
+            border-color: var(--theme-border) !important;
+        }
+
+        :root[data-theme$="-light"] .tema-opcao {
+            color: var(--theme-text) !important;
+        }
+
+        @media (max-width: 700px) {
+            :root[data-theme$="-light"] body {
+                background: var(--theme-bg) !important;
+            }
+
+            :root[data-theme$="-light"] header,
+            :root[data-theme$="-light"] main {
+                background-color: transparent !important;
+            }
+        }
+    `;
+    document.head.appendChild(reforco);
+
     function aplicarTema(id) {
         if (!temas.some(t => t.id === id)) return;
 
