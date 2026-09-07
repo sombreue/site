@@ -44,17 +44,17 @@ app.post("/api/sugestoes", exigirLogin, async (req, res) => {
             });
         }
 
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS sugestoes (
-                id SERIAL PRIMARY KEY,
-                nome TEXT NOT NULL,
-                sugestao TEXT NOT NULL,
-                data TIMESTAMPTZ NOT NULL DEFAULT NOW()
-            )
-        `);
+        await pool.query(
+            "CREATE TABLE IF NOT EXISTS sugestoes (" +
+            "id SERIAL PRIMARY KEY, " +
+            "nome TEXT NOT NULL, " +
+            "sugestao TEXT NOT NULL, " +
+            "data TIMESTAMPTZ NOT NULL DEFAULT NOW()" +
+            ")"
+        );
 
         await pool.query(
-            `INSERT INTO sugestoes (nome, sugestao) VALUES ($1, $2)`,
+            "INSERT INTO sugestoes (nome, sugestao) VALUES ($1, $2)",
             [nome, sugestao]
         );
 
@@ -73,20 +73,19 @@ app.post("/api/sugestoes", exigirLogin, async (req, res) => {
 
 app.get("/api/sugestoes", exigirAdmin, async (req, res) => {
     try {
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS sugestoes (
-                id SERIAL PRIMARY KEY,
-                nome TEXT NOT NULL,
-                sugestao TEXT NOT NULL,
-                data TIMESTAMPTZ NOT NULL DEFAULT NOW()
-            )
-        `);
+        await pool.query(
+            "CREATE TABLE IF NOT EXISTS sugestoes (" +
+            "id SERIAL PRIMARY KEY, " +
+            "nome TEXT NOT NULL, " +
+            "sugestao TEXT NOT NULL, " +
+            "data TIMESTAMPTZ NOT NULL DEFAULT NOW()" +
+            ")"
+        );
 
-        const resultado = await pool.query(`
-            SELECT id, nome, sugestao, data
-            FROM sugestoes
-            ORDER BY data DESC, id DESC
-        `);
+        const resultado = await pool.query(
+            "SELECT id, nome, sugestao, data " +
+            "FROM sugestoes ORDER BY data DESC, id DESC"
+        );
 
         res.json({
             sucesso: true,
@@ -113,7 +112,7 @@ app.delete("/api/sugestoes/:id", exigirAdmin, async (req, res) => {
         }
 
         const resultado = await pool.query(
-            `DELETE FROM sugestoes WHERE id = $1`,
+            "DELETE FROM sugestoes WHERE id = $1",
             [id]
         );
 
