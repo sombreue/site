@@ -3,9 +3,6 @@ require("dotenv").config();
 const express = require("express");
 const { Pool } = require("pg");
 
-// O server.js já cria a aplicação Express e inicia o servidor.
-// Este arquivo captura a aplicação antes do listen para acrescentar
-// o módulo de sugestões sem mexer no restante do backend.
 const expressOriginal = express;
 const apps = [];
 
@@ -37,6 +34,12 @@ async function prepararSugestoes() {
     `);
 }
 
+const tabelaSugestoesPronta = prepararSugestoes();
+
+tabelaSugestoesPronta.catch(erro => {
+    console.error("Erro ao preparar tabela de sugestões:", erro);
+});
+
 function exigirLoginSugestoes(req, res, next) {
     if (!req.session?.usuario) {
         return res.status(401).json({
@@ -65,9 +68,10 @@ function exigirAdminSugestoes(req, res, next) {
     next();
 }
 
-// Enviar sugestão: qualquer usuário logado pode enviar.
 app.post("/api/sugestoes", exigirLoginSugestoes, async (req, res) => {
     try {
+        await tabelaSugestoesPronta;
+
         const nome = String(req.body.nome || "").trim();
         const sugestao = String(req.body.sugestao || "").trim();
 
@@ -103,9 +107,10 @@ app.post("/api/sugestoes", exigirLoginSugestoes, async (req, res) => {
     }
 });
 
-// Listar sugestões: somente o administrador.
 app.get("/api/sugestoes", exigirAdminSugestoes, async (req, res) => {
     try {
+        await tabelaSugestoesPronta;
+
         const resultado = await pool.query(`
             SELECT id, nome, sugestao, data
             FROM sugestoes
@@ -125,9 +130,10 @@ app.get("/api/sugestoes", exigirAdminSugestoes, async (req, res) => {
     }
 });
 
-// Excluir sugestão: somente o administrador.
 app.delete("/api/sugestoes/:id", exigirAdminSugestoes, async (req, res) => {
     try {
+        await tabelaSugestoesPronta;
+
         const id = Number(req.params.id);
 
         if (!Number.isInteger(id) || id <= 0) {
@@ -160,8 +166,4 @@ app.delete("/api/sugestoes/:id", exigirAdminSugestoes, async (req, res) => {
             mensagem: "Erro interno do servidor."
         });
     }
-});
-
-prepararSugestoes().catch(erro => {
-    console.error("Erro ao preparar tabela de sugestões:", erro);
 });
