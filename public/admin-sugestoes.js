@@ -6,6 +6,16 @@ async function carregarSugestoes() {
         const resposta = await fetch("/api/sugestoes");
         const dados = await resposta.json();
 
+        if (resposta.status === 401) {
+            window.location.href = "/login.html";
+            return;
+        }
+
+        if (resposta.status === 403) {
+            window.location.href = "/";
+            return;
+        }
+
         if (!resposta.ok) {
             throw new Error(dados.mensagem || "Não foi possível carregar as sugestões.");
         }
