@@ -7,6 +7,7 @@
     <title>Agenda auruda</title>
     <link rel="stylesheet" href="style.css?v=20260907-lightfix">
     <link rel="stylesheet" href="light-theme-fix.css?v=20260907-1">
+    <link rel="stylesheet" href="admin-panel.css?v=20260907-1">
 </head>
 <body>
 <header>
@@ -20,13 +21,27 @@
 </header>
 
 <section id="painel-admin" class="painel-admin" style="display: none;">
-    <h2>Administração</h2>
-    <h3>Criar usuário</h3>
-    <input type="text" id="novo-usuario" placeholder="Nome de usuário">
-    <input type="password" id="nova-senha" placeholder="Senha">
-    <button onclick="criarUsuario()">Criar conta</button>
-    <h3>Usuários cadastrados</h3>
-    <div id="lista-usuarios"></div>
+    <div class="painel-admin-cabecalho">
+        <h2>Administração</h2>
+        <button
+            type="button"
+            id="botao-minimizar-admin"
+            class="botao-minimizar-admin"
+            aria-expanded="true"
+            aria-controls="conteudo-painel-admin"
+            aria-label="Minimizar painel de administração"
+            title="Minimizar painel"
+        >−</button>
+    </div>
+
+    <div id="conteudo-painel-admin" class="conteudo-painel-admin">
+        <h3>Criar usuário</h3>
+        <input type="text" id="novo-usuario" placeholder="Nome de usuário">
+        <input type="password" id="nova-senha" placeholder="Senha">
+        <button onclick="criarUsuario()">Criar conta</button>
+        <h3>Usuários cadastrados</h3>
+        <div id="lista-usuarios"></div>
+    </div>
 </section>
 
 <main>
@@ -68,5 +83,6 @@
 
 <script src="script.js?v=20260907"></script>
 <script src="temas.js?v=20260907-lightfix"></script>
+<script src="admin-panel.js?v=20260907-1"></script>
 </body>
 </html>
