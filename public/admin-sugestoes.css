@@ -1,0 +1,92 @@
+body {
+    min-height: 100vh;
+}
+
+.admin-sugestoes {
+    width: min(100% - 24px, 1000px);
+    margin: 28px auto;
+}
+
+.cabecalho-sugestoes {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.cabecalho-sugestoes h2 {
+    margin: 0;
+}
+
+.cabecalho-sugestoes p {
+    margin: 5px 0 0;
+    opacity: .75;
+}
+
+.cabecalho-sugestoes button,
+.botao-voltar {
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+    text-decoration: none;
+    background: var(--cor-primaria, #4f46e5);
+    color: #fff;
+}
+
+.lista-sugestoes {
+    display: grid;
+    gap: 14px;
+}
+
+.sugestao-card {
+    border: 1px solid var(--borda, rgba(128,128,128,.35));
+    border-radius: 14px;
+    padding: 16px;
+    background: var(--fundo-cartao, rgba(255,255,255,.06));
+}
+
+.sugestao-card h3 {
+    margin: 0 0 7px;
+}
+
+.sugestao-card p {
+    margin: 0 0 10px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.sugestao-data {
+    font-size: .85rem;
+    opacity: .7;
+}
+
+.botao-excluir-sugestao {
+    margin-top: 12px;
+    border: 0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 700;
+}
+
+.estado-vazio {
+    text-align: center;
+    padding: 35px 15px;
+    opacity: .75;
+}
+
+@media (max-width: 600px) {
+    header {
+        flex-wrap: wrap;
+    }
+
+    .cabecalho-sugestoes {
+        align-items: stretch;
+        flex-direction: column;
+    }
+}
