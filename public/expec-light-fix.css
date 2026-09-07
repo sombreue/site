@@ -1,0 +1,38 @@
+/* Correção de contraste das equipes da EXPEC nos temas claros */
+html[data-theme$="-light"] .feira-equipes .equipe,
+html[data-theme$="-light"] .feira-equipes .equipe h3,
+html[data-theme$="-light"] .feira-equipes .equipe p,
+html[data-theme$="-light"] .feira-equipes .equipe strong,
+html[data-theme$="-light"] .feira-equipes .equipe span,
+html[data-theme$="-light"] .feira-equipes .equipe li {
+    color: var(--theme-text) !important;
+}
+
+html[data-theme$="-light"] .feira-equipes .equipe h3 {
+    color: var(--theme-accent-dark) !important;
+}
+
+html[data-theme$="-light"] .feira-equipes .equipe p {
+    color: var(--theme-text) !important;
+}
+
+html[data-theme$="-light"] .feira-equipes .equipe-acoes button {
+    color: #fff !important;
+}
+
+html[data-theme$="-light"] .feira-equipes #listaEquipes > p {
+    color: var(--theme-muted) !important;
+}
+
+html[data-theme="system"] .feira-equipes .equipe,
+html[data-theme="system"] .feira-equipes .equipe h3,
+html[data-theme="system"] .feira-equipes .equipe p,
+html[data-theme="system"] .feira-equipes .equipe strong {
+    color: var(--theme-text) !important;
+}
+
+@media (prefers-color-scheme: light) {
+    html[data-theme="system"] .feira-equipes .equipe h3 {
+        color: var(--theme-accent-dark) !important;
+    }
+}
