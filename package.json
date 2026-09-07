@@ -4,6 +4,7 @@
   "description": "Sistema de tarefas da turma",
   "main": "server-sugestoes.js",
   "scripts": {
+    "postinstall": "node fix-expec-route.js",
     "prestart": "node fix-expec-route.js",
     "start": "node server-sugestoes.js"
   },
