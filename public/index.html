@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css?v=20260907-lightfix">
     <link rel="stylesheet" href="light-theme-fix.css?v=20260907-1">
     <link rel="stylesheet" href="admin-panel.css?v=20260907-1">
+    <link rel="stylesheet" href="horario-aulas.css?v=20260907-1">
     <style>
         /* Temas removidos: não exibir no seletor nem permitir seleção visual. */
         .tema-opcao[data-tema="forest"],
@@ -52,6 +53,99 @@
     </div>
 </section>
 
+<section id="horario-aulas" class="horario-aulas" aria-labelledby="titulo-horario">
+    <div class="horario-cabecalho">
+        <div class="horario-titulo">
+            <h2 id="titulo-horario">Horário de aulas — 8º B</h2>
+            <p>Grade semanal de segunda a sexta</p>
+        </div>
+        <button
+            type="button"
+            id="botao-minimizar-horario"
+            class="botao-minimizar-horario"
+            aria-expanded="true"
+            aria-controls="conteudo-horario-aulas"
+            aria-label="Minimizar horário de aulas"
+            title="Minimizar horário"
+        >−</button>
+    </div>
+
+    <div id="conteudo-horario-aulas" class="horario-conteudo">
+        <div class="horario-tabela-wrap">
+            <table class="horario-tabela">
+                <thead>
+                    <tr>
+                        <th scope="col">Horário</th>
+                        <th scope="col">Segunda</th>
+                        <th scope="col">Terça</th>
+                        <th scope="col">Quarta</th>
+                        <th scope="col">Quinta</th>
+                        <th scope="col">Sexta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>07:00 - 07:50</td>
+                        <td>Ciências</td>
+                        <td>Redação</td>
+                        <td>Ed. Física</td>
+                        <td>Gramática</td>
+                        <td>Geografia</td>
+                    </tr>
+                    <tr>
+                        <td>07:50 - 08:40</td>
+                        <td>Português</td>
+                        <td>Redação</td>
+                        <td>Ed. Física</td>
+                        <td>História</td>
+                        <td>Física</td>
+                    </tr>
+                    <tr>
+                        <td>08:40 - 09:30</td>
+                        <td>Matemática</td>
+                        <td>Bilíngue</td>
+                        <td>Socioemocional</td>
+                        <td>História</td>
+                        <td>Geografia</td>
+                    </tr>
+                    <tr class="intervalo">
+                        <td>09:30 - 09:50</td>
+                        <td>INTERVALO</td>
+                        <td>INTERVALO</td>
+                        <td>INTERVALO</td>
+                        <td>INTERVALO</td>
+                        <td>INTERVALO</td>
+                    </tr>
+                    <tr>
+                        <td>09:50 - 10:40</td>
+                        <td>Português</td>
+                        <td>Artes</td>
+                        <td>Literatura</td>
+                        <td>Matemática</td>
+                        <td>Física</td>
+                    </tr>
+                    <tr>
+                        <td>10:40 - 11:30</td>
+                        <td>Matemática</td>
+                        <td>Matemática</td>
+                        <td>Matemática</td>
+                        <td>Bilíngue</td>
+                        <td>Gramática</td>
+                    </tr>
+                    <tr>
+                        <td>11:30 - 12:20</td>
+                        <td class="vazio">—</td>
+                        <td>Robótica</td>
+                        <td class="vazio">—</td>
+                        <td>Química</td>
+                        <td>Ciências</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
 <main>
     <section class="filtro">
         <label for="data">Pesquisar por data:</label>
@@ -92,5 +186,6 @@
 <script src="script.js?v=20260907"></script>
 <script src="temas.js?v=20260907-lightfix"></script>
 <script src="admin-panel.js?v=20260907-1"></script>
+<script src="horario-aulas.js?v=20260907-1"></script>
 </body>
 </html>
