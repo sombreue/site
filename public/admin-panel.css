@@ -1,0 +1,84 @@
+/* =========================================================
+   PAINEL ADMINISTRATIVO — MINIMIZÁVEL
+   ========================================================= */
+
+.painel-admin {
+    position: relative;
+}
+
+.painel-admin-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.painel-admin-cabecalho h2 {
+    margin: 0;
+}
+
+.botao-minimizar-admin {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 42px;
+    width: 42px;
+    height: 38px;
+    padding: 0;
+    border: 1px solid var(--border-hover);
+    border-radius: 9px;
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 22px;
+    line-height: 1;
+}
+
+.botao-minimizar-admin:hover {
+    background: var(--surface-3);
+    border-color: var(--accent);
+}
+
+.conteudo-painel-admin {
+    overflow: hidden;
+    max-height: 1200px;
+    opacity: 1;
+    margin-top: 0;
+    transition: max-height 0.25s ease, opacity 0.18s ease, margin-top 0.25s ease;
+}
+
+.painel-admin.minimizado {
+    padding-top: 13px;
+    padding-bottom: 13px;
+}
+
+.painel-admin.minimizado .conteudo-painel-admin {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    pointer-events: none;
+}
+
+.painel-admin.minimizado .painel-admin-cabecalho {
+    margin: 0;
+}
+
+.painel-admin.minimizado .painel-admin-cabecalho h2 {
+    font-size: 18px;
+}
+
+.botao-minimizar-admin[aria-expanded="false"] {
+    font-size: 20px;
+}
+
+@media (max-width: 600px) {
+    .painel-admin-cabecalho {
+        gap: 10px;
+    }
+
+    .botao-minimizar-admin {
+        min-width: 40px;
+        width: 40px;
+        height: 36px;
+    }
+}
