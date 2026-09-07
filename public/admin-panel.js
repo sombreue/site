@@ -19,26 +19,18 @@
         const painel = obterPainel();
         const botao = obterBotao();
 
-        if (!painel || !botao) {
-            return;
-        }
+        if (!painel || !botao) return;
 
         painel.classList.toggle("minimizado", minimizado);
         botao.setAttribute("aria-expanded", String(!minimizado));
-        botao.setAttribute(
-            "aria-label",
-            minimizado ? "Expandir painel de administração" : "Minimizar painel de administração"
-        );
+        botao.setAttribute("aria-label", minimizado ? "Expandir painel de administração" : "Minimizar painel de administração");
         botao.title = minimizado ? "Expandir painel" : "Minimizar painel";
         botao.textContent = minimizado ? "+" : "−";
     }
 
     function alternarPainel() {
         const painel = obterPainel();
-
-        if (!painel) {
-            return;
-        }
+        if (!painel) return;
 
         const minimizado = !painel.classList.contains("minimizado");
         aplicarEstado(minimizado);
@@ -53,15 +45,11 @@
     function inicializarPainel() {
         const painel = obterPainel();
         const botao = obterBotao();
-
-        if (!painel || !botao) {
-            return;
-        }
+        if (!painel || !botao) return;
 
         botao.addEventListener("click", alternarPainel);
 
         let minimizado = false;
-
         try {
             minimizado = localStorage.getItem(STORAGE_KEY) === "true";
         } catch (erro) {
@@ -69,6 +57,21 @@
         }
 
         aplicarEstado(minimizado);
+
+        // O botão só aparece para administradores.
+        fetch("/api/sessao")
+            .then(resposta => resposta.json())
+            .then(sessao => {
+                if (sessao.logado && sessao.tipo === "admin") {
+                    const link = document.createElement("a");
+                    link.href = "/admin-sugestoes.html";
+                    link.className = "botao-sugestoes-admin";
+                    link.textContent = "Sugestões recebidas";
+                    link.title = "Abrir sugestões recebidas";
+                    painel.querySelector(".painel-admin-cabecalho")?.appendChild(link);
+                }
+            })
+            .catch(() => {});
     }
 
     if (document.readyState === "loading") {
