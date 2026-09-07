@@ -2,10 +2,10 @@
   "name": "tarefas-turma",
   "version": "1.0.0",
   "description": "Sistema de tarefas da turma",
-  "main": "server.js",
+  "main": "server-sugestoes.js",
   "scripts": {
     "prestart": "node fix-expec-route.js",
-    "start": "node server.js"
+    "start": "node server-sugestoes.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
