@@ -1,10 +1,31 @@
 (() => {
     const root = document.documentElement;
 
+    const variaveis = [
+        "--bg", "--surface", "--surface-2", "--surface-3", "--border",
+        "--border-hover", "--text", "--muted", "--accent", "--accent-hover", "--accent-dark"
+    ];
+
+    const propriedadesElementos = ["background", "background-image", "color", "border-color"];
+
     const sincronizar = () => {
         const tema = root.dataset.theme || "ruby";
-        const claro = tema.endsWith("-light") || tema === "system" && window.matchMedia("(prefers-color-scheme: light)").matches;
-        if (!claro) return;
+        const claro = tema.endsWith("-light") || (
+            tema === "system" && window.matchMedia("(prefers-color-scheme: light)").matches
+        );
+
+        const limpar = (seletor) => {
+            document.querySelectorAll(seletor).forEach(elemento => {
+                propriedadesElementos.forEach(nome => elemento.style.removeProperty(nome));
+            });
+        };
+
+        if (!claro) {
+            variaveis.forEach(nome => root.style.removeProperty(nome));
+            root.style.removeProperty("color-scheme");
+            limpar("body, header, .filtro, .painel-admin, .formulario, .conteudo-modal, .tarefa, .equipe, .card-equipe, .contador-feira, input, textarea, select, .dia h2, .tarefa h3, .painel-admin h2, .formulario h2, .tarefa p, .filtro label, .formulario label, .painel-admin h3, #usuario-logado, header p, .secao-cabecalho p, #botao-logout, .cancelar, .botao-imagem, .botao-voltar");
+            return;
+        }
 
         const vars = {
             "--bg": "var(--theme-bg)",
@@ -23,7 +44,6 @@
         Object.entries(vars).forEach(([nome, valor]) => {
             root.style.setProperty(nome, valor, "important");
         });
-
         root.style.setProperty("color-scheme", "light", "important");
 
         const aplicar = (seletor, propriedades) => {
@@ -34,9 +54,11 @@
             });
         };
 
-        document.body.style.setProperty("background", "var(--theme-bg)", "important");
-        document.body.style.setProperty("background-image", "none", "important");
-        document.body.style.setProperty("color", "var(--theme-text)", "important");
+        aplicar("body", {
+            background: "var(--theme-bg)",
+            "background-image": "none",
+            color: "var(--theme-text)"
+        });
 
         aplicar("header", {
             background: "linear-gradient(180deg, var(--theme-header), var(--theme-header-2))",
@@ -44,17 +66,16 @@
             "border-color": "var(--theme-border)"
         });
 
-        aplicar(".filtro, .painel-admin, .formulario, .conteudo-modal, .tarefa, .equipe, .card-equipe, .contador-feira", {
-            "border-color": "var(--theme-border)",
-            color: "var(--theme-text)"
-        });
-
         aplicar(".filtro, .painel-admin, .formulario, .conteudo-modal, .equipe, .card-equipe, .contador-feira", {
-            background: "var(--theme-surface)"
+            background: "var(--theme-surface)",
+            color: "var(--theme-text)",
+            "border-color": "var(--theme-border)"
         });
 
         aplicar(".tarefa", {
-            background: "linear-gradient(145deg, var(--theme-surface-2), var(--theme-surface))"
+            background: "linear-gradient(145deg, var(--theme-surface-2), var(--theme-surface))",
+            color: "var(--theme-text)",
+            "border-color": "var(--theme-border)"
         });
 
         aplicar("input, textarea, select", {
