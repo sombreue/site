@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sugestões — Administração</title>
+    <link rel="stylesheet" href="style.css?v=20260907">
+    <link rel="stylesheet" href="admin-sugestoes.css?v=20260907-1">
+</head>
+<body>
+<header>
+    <h1>Sugestões dos colegas</h1>
+    <a href="/" class="botao-voltar">Voltar ao site</a>
+</header>
+
+<main class="admin-sugestoes">
+    <div class="cabecalho-sugestoes">
+        <div>
+            <h2>Sugestões recebidas</h2>
+            <p id="contador-sugestoes">Carregando...</p>
+        </div>
+        <button type="button" id="botao-atualizar">Atualizar</button>
+    </div>
+    <div id="lista-sugestoes" class="lista-sugestoes" aria-live="polite"></div>
+</main>
+
+<script src="admin-sugestoes.js?v=20260907-1"></script>
+</body>
+</html>
