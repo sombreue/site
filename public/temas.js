@@ -22,148 +22,174 @@
         { id: "system", nome: "Sistema", icone: "◐", cor: "#888", grupo: "Automático" }
     ];
 
+    const temasClaros = {
+        "ruby-light": {
+            bg: "#f6f6f7", surface: "#ffffff", surface2: "#f1f1f3", surface3: "#e9e9ec", border: "#d7d7dc", borderHover: "#b8b8c0", text: "#18181b", muted: "#666670", accent: "#d92838", accentHover: "#ef3340", accentDark: "#a71925", input: "#ffffff", header: "#ffffff", header2: "#f5f5f6", button: "#e7e7ea", buttonHover: "#dcdce0"
+        },
+        "ocean-light": {
+            bg: "#f3f8fb", surface: "#ffffff", surface2: "#eaf3f8", surface3: "#dfeef5", border: "#cbdde7", borderHover: "#aac5d3", text: "#15232b", muted: "#60747f", accent: "#0878c9", accentHover: "#1595ec", accentDark: "#07588f", input: "#ffffff", header: "#ffffff", header2: "#eef6fa", button: "#e4f0f6", buttonHover: "#d5e7ef"
+        },
+        "violet-light": {
+            bg: "#f7f4fa", surface: "#ffffff", surface2: "#f0eaf6", surface3: "#e8dff0", border: "#dacde3", borderHover: "#bea9cb", text: "#21192a", muted: "#75667e", accent: "#7c3dcc", accentHover: "#9553e8", accentDark: "#5d249f", input: "#ffffff", header: "#ffffff", header2: "#f5f0f8", button: "#ede5f3", buttonHover: "#e1d5e9"
+        },
+        "emerald-light": {
+            bg: "#f2f8f5", surface: "#ffffff", surface2: "#e8f3ed", surface3: "#dcece4", border: "#c8ded2", borderHover: "#a9c8b7", text: "#17251e", muted: "#60766a", accent: "#07935a", accentHover: "#12b76e", accentDark: "#056b41", input: "#ffffff", header: "#ffffff", header2: "#edf6f1", button: "#e1eee7", buttonHover: "#d2e4da"
+        },
+        "amber-light": {
+            bg: "#fbf8f0", surface: "#ffffff", surface2: "#f7f0df", surface3: "#eee4ca", border: "#dfd2b5", borderHover: "#c8b78f", text: "#2b2418", muted: "#786b54", accent: "#bd7900", accentHover: "#d89400", accentDark: "#8c5b00", input: "#ffffff", header: "#fffdf8", header2: "#f8f1e2", button: "#f0e7d2", buttonHover: "#e6dac0"
+        },
+        "ice-light": {
+            bg: "#f2f9fc", surface: "#ffffff", surface2: "#e8f5fa", surface3: "#dceef4", border: "#c7dfe8", borderHover: "#a7c9d5", text: "#17272d", muted: "#607b85", accent: "#089fc7", accentHover: "#18b9e2", accentDark: "#087b99", input: "#ffffff", header: "#ffffff", header2: "#edf7fa", button: "#e1f0f5", buttonHover: "#d1e6ed"
+        }
+    };
+
     const chave = "agenda-auruda-tema";
     const temaSalvo = localStorage.getItem(chave) || "ruby";
-
-    document.documentElement.dataset.theme = temas.some(t => t.id === temaSalvo) ? temaSalvo : "ruby";
+    const temaInicial = temas.some(t => t.id === temaSalvo) ? temaSalvo : "ruby";
+    document.documentElement.dataset.theme = temaInicial;
 
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "themes.css?v=20260907-lightfix2";
+    link.href = "themes.css?v=20260907-lightfix3";
     document.head.appendChild(link);
 
-    const reforco = document.createElement("style");
-    reforco.textContent = `
-        :root[data-theme$="-light"] {
-            color-scheme: light !important;
-            --bg: var(--theme-bg) !important;
-            --surface: var(--theme-surface) !important;
-            --surface-2: var(--theme-surface-2) !important;
-            --surface-3: var(--theme-surface-3) !important;
-            --border: var(--theme-border) !important;
-            --border-hover: var(--theme-border-hover) !important;
-            --text: var(--theme-text) !important;
-            --muted: var(--theme-muted) !important;
-            --accent: var(--theme-accent) !important;
-            --accent-hover: var(--theme-accent-hover) !important;
-            --accent-dark: var(--theme-accent-dark) !important;
-        }
-
-        :root[data-theme$="-light"] body {
+    const estilo = document.createElement("style");
+    estilo.textContent = `
+        html[data-theme$="-light"],
+        html[data-theme$="-light"] body {
             background: var(--theme-bg) !important;
             color: var(--theme-text) !important;
         }
 
-        :root[data-theme$="-light"] header {
+        html[data-theme$="-light"] header {
             background: linear-gradient(180deg, var(--theme-header), var(--theme-header-2)) !important;
             color: var(--theme-text) !important;
             border-color: var(--theme-border) !important;
         }
 
-        :root[data-theme$="-light"] header p,
-        :root[data-theme$="-light"] #usuario-logado,
-        :root[data-theme$="-light"] .filtro label,
-        :root[data-theme$="-light"] .formulario label,
-        :root[data-theme$="-light"] .tarefa p,
-        :root[data-theme$="-light"] .dia h2 {
+        html[data-theme$="-light"] main,
+        html[data-theme$="-light"] section,
+        html[data-theme$="-light"] .filtro,
+        html[data-theme$="-light"] .painel-admin,
+        html[data-theme$="-light"] .formulario,
+        html[data-theme$="-light"] .tarefa,
+        html[data-theme$="-light"] .conteudo-modal,
+        html[data-theme$="-light"] .contador-feira,
+        html[data-theme$="-light"] .equipe,
+        html[data-theme$="-light"] .card-equipe {
             color: var(--theme-text) !important;
-        }
-
-        :root[data-theme$="-light"] main,
-        :root[data-theme$="-light"] section,
-        :root[data-theme$="-light"] .filtro,
-        :root[data-theme$="-light"] .painel-admin,
-        :root[data-theme$="-light"] .formulario,
-        :root[data-theme$="-light"] .tarefa,
-        :root[data-theme$="-light"] .conteudo-modal,
-        :root[data-theme$="-light"] .contador-feira,
-        :root[data-theme$="-light"] .decoracao,
-        :root[data-theme$="-light"] .equipe,
-        :root[data-theme$="-light"] .card-equipe {
-            color: var(--theme-text) !important;
-            background-color: var(--theme-surface) !important;
             border-color: var(--theme-border) !important;
         }
 
-        :root[data-theme$="-light"] .tarefa {
+        html[data-theme$="-light"] .filtro,
+        html[data-theme$="-light"] .painel-admin,
+        html[data-theme$="-light"] .formulario,
+        html[data-theme$="-light"] .conteudo-modal,
+        html[data-theme$="-light"] .contador-feira,
+        html[data-theme$="-light"] .equipe,
+        html[data-theme$="-light"] .card-equipe {
+            background: var(--theme-surface) !important;
+        }
+
+        html[data-theme$="-light"] .tarefa {
             background: linear-gradient(145deg, var(--theme-surface-2), var(--theme-surface)) !important;
         }
 
-        :root[data-theme$="-light"] .tarefa:hover {
-            background: var(--theme-surface-3) !important;
-            border-color: var(--theme-border-hover) !important;
-        }
-
-        :root[data-theme$="-light"] input,
-        :root[data-theme$="-light"] textarea,
-        :root[data-theme$="-light"] select {
+        html[data-theme$="-light"] input,
+        html[data-theme$="-light"] textarea,
+        html[data-theme$="-light"] select {
             background: var(--theme-input) !important;
             color: var(--theme-text) !important;
             border-color: var(--theme-border) !important;
             color-scheme: light !important;
         }
 
-        :root[data-theme$="-light"] input:focus,
-        :root[data-theme$="-light"] textarea:focus {
-            background: var(--theme-input) !important;
+        html[data-theme$="-light"] .dia h2,
+        html[data-theme$="-light"] .tarefa p,
+        html[data-theme$="-light"] .filtro label,
+        html[data-theme$="-light"] .formulario label,
+        html[data-theme$="-light"] #usuario-logado {
+            color: var(--theme-text) !important;
         }
 
-        :root[data-theme$="-light"] ::placeholder {
-            color: var(--theme-muted) !important;
-            opacity: 1 !important;
-        }
-
-        :root[data-theme$="-light"] #botao-logout,
-        :root[data-theme$="-light"] .cancelar {
+        html[data-theme$="-light"] #botao-logout,
+        html[data-theme$="-light"] .cancelar,
+        html[data-theme$="-light"] .botao-imagem,
+        html[data-theme$="-light"] .botao-voltar {
             background: var(--theme-button) !important;
             color: var(--theme-text) !important;
             border-color: var(--theme-border) !important;
         }
 
-        :root[data-theme$="-light"] #botao-logout:hover,
-        :root[data-theme$="-light"] .cancelar:hover {
-            background: var(--theme-button-hover) !important;
-        }
-
-        :root[data-theme$="-light"] .botao-imagem,
-        :root[data-theme$="-light"] .botao-voltar {
-            background: var(--theme-surface-2) !important;
-            color: var(--theme-text) !important;
-            border-color: var(--theme-border) !important;
-        }
-
-        :root[data-theme$="-light"] .botao-imagem:hover,
-        :root[data-theme$="-light"] .botao-voltar:hover {
-            background: var(--theme-surface-3) !important;
-        }
-
-        :root[data-theme$="-light"] .arquivo:hover {
-            color: var(--theme-text) !important;
-        }
-
-        :root[data-theme$="-light"] .modal-senha {
-            background: rgba(30, 30, 35, 0.45) !important;
-        }
-
-        :root[data-theme$="-light"] .seletor-tema-botao,
-        :root[data-theme$="-light"] .seletor-tema-lista {
+        html[data-theme$="-light"] .seletor-tema-botao,
+        html[data-theme$="-light"] .seletor-tema-lista {
             background: var(--theme-surface) !important;
             color: var(--theme-text) !important;
             border-color: var(--theme-border) !important;
         }
-
-        :root[data-theme$="-light"] .tema-opcao,
-        :root[data-theme$="-light"] .tema-grupo-titulo {
-            color: var(--theme-text) !important;
-        }
     `;
-    document.head.appendChild(reforco);
+    document.head.appendChild(estilo);
+
+    function limparVariaveisForcadas() {
+        const root = document.documentElement;
+        [
+            "--theme-bg", "--theme-surface", "--theme-surface-2", "--theme-surface-3",
+            "--theme-border", "--theme-border-hover", "--theme-text", "--theme-muted",
+            "--theme-accent", "--theme-accent-hover", "--theme-accent-dark", "--theme-input",
+            "--theme-header", "--theme-header-2", "--theme-button", "--theme-button-hover",
+            "--bg", "--surface", "--surface-2", "--surface-3", "--border", "--border-hover",
+            "--text", "--muted", "--accent", "--accent-hover", "--accent-dark"
+        ].forEach(nome => root.style.removeProperty(nome));
+    }
+
+    function forcarVariaveisClaras(id) {
+        const cores = temasClaros[id];
+        const root = document.documentElement;
+        if (!cores) {
+            limparVariaveisForcadas();
+            return;
+        }
+
+        const vars = {
+            "--theme-bg": cores.bg,
+            "--theme-surface": cores.surface,
+            "--theme-surface-2": cores.surface2,
+            "--theme-surface-3": cores.surface3,
+            "--theme-border": cores.border,
+            "--theme-border-hover": cores.borderHover,
+            "--theme-text": cores.text,
+            "--theme-muted": cores.muted,
+            "--theme-accent": cores.accent,
+            "--theme-accent-hover": cores.accentHover,
+            "--theme-accent-dark": cores.accentDark,
+            "--theme-input": cores.input,
+            "--theme-header": cores.header,
+            "--theme-header-2": cores.header2,
+            "--theme-button": cores.button,
+            "--theme-button-hover": cores.buttonHover,
+            "--bg": cores.bg,
+            "--surface": cores.surface,
+            "--surface-2": cores.surface2,
+            "--surface-3": cores.surface3,
+            "--border": cores.border,
+            "--border-hover": cores.borderHover,
+            "--text": cores.text,
+            "--muted": cores.muted,
+            "--accent": cores.accent,
+            "--accent-hover": cores.accentHover,
+            "--accent-dark": cores.accentDark
+        };
+
+        Object.entries(vars).forEach(([nome, valor]) => root.style.setProperty(nome, valor, "important"));
+        root.style.setProperty("color-scheme", "light", "important");
+    }
 
     function aplicarTema(id) {
         if (!temas.some(t => t.id === id)) return;
 
         document.documentElement.classList.add("trocando-tema");
         document.documentElement.dataset.theme = id;
+        forcarVariaveisClaras(id);
         localStorage.setItem(chave, id);
 
         document.querySelectorAll(".tema-opcao").forEach(botao => {
@@ -198,8 +224,7 @@
         lista.hidden = true;
         lista.setAttribute("role", "menu");
 
-        const grupos = ["Automático", "Especiais", "Escuros", "Claros"];
-        grupos.forEach(grupo => {
+        ["Automático", "Especiais", "Escuros", "Claros"].forEach(grupo => {
             const itens = temas.filter(tema => tema.grupo === grupo);
             if (!itens.length) return;
 
