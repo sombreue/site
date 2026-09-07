@@ -5,10 +5,28 @@ const { Pool } = require("pg");
 
 const expressOriginal = express;
 const apps = [];
+let escutaSolicitada = null;
+let rotasProntas = false;
+let servidorIniciado = false;
 
 function expressCapturado(...args) {
     const app = expressOriginal(...args);
     apps.push(app);
+
+    // O server.js chama app.listen() depois de uma inicialização assíncrona.
+    // Seguramos a escuta até que as rotas de sugestões tenham sido registradas.
+    const listenOriginal = app.listen.bind(app);
+    app.listen = (...listenArgs) => {
+        escutaSolicitada = { listenOriginal, listenArgs };
+
+        if (rotasProntas && !servidorIniciado) {
+            servidorIniciado = true;
+            listenOriginal(...listenArgs);
+        }
+
+        return app;
+    };
+
     return app;
 }
 
@@ -18,6 +36,12 @@ require.cache[require.resolve("express")].exports = expressCapturado;
 require("./server.js");
 
 const app = apps[0];
+
+if (!app) {
+    console.error("Não foi possível obter a aplicação Express.");
+    process.exit(1);
+}
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -167,3 +191,10 @@ app.delete("/api/sugestoes/:id", exigirAdminSugestoes, async (req, res) => {
         });
     }
 });
+
+// Só agora liberamos a inicialização do servidor.
+rotasProntas = true;
+if (escutaSolicitada && !servidorIniciado) {
+    servidorIniciado = true;
+    escutaSolicitada.listenOriginal(...escutaSolicitada.listenArgs);
+}
