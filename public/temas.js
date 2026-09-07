@@ -29,16 +29,24 @@
 
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "themes.css";
+    link.href = "themes.css?v=20260907-lightfix2";
     document.head.appendChild(link);
 
-    // Reforça os temas claros, principalmente no navegador mobile.
-    // O CSS principal possui algumas regras antigas com cores fixas; estas regras
-    // entram depois de themes.css e garantem que o modo claro seja realmente claro.
     const reforco = document.createElement("style");
     reforco.textContent = `
         :root[data-theme$="-light"] {
             color-scheme: light !important;
+            --bg: var(--theme-bg) !important;
+            --surface: var(--theme-surface) !important;
+            --surface-2: var(--theme-surface-2) !important;
+            --surface-3: var(--theme-surface-3) !important;
+            --border: var(--theme-border) !important;
+            --border-hover: var(--theme-border-hover) !important;
+            --text: var(--theme-text) !important;
+            --muted: var(--theme-muted) !important;
+            --accent: var(--theme-accent) !important;
+            --accent-hover: var(--theme-accent-hover) !important;
+            --accent-dark: var(--theme-accent-dark) !important;
         }
 
         :root[data-theme$="-light"] body {
@@ -50,6 +58,15 @@
             background: linear-gradient(180deg, var(--theme-header), var(--theme-header-2)) !important;
             color: var(--theme-text) !important;
             border-color: var(--theme-border) !important;
+        }
+
+        :root[data-theme$="-light"] header p,
+        :root[data-theme$="-light"] #usuario-logado,
+        :root[data-theme$="-light"] .filtro label,
+        :root[data-theme$="-light"] .formulario label,
+        :root[data-theme$="-light"] .tarefa p,
+        :root[data-theme$="-light"] .dia h2 {
+            color: var(--theme-text) !important;
         }
 
         :root[data-theme$="-light"] main,
@@ -64,7 +81,17 @@
         :root[data-theme$="-light"] .equipe,
         :root[data-theme$="-light"] .card-equipe {
             color: var(--theme-text) !important;
+            background-color: var(--theme-surface) !important;
             border-color: var(--theme-border) !important;
+        }
+
+        :root[data-theme$="-light"] .tarefa {
+            background: linear-gradient(145deg, var(--theme-surface-2), var(--theme-surface)) !important;
+        }
+
+        :root[data-theme$="-light"] .tarefa:hover {
+            background: var(--theme-surface-3) !important;
+            border-color: var(--theme-border-hover) !important;
         }
 
         :root[data-theme$="-light"] input,
@@ -76,8 +103,26 @@
             color-scheme: light !important;
         }
 
-        :root[data-theme$="-light"] button:not(.seletor-tema-botao):not(.tema-opcao) {
-            color: #fff !important;
+        :root[data-theme$="-light"] input:focus,
+        :root[data-theme$="-light"] textarea:focus {
+            background: var(--theme-input) !important;
+        }
+
+        :root[data-theme$="-light"] ::placeholder {
+            color: var(--theme-muted) !important;
+            opacity: 1 !important;
+        }
+
+        :root[data-theme$="-light"] #botao-logout,
+        :root[data-theme$="-light"] .cancelar {
+            background: var(--theme-button) !important;
+            color: var(--theme-text) !important;
+            border-color: var(--theme-border) !important;
+        }
+
+        :root[data-theme$="-light"] #botao-logout:hover,
+        :root[data-theme$="-light"] .cancelar:hover {
+            background: var(--theme-button-hover) !important;
         }
 
         :root[data-theme$="-light"] .botao-imagem,
@@ -87,6 +132,19 @@
             border-color: var(--theme-border) !important;
         }
 
+        :root[data-theme$="-light"] .botao-imagem:hover,
+        :root[data-theme$="-light"] .botao-voltar:hover {
+            background: var(--theme-surface-3) !important;
+        }
+
+        :root[data-theme$="-light"] .arquivo:hover {
+            color: var(--theme-text) !important;
+        }
+
+        :root[data-theme$="-light"] .modal-senha {
+            background: rgba(30, 30, 35, 0.45) !important;
+        }
+
         :root[data-theme$="-light"] .seletor-tema-botao,
         :root[data-theme$="-light"] .seletor-tema-lista {
             background: var(--theme-surface) !important;
@@ -94,19 +152,9 @@
             border-color: var(--theme-border) !important;
         }
 
-        :root[data-theme$="-light"] .tema-opcao {
+        :root[data-theme$="-light"] .tema-opcao,
+        :root[data-theme$="-light"] .tema-grupo-titulo {
             color: var(--theme-text) !important;
-        }
-
-        @media (max-width: 700px) {
-            :root[data-theme$="-light"] body {
-                background: var(--theme-bg) !important;
-            }
-
-            :root[data-theme$="-light"] header,
-            :root[data-theme$="-light"] main {
-                background-color: transparent !important;
-            }
         }
     `;
     document.head.appendChild(reforco);
