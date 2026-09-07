@@ -1,10 +1,26 @@
+async function lerResposta(resposta) {
+    const tipo = resposta.headers.get("content-type") || "";
+
+    if (!tipo.includes("application/json")) {
+        const texto = await resposta.text();
+        if (texto.trimStart().startsWith("<!DOCTYPE") || texto.trimStart().startsWith("<html")) {
+            throw new Error(`O servidor não está entregando a API de sugestões (HTTP ${resposta.status}). Verifique se o servidor foi reiniciado com o novo código.`);
+        }
+        throw new Error(`Resposta inválida do servidor (HTTP ${resposta.status}).`);
+    }
+
+    return resposta.json();
+}
+
 async function carregarSugestoes() {
     const lista = document.getElementById("lista-sugestoes");
     const contador = document.getElementById("contador-sugestoes");
 
     try {
-        const resposta = await fetch("/api/sugestoes");
-        const dados = await resposta.json();
+        const resposta = await fetch("/api/sugestoes", {
+            headers: { "Accept": "application/json" },
+            cache: "no-store"
+        });
 
         if (resposta.status === 401) {
             window.location.href = "/login.html";
@@ -15,6 +31,8 @@ async function carregarSugestoes() {
             window.location.href = "/";
             return;
         }
+
+        const dados = await lerResposta(resposta);
 
         if (!resposta.ok) {
             throw new Error(dados.mensagem || "Não foi possível carregar as sugestões.");
@@ -44,15 +62,32 @@ async function carregarSugestoes() {
 async function excluirSugestao(id) {
     if (!confirm("Excluir esta sugestão?")) return;
 
-    const resposta = await fetch(`/api/sugestoes/${id}`, { method: "DELETE" });
-    const dados = await resposta.json();
+    try {
+        const resposta = await fetch(`/api/sugestoes/${id}`, {
+            method: "DELETE",
+            headers: { "Accept": "application/json" }
+        });
 
-    if (!resposta.ok) {
-        alert(dados.mensagem || "Não foi possível excluir a sugestão.");
-        return;
+        if (resposta.status === 401) {
+            window.location.href = "/login.html";
+            return;
+        }
+
+        if (resposta.status === 403) {
+            window.location.href = "/";
+            return;
+        }
+
+        const dados = await lerResposta(resposta);
+
+        if (!resposta.ok) {
+            throw new Error(dados.mensagem || "Não foi possível excluir a sugestão.");
+        }
+
+        carregarSugestoes();
+    } catch (erro) {
+        alert(erro.message);
     }
-
-    carregarSugestoes();
 }
 
 function escaparHtml(valor) {
