@@ -1,0 +1,178 @@
+/* =========================================================
+   LIGHT THEME HARD FIX
+   Override the legacy dark CSS directly.
+   ========================================================= */
+
+html[data-theme="ruby-light"] { --bg:#f6f6f7; --surface:#fff; --surface-2:#f1f1f3; --surface-3:#e9e9ec; --border:#d7d7dc; --border-hover:#b8b8c0; --text:#18181b; --muted:#666670; --accent:#d92838; --accent-hover:#ef3340; --accent-dark:#a71925; }
+html[data-theme="ocean-light"] { --bg:#f3f8fb; --surface:#fff; --surface-2:#eaf3f8; --surface-3:#dfeef5; --border:#cbdde7; --border-hover:#aac5d3; --text:#15232b; --muted:#60747f; --accent:#0878c9; --accent-hover:#1595ec; --accent-dark:#07588f; }
+html[data-theme="violet-light"] { --bg:#f7f4fa; --surface:#fff; --surface-2:#f0eaf6; --surface-3:#e8dff0; --border:#dacde3; --border-hover:#bea9cb; --text:#21192a; --muted:#75667e; --accent:#7c3dcc; --accent-hover:#9553e8; --accent-dark:#5d249f; }
+html[data-theme="emerald-light"] { --bg:#f2f8f5; --surface:#fff; --surface-2:#e8f3ed; --surface-3:#dcece4; --border:#c8ded2; --border-hover:#a9c8b7; --text:#17251e; --muted:#60766a; --accent:#07935a; --accent-hover:#12b76e; --accent-dark:#056b41; }
+html[data-theme="amber-light"] { --bg:#fbf8f0; --surface:#fff; --surface-2:#f7f0df; --surface-3:#eee4ca; --border:#dfd2b5; --border-hover:#c8b78f; --text:#2b2418; --muted:#786b54; --accent:#bd7900; --accent-hover:#d89400; --accent-dark:#8c5b00; }
+html[data-theme="ice-light"] { --bg:#f2f9fc; --surface:#fff; --surface-2:#e8f5fa; --surface-3:#dceef4; --border:#c7dfe8; --border-hover:#a7c9d5; --text:#17272d; --muted:#607b85; --accent:#089fc7; --accent-hover:#18b9e2; --accent-dark:#087b99; }
+
+html[data-theme$="-light"],
+html[data-theme$="-light"] body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+}
+
+html[data-theme$="-light"] body {
+    background-image: none !important;
+}
+
+html[data-theme$="-light"] header {
+    background: linear-gradient(180deg, var(--surface), var(--surface-2)) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+html[data-theme$="-light"] header::before {
+    background: color-mix(in srgb, var(--accent) 7%, transparent) !important;
+}
+
+html[data-theme$="-light"] main,
+html[data-theme$="-light"] #lista-tarefas,
+html[data-theme$="-light"] .filtro,
+html[data-theme$="-light"] .painel-admin,
+html[data-theme$="-light"] .formulario,
+html[data-theme$="-light"] .tarefa,
+html[data-theme$="-light"] .conteudo-modal,
+html[data-theme$="-light"] .modal-conteudo,
+html[data-theme$="-light"] .equipe,
+html[data-theme$="-light"] .card-equipe,
+html[data-theme$="-light"] .contador-feira,
+html[data-theme$="-light"] .decoracao-feira,
+html[data-theme$="-light"] .horario-aulas,
+html[data-theme$="-light"] .sugestoes-secao {
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+html[data-theme$="-light"] .filtro,
+html[data-theme$="-light"] .painel-admin,
+html[data-theme$="-light"] .formulario,
+html[data-theme$="-light"] .conteudo-modal,
+html[data-theme$="-light"] .modal-conteudo,
+html[data-theme$="-light"] .equipe,
+html[data-theme$="-light"] .card-equipe,
+html[data-theme$="-light"] .contador-feira,
+html[data-theme$="-light"] .decoracao-feira,
+html[data-theme$="-light"] .horario-aulas,
+html[data-theme$="-light"] .sugestoes-secao {
+    background: var(--surface) !important;
+}
+
+html[data-theme$="-light"] .tarefa {
+    background: linear-gradient(145deg, var(--surface-2), var(--surface)) !important;
+}
+
+html[data-theme$="-light"] .tarefa:hover {
+    background: var(--surface-3) !important;
+    border-color: var(--border-hover) !important;
+}
+
+html[data-theme$="-light"] .dia h2,
+html[data-theme$="-light"] .tarefa h3,
+html[data-theme$="-light"] .painel-admin h2,
+html[data-theme$="-light"] .formulario h2,
+html[data-theme$="-light"] .secao-cabecalho h2 {
+    color: var(--accent) !important;
+}
+
+html[data-theme$="-light"] .dia h2 {
+    border-color: var(--accent) !important;
+}
+
+html[data-theme$="-light"] .tarefa p,
+html[data-theme$="-light"] .filtro label,
+html[data-theme$="-light"] .formulario label,
+html[data-theme$="-light"] .painel-admin h3,
+html[data-theme$="-light"] #usuario-logado,
+html[data-theme$="-light"] header p,
+html[data-theme$="-light"] .secao-cabecalho p,
+html[data-theme$="-light"] #usuario-senha {
+    color: var(--text) !important;
+}
+
+html[data-theme$="-light"] header p,
+html[data-theme$="-light"] #usuario-logado,
+html[data-theme$="-light"] .secao-cabecalho p,
+html[data-theme$="-light"] #usuario-senha {
+    color: var(--muted) !important;
+}
+
+html[data-theme$="-light"] input,
+html[data-theme$="-light"] textarea,
+html[data-theme$="-light"] select {
+    background: #fff !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+html[data-theme$="-light"] input:focus,
+html[data-theme$="-light"] textarea:focus,
+html[data-theme$="-light"] select:focus {
+    background: #fff !important;
+    border-color: var(--accent) !important;
+}
+
+html[data-theme$="-light"] ::placeholder {
+    color: var(--muted) !important;
+}
+
+html[data-theme$="-light"] .botao-voltar,
+html[data-theme$="-light"] .botao-imagem,
+html[data-theme$="-light"] #botao-logout,
+html[data-theme$="-light"] .cancelar {
+    background: var(--surface-2) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+html[data-theme$="-light"] .botao-voltar:hover,
+html[data-theme$="-light"] .botao-imagem:hover,
+html[data-theme$="-light"] #botao-logout:hover,
+html[data-theme$="-light"] .cancelar:hover {
+    background: var(--surface-3) !important;
+    border-color: var(--border-hover) !important;
+}
+
+html[data-theme$="-light"] .botao-expec,
+html[data-theme$="-light"] .botao-adicionar,
+html[data-theme$="-light"] .botoes-formulario button:not(.cancelar),
+html[data-theme$="-light"] .botoes-modal button:not(.cancelar) {
+    background: linear-gradient(135deg, var(--accent-dark), var(--accent)) !important;
+    color: #fff !important;
+}
+
+html[data-theme$="-light"] .arquivo {
+    color: var(--accent) !important;
+}
+
+html[data-theme$="-light"] .barra-container {
+    background: var(--surface-3) !important;
+    border-color: var(--border) !important;
+}
+
+html[data-theme$="-light"] #contador {
+    color: var(--accent-dark) !important;
+    text-shadow: none !important;
+}
+
+html[data-theme$="-light"] table,
+html[data-theme$="-light"] th,
+html[data-theme$="-light"] td,
+html[data-theme$="-light"] .tabela-container {
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+html[data-theme$="-light"] th {
+    background: var(--surface-2) !important;
+}
+
+html[data-theme$="-light"] .modal,
+html[data-theme$="-light"] .modal-senha {
+    background: rgba(20, 25, 30, .35) !important;
+}
