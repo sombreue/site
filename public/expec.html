@@ -10,6 +10,43 @@
     <title>EXPEC</title>
 
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* A contagem precisa acompanhar o tema atual */
+        #contador {
+            color: var(--theme-accent, #ef3340) !important;
+        }
+
+        .barra-container {
+            background: var(--theme-surface-3, #222229) !important;
+            border-color: var(--theme-border, #2c2c34) !important;
+        }
+
+        #barraProgresso {
+            background: linear-gradient(
+                90deg,
+                var(--theme-accent-dark, #a71925),
+                var(--theme-accent, #ef3340)
+            ) !important;
+        }
+
+        /* Nos temas claros, mantém contraste forte sem perder a cor do tema */
+        :root[data-theme$="-light"] #contador {
+            color: var(--theme-accent-dark, #a71925) !important;
+            text-shadow: none !important;
+        }
+
+        :root[data-theme="system"] #contador {
+            color: var(--theme-accent, #ef3340) !important;
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root[data-theme="system"] #contador {
+                color: var(--theme-accent-dark, #a71925) !important;
+                text-shadow: none !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
