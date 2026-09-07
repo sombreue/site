@@ -1,0 +1,184 @@
+/* =========================================================
+   HORÁRIO DE AULAS — RESPONSIVO E COMPATÍVEL COM OS TEMAS
+   ========================================================= */
+
+.horario-aulas {
+    width: 100%;
+    margin: 28px 0 34px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--accent);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.horario-cabecalho {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.horario-titulo {
+    min-width: 0;
+}
+
+.horario-titulo h2 {
+    margin: 0;
+    color: var(--accent);
+    font-size: clamp(19px, 3vw, 24px);
+    line-height: 1.2;
+}
+
+.horario-titulo p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.botao-minimizar-horario {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--border-hover);
+    border-radius: 9px;
+    background: var(--surface-2);
+    color: var(--text);
+    font-size: 21px;
+    line-height: 1;
+}
+
+.botao-minimizar-horario:hover {
+    background: var(--surface-3);
+    border-color: var(--accent);
+}
+
+.horario-conteudo {
+    overflow: hidden;
+    max-height: 900px;
+    opacity: 1;
+    transition: max-height .25s ease, opacity .18s ease, margin-top .25s ease;
+}
+
+.horario-tabela-wrap {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+}
+
+.horario-tabela {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: var(--surface);
+    color: var(--text);
+    font-size: clamp(9px, 1.25vw, 14px);
+    line-height: 1.2;
+}
+
+.horario-tabela th,
+.horario-tabela td {
+    padding: clamp(6px, .8vw, 10px) clamp(4px, .65vw, 8px);
+    text-align: center;
+    vertical-align: middle;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow-wrap: anywhere;
+}
+
+.horario-tabela th:last-child,
+.horario-tabela td:last-child {
+    border-right: 0;
+}
+
+.horario-tabela tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.horario-tabela thead th {
+    background: var(--surface-2);
+    color: var(--accent);
+    font-weight: 800;
+}
+
+.horario-tabela th:first-child,
+.horario-tabela td:first-child {
+    width: 15%;
+    color: var(--muted);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.horario-tabela tbody tr:nth-child(even) td {
+    background: color-mix(in srgb, var(--surface-2) 45%, var(--surface));
+}
+
+.horario-tabela .intervalo td {
+    background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+    color: var(--accent) !important;
+    font-weight: 800;
+    letter-spacing: .02em;
+}
+
+.horario-tabela .vazio {
+    color: var(--muted);
+}
+
+.horario-aulas.minimizado {
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+
+.horario-aulas.minimizado .horario-conteudo {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.horario-aulas.minimizado .horario-cabecalho {
+    margin-bottom: 0;
+}
+
+.horario-aulas.minimizado .horario-titulo p {
+    display: none;
+}
+
+.botao-minimizar-horario[aria-expanded="false"] {
+    font-size: 19px;
+}
+
+@media (max-width: 600px) {
+    .horario-aulas {
+        padding: 12px;
+        margin-top: 20px;
+    }
+
+    .horario-cabecalho {
+        margin-bottom: 10px;
+    }
+
+    .horario-titulo p {
+        font-size: 11px;
+    }
+
+    .horario-tabela {
+        font-size: clamp(7px, 2.15vw, 10px);
+    }
+
+    .horario-tabela th,
+    .horario-tabela td {
+        padding: 5px 2px;
+    }
+
+    .horario-tabela th:first-child,
+    .horario-tabela td:first-child {
+        width: 17%;
+    }
+}
