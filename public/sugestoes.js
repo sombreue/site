@@ -1,5 +1,3 @@
-const CHAVE_SUGESTOES = "agenda-sugestoes-site";
-
 function inicializarSugestoes() {
     const secao = document.getElementById("sugestoes-secao");
     const formulario = document.getElementById("formulario-sugestao");
@@ -10,40 +8,52 @@ function inicializarSugestoes() {
     botao.addEventListener("click", () => {
         const minimizado = secao.classList.toggle("minimizado");
         botao.setAttribute("aria-expanded", String(!minimizado));
-        botao.textContent = minimizado ? "Abrir" : "Minimizar";
+        botao.setAttribute("aria-label", minimizado ? "Expandir sugestões" : "Minimizar sugestões");
+        botao.title = minimizado ? "Expandir sugestões" : "Minimizar sugestões";
+        botao.textContent = minimizado ? "+" : "−";
     });
 
-    formulario.addEventListener("submit", salvarSugestao);
+    formulario.addEventListener("submit", enviarSugestao);
 }
 
-function salvarSugestao(evento) {
+async function enviarSugestao(evento) {
     evento.preventDefault();
 
     const nome = document.getElementById("nome-sugestao")?.value.trim();
     const sugestao = document.getElementById("texto-sugestao")?.value.trim();
     const status = document.getElementById("status-sugestao");
+    const botao = evento.target.querySelector("button[type='submit']");
 
     if (!nome || !sugestao) {
         if (status) status.textContent = "Preencha seu nome e a sugestão.";
         return;
     }
 
-    const sugestoes = JSON.parse(localStorage.getItem(CHAVE_SUGESTOES) || "[]");
+    if (botao) botao.disabled = true;
 
-    sugestoes.push({
-        nome,
-        sugestao,
-        data: new Date().toISOString()
-    });
+    try {
+        const resposta = await fetch("/api/sugestoes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ nome, sugestao })
+        });
 
-    localStorage.setItem(CHAVE_SUGESTOES, JSON.stringify(sugestoes));
-    evento.target.reset();
+        const dados = await resposta.json();
 
-    if (status) {
-        status.textContent = "Sugestão enviada! Valeu pela ideia.";
+        if (!resposta.ok) {
+            throw new Error(dados.mensagem || "Não foi possível enviar a sugestão.");
+        }
+
+        evento.target.reset();
+        if (status) status.textContent = "Sugestão enviada! Valeu pela ideia.";
+
         setTimeout(() => {
-            status.textContent = "";
+            if (status) status.textContent = "";
         }, 4000);
+    } catch (erro) {
+        if (status) status.textContent = erro.message;
+    } finally {
+        if (botao) botao.disabled = false;
     }
 }
 
