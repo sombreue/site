@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "prestart": "node fix-expec-route.js",
-    "start": "node server-sugestoes.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
