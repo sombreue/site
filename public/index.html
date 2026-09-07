@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="light-theme-fix.css?v=20260907-1">
     <link rel="stylesheet" href="admin-panel.css?v=20260907-1">
     <link rel="stylesheet" href="horario-aulas.css?v=20260907-1">
+    <link rel="stylesheet" href="sugestoes.css?v=20260907-1">
     <style>
         /* Temas removidos: não exibir no seletor nem permitir seleção visual. */
         .tema-opcao[data-tema="forest"],
@@ -69,6 +70,26 @@
     </div>
 </section>
 
+<section id="sugestoes-secao" class="sugestoes-secao" aria-labelledby="titulo-sugestoes">
+    <div class="sugestoes-cabecalho">
+        <div class="sugestoes-titulo">
+            <h2 id="titulo-sugestoes">Sugestões para o site</h2>
+            <p>Tem uma ideia? Manda pra mim!</p>
+        </div>
+        <button type="button" id="botao-aba-sugestoes" class="botao-aba-sugestoes" aria-expanded="true" aria-controls="conteudo-sugestoes">Minimizar</button>
+    </div>
+    <div id="conteudo-sugestoes" class="sugestoes-conteudo">
+        <form id="formulario-sugestao" class="sugestoes-formulario">
+            <label for="texto-sugestao">Sugestão:</label>
+            <textarea id="texto-sugestao" name="sugestao" placeholder="O que você gostaria que eu adicionasse ao site?" maxlength="1000" required></textarea>
+            <label for="nome-sugestao">Nome:</label>
+            <input type="text" id="nome-sugestao" name="nome" placeholder="Seu nome" maxlength="80" required>
+            <button type="submit" class="botao-enviar-sugestao">Enviar sugestão</button>
+            <p id="status-sugestao" class="sugestao-status" aria-live="polite"></p>
+        </form>
+    </div>
+</section>
+
 <main>
     <section class="filtro">
         <label for="data">Pesquisar por data:</label>
@@ -96,5 +117,6 @@
 <script src="temas.js?v=20260907-lightfix"></script>
 <script src="admin-panel.js?v=20260907-1"></script>
 <script src="horario-aulas.js?v=20260907-1"></script>
+<script src="sugestoes.js?v=20260907-1"></script>
 </body>
 </html>
