@@ -16,6 +16,20 @@ function inicializarSugestoes() {
     formulario.addEventListener("submit", enviarSugestao);
 }
 
+async function lerRespostaSugestao(resposta) {
+    const tipo = resposta.headers.get("content-type") || "";
+
+    if (!tipo.includes("application/json")) {
+        const texto = await resposta.text();
+        if (texto.trimStart().startsWith("<!DOCTYPE") || texto.trimStart().startsWith("<html")) {
+            throw new Error(`O servidor não entregou a API de sugestões (HTTP ${resposta.status}). Reinicie/reimplante o servidor para aplicar as alterações.`);
+        }
+        throw new Error(`Resposta inválida do servidor (HTTP ${resposta.status}).`);
+    }
+
+    return resposta.json();
+}
+
 async function enviarSugestao(evento) {
     evento.preventDefault();
 
@@ -34,11 +48,19 @@ async function enviarSugestao(evento) {
     try {
         const resposta = await fetch("/api/sugestoes", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            cache: "no-store",
             body: JSON.stringify({ nome, sugestao })
         });
 
-        const dados = await resposta.json();
+        if (resposta.status === 401) {
+            throw new Error("Você precisa estar logado para enviar uma sugestão.");
+        }
+
+        const dados = await lerRespostaSugestao(resposta);
 
         if (!resposta.ok) {
             throw new Error(dados.mensagem || "Não foi possível enviar a sugestão.");
