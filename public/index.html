@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="admin-panel.css?v=20260907-1">
     <link rel="stylesheet" href="horario-aulas.css?v=20260907-1">
     <link rel="stylesheet" href="sugestoes.css?v=20260907-2">
+    <link rel="stylesheet" href="meme-do-dia.css?v=20260907-1">
     <style>
         /* Temas removidos: não exibir no seletor nem permitir seleção visual. */
         .tema-opcao[data-tema="forest"],
@@ -22,6 +23,7 @@
 <body>
 <header>
     <img src="https://i.imgur.com/NKvDhdY.png" alt="Logo" class="logo">
+    <div id="meme-do-dia" class="meme-do-dia" aria-label="Meme"></div>
     <p>ve os coiso ai</p>
     <a href="/expec.html" class="botao-expec">EXPEC</a>
     <div id="usuario-logado"></div>
@@ -99,7 +101,7 @@
     <section id="formulario" class="formulario" style="display: none;">
         <h2>Adicionar tarefas</h2>
         <label for="nova-data">Data:</label>
-        <input type="date" id="nova-data" onchange="mostrarMateriasDoDia">
+        <input type="date" id="nova-data" onchange="mostrarMateriasDoDia()">
         <div id="lista-materias-formulario"></div>
         <div class="botoes-formulario"><button onclick="adicionarTarefasDoDia()">Adicionar tarefas</button><button class="cancelar" onclick="fecharFormulario()">Cancelar</button></div>
     </section>
@@ -117,5 +119,6 @@
 <script src="admin-panel.js?v=20260907-1"></script>
 <script src="horario-aulas.js?v=20260907-1"></script>
 <script src="sugestoes.js?v=20260907-2"></script>
+<script src="meme-do-dia.js?v=20260907-1"></script>
 </body>
 </html>
