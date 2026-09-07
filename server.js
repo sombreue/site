@@ -94,7 +94,12 @@ app.use(session({
 // =========================
 // ARQUIVOS DO SITE
 // =========================
-app.get("/expec.html", exigirLogin, async (req, res) => {
+app.get("/expec.html", async (req, res, next) => {
+    if (!req.session.usuario) {
+        return res.redirect("/login.html");
+    }
+    next();
+}, exigirLogin, async (req, res) => {
 
     try {
 
