@@ -44,12 +44,9 @@ function escaparHtml(valor){
 async function lerRespostaJson(resposta, mensagemPadrao){
     const tipo = resposta.headers.get('content-type') || '';
     const texto = await resposta.text();
-    if(!tipo.toLowerCase().includes('application/json')){
-        throw new Error('A API de trabalhos não está disponível no servidor publicado. Faça um novo deploy do backend.');
-    }
+    if(!tipo.toLowerCase().includes('application/json')) throw new Error('A API de trabalhos não está disponível no servidor publicado. Faça um novo deploy do backend.');
     let dados;
-    try{ dados = JSON.parse(texto); }
-    catch{ throw new Error('O servidor retornou uma resposta inválida.'); }
+    try{ dados = JSON.parse(texto); }catch{ throw new Error('O servidor retornou uma resposta inválida.'); }
     if(!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || mensagemPadrao);
     return dados;
 }
@@ -59,10 +56,7 @@ function atualizarMaterias(){
     const materias = [...new Set(trabalhos.map(t => t.materia).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
     filtroMateria.innerHTML = '<option value="">Todas as matérias</option>';
     materias.forEach(materia => {
-        const option = document.createElement('option');
-        option.value = materia;
-        option.textContent = materia;
-        filtroMateria.appendChild(option);
+        const option = document.createElement('option'); option.value = materia; option.textContent = materia; filtroMateria.appendChild(option);
     });
     if(materias.includes(atual)) filtroMateria.value = atual;
 }
@@ -79,38 +73,27 @@ function renderizar(){
 
     document.getElementById('total').textContent = trabalhos.length;
     document.getElementById('pendentes').textContent = trabalhos.filter(t => calcularPrioridade(t.prazo).nivel !== 'atrasado').length;
-    const hoje = new Date();
-    hoje.setHours(0,0,0,0);
+    const hoje = new Date(); hoje.setHours(0,0,0,0);
     document.getElementById('proximos').textContent = trabalhos.filter(t => t.prazo && new Date(`${t.prazo}T12:00:00`) >= hoje).length;
 
-    if(!filtrados.length){
-        lista.innerHTML = '<div class="vazio">Nenhum trabalho encontrado com esses filtros.</div>';
-        return;
-    }
+    if(!filtrados.length){ lista.innerHTML = '<div class="vazio">Nenhum trabalho encontrado com esses filtros.</div>'; return; }
 
     lista.innerHTML = filtrados.map(t => {
         const prioridade = calcularPrioridade(t.prazo);
+        const valePonto = t.vale_ponto !== false;
         const controles = usuarioSessao?.tipo === 'admin' ? `<div class="controles-trabalho"><button type="button" data-editar="${t.id}">Editar</button><button type="button" class="excluir" data-excluir="${t.id}">Excluir</button></div>` : '';
         return `<article class="trabalho">
             <div class="trabalho-topo"><div><div class="materia">${escaparHtml(t.materia)}</div><h2>${escaparHtml(t.titulo)}</h2></div><span class="prioridade ${prioridade.classe}">${prioridade.nome}</span></div>
             <p class="descricao">${escaparHtml(t.descricao || '')}</p>
-            <div class="meta"><span class="tag">Prazo: ${formatarData(t.prazo)}</span><span class="tag">${textoPrazo(t.prazo)}</span><span class="tag">Vale ponto</span></div>
+            <div class="meta"><span class="tag">Prazo: ${formatarData(t.prazo)}</span><span class="tag">${textoPrazo(t.prazo)}</span>${valePonto ? '<span class="tag">Vale ponto</span>' : ''}</div>
             ${controles}
         </article>`;
     }).join('');
 }
 
 async function carregarTrabalhos(){
-    try{
-        const resposta = await fetch('/api/trabalhos');
-        const dados = await lerRespostaJson(resposta, 'Falha ao carregar trabalhos.');
-        trabalhos = dados.trabalhos || [];
-        atualizarMaterias();
-        renderizar();
-    }catch(erro){
-        console.error(erro);
-        lista.innerHTML = `<div class="vazio">${escaparHtml(erro.message || 'Não foi possível carregar os trabalhos.')}</div>`;
-    }
+    try{ const resposta = await fetch('/api/trabalhos'); const dados = await lerRespostaJson(resposta, 'Falha ao carregar trabalhos.'); trabalhos = dados.trabalhos || []; atualizarMaterias(); renderizar(); }
+    catch(erro){ console.error(erro); lista.innerHTML = `<div class="vazio">${escaparHtml(erro.message || 'Não foi possível carregar os trabalhos.')}</div>`; }
 }
 
 function preencherFormulario(trabalho){
@@ -119,6 +102,7 @@ function preencherFormulario(trabalho){
     document.getElementById('admin-materia').value = trabalho?.materia || '';
     document.getElementById('admin-prazo').value = trabalho?.prazo || '';
     document.getElementById('admin-descricao').value = trabalho?.descricao || '';
+    document.getElementById('admin-vale-ponto').checked = trabalho?.vale_ponto !== false;
     document.getElementById('botao-salvar-trabalho').textContent = trabalho ? 'Salvar alterações' : 'Criar trabalho';
     document.getElementById('botao-cancelar-trabalho').hidden = !trabalho;
 }
@@ -126,72 +110,28 @@ function preencherFormulario(trabalho){
 formAdmin.addEventListener('submit', async evento => {
     evento.preventDefault();
     const id = document.getElementById('trabalho-id').value;
-    const payload = {
-        titulo: document.getElementById('admin-titulo').value.trim(),
-        materia: document.getElementById('admin-materia').value.trim(),
-        prazo: document.getElementById('admin-prazo').value,
-        descricao: document.getElementById('admin-descricao').value.trim()
-    };
+    const payload = {titulo:document.getElementById('admin-titulo').value.trim(),materia:document.getElementById('admin-materia').value.trim(),prazo:document.getElementById('admin-prazo').value,descricao:document.getElementById('admin-descricao').value.trim(),vale_ponto:document.getElementById('admin-vale-ponto').checked};
     statusAdmin.textContent = id ? 'Salvando...' : 'Criando...';
     try{
-        const resposta = await fetch(id ? `/api/trabalhos/${id}` : '/api/trabalhos', {
-            method: id ? 'PUT' : 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify(payload)
-        });
-        await lerRespostaJson(resposta, 'Não foi possível salvar.');
-        statusAdmin.textContent = id ? 'Trabalho atualizado.' : 'Trabalho criado.';
-        preencherFormulario(null);
-        await carregarTrabalhos();
-    }catch(erro){ statusAdmin.textContent = erro.message; }
+        const resposta = await fetch(id ? `/api/trabalhos/${id}` : '/api/trabalhos',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        await lerRespostaJson(resposta,'Não foi possível salvar.'); statusAdmin.textContent=id?'Trabalho atualizado.':'Trabalho criado.'; preencherFormulario(null); await carregarTrabalhos();
+    }catch(erro){ statusAdmin.textContent=erro.message; }
 });
 
-document.getElementById('botao-cancelar-trabalho').addEventListener('click', () => {
-    preencherFormulario(null);
-    statusAdmin.textContent = '';
+document.getElementById('botao-cancelar-trabalho').addEventListener('click',()=>{preencherFormulario(null);statusAdmin.textContent='';});
+
+lista.addEventListener('click',async evento=>{
+    const editar=evento.target.closest('[data-editar]'); const excluir=evento.target.closest('[data-excluir]');
+    if(editar){const trabalho=trabalhos.find(t=>String(t.id)===editar.dataset.editar);if(trabalho){preencherFormulario(trabalho);painelAdmin.scrollIntoView({behavior:'smooth',block:'start'});}}
+    if(excluir){const id=excluir.dataset.excluir;if(!confirm('Tem certeza que deseja excluir este trabalho?'))return;try{await lerRespostaJson(await fetch(`/api/trabalhos/${id}`,{method:'DELETE'}),'Não foi possível excluir.');statusAdmin.textContent='Trabalho excluído.';await carregarTrabalhos();}catch(erro){statusAdmin.textContent=erro.message;}}
 });
 
-lista.addEventListener('click', async evento => {
-    const editar = evento.target.closest('[data-editar]');
-    const excluir = evento.target.closest('[data-excluir]');
-    if(editar){
-        const trabalho = trabalhos.find(t => String(t.id) === editar.dataset.editar);
-        if(trabalho){
-            preencherFormulario(trabalho);
-            painelAdmin.scrollIntoView({behavior:'smooth', block:'start'});
-        }
-    }
-    if(excluir){
-        const id = excluir.dataset.excluir;
-        if(!confirm('Tem certeza que deseja excluir este trabalho?')) return;
-        try{
-            const resposta = await fetch(`/api/trabalhos/${id}`, {method:'DELETE'});
-            await lerRespostaJson(resposta, 'Não foi possível excluir.');
-            statusAdmin.textContent = 'Trabalho excluído.';
-            await carregarTrabalhos();
-        }catch(erro){ statusAdmin.textContent = erro.message; }
-    }
-});
-
-botaoMinAdmin.addEventListener('click', () => {
-    const minimizado = conteudoAdmin.hidden;
-    conteudoAdmin.hidden = !minimizado;
-    botaoMinAdmin.textContent = minimizado ? '−' : '+';
-    botaoMinAdmin.setAttribute('aria-expanded', String(minimizado));
-});
-
-[busca, filtroMateria, filtroPrioridade].forEach(el => el.addEventListener('input', renderizar));
+botaoMinAdmin.addEventListener('click',()=>{const minimizado=conteudoAdmin.hidden;conteudoAdmin.hidden=!minimizado;botaoMinAdmin.textContent=minimizado?'−':'+';botaoMinAdmin.setAttribute('aria-expanded',String(minimizado));});
+[busca,filtroMateria,filtroPrioridade].forEach(el=>el.addEventListener('input',renderizar));
 
 async function inicializar(){
-    try{
-        const resposta = await fetch('/api/sessao');
-        const sessao = await lerRespostaJson(resposta, 'Não foi possível verificar a sessão.');
-        usuarioSessao = sessao.logado ? sessao : null;
-        if(usuarioSessao?.tipo === 'admin'){
-            painelAdmin.hidden = false;
-            preencherFormulario(null);
-        }
-    }catch(erro){ usuarioSessao = null; }
+    try{const resposta=await fetch('/api/sessao');const sessao=await lerRespostaJson(resposta,'Não foi possível verificar a sessão.');usuarioSessao=sessao.logado?sessao:null;if(usuarioSessao?.tipo==='admin'){painelAdmin.hidden=false;preencherFormulario(null);}}
+    catch(erro){usuarioSessao=null;}
     await carregarTrabalhos();
 }
 
