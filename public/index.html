@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/imagens/favicon.ico">
     <title>Agenda auruda — Início</title>
-    <link rel="stylesheet" href="themes.css?v=20260908-home2">
-    <link rel="stylesheet" href="home.css?v=20260908-home2">
+    <link rel="stylesheet" href="themes.css?v=20260908-home3">
+    <link rel="stylesheet" href="home.css?v=20260908-home3">
     <script>
         document.documentElement.dataset.theme = localStorage.getItem('agenda-auruda-tema') || 'ruby';
     </script>
@@ -17,7 +17,31 @@
         <img src="https://i.imgur.com/NKvDhdY.png" alt="Logo" class="home-logo">
         <h1>Agenda auruda</h1>
         <p>Central do site — escolha o que você quer acessar.</p>
+        <div class="conta-index">
+            <span id="usuario-logado-index">Verificando sessão...</span>
+            <button id="botao-logout-index" type="button" hidden>Sair</button>
+        </div>
     </header>
+
+    <section id="painel-admin-index" class="painel-admin-index" hidden>
+        <div class="painel-admin-index-cabecalho">
+            <div>
+                <h2>Painel de administração</h2>
+                <p>Gerencie os usuários do site.</p>
+            </div>
+            <button type="button" id="botao-minimizar-admin-index" aria-expanded="true" aria-controls="conteudo-admin-index">−</button>
+        </div>
+        <div id="conteudo-admin-index">
+            <form id="form-criar-usuario-index" class="form-criar-usuario-index">
+                <input id="novo-usuario-index" type="text" placeholder="Nome de usuário" minlength="3" required>
+                <input id="nova-senha-index" type="password" placeholder="Senha" minlength="4" required>
+                <button type="submit">Criar conta</button>
+            </form>
+            <p id="status-admin-index" class="status-admin-index" aria-live="polite"></p>
+            <h3>Usuários cadastrados</h3>
+            <div id="lista-usuarios-index" class="lista-usuarios-index"></div>
+        </div>
+    </section>
 
     <section class="pagina-grid" aria-label="Páginas do site">
         <a class="pagina-card" href="/agenda.html">
@@ -26,14 +50,12 @@
             <p>Veja tarefas, provas, trabalhos, compromissos e o horário de aulas.</p>
             <span class="pagina-link">Acessar Agenda →</span>
         </a>
-
         <a class="pagina-card" href="/expec.html">
             <span class="pagina-icone">🎯</span>
             <h2>EXPEC</h2>
             <p>Acesse a contagem regressiva, decoração e equipes da EXPEC.</p>
             <span class="pagina-link">Acessar EXPEC →</span>
         </a>
-
         <a class="pagina-card" href="/trabalhos.html">
             <span class="pagina-icone">📚</span>
             <h2>Trabalhos & Pesquisas</h2>
@@ -43,49 +65,18 @@
     </section>
 
     <section class="home-section">
-        <h2>Personalização</h2>
-        <p>Escolha o tema visual que você quer usar no site.</p>
-        <div class="tema-controles">
-            <label for="tema-select">Tema</label>
-            <select id="tema-select" aria-label="Escolher tema"></select>
-        </div>
-    </section>
-
-    <section class="home-section">
         <h2>Atalhos</h2>
         <p>As páginas principais também ficam disponíveis aqui para facilitar a navegação.</p>
         <nav class="atalhos" aria-label="Atalhos">
             <a class="atalho" href="/agenda.html">Agenda</a>
             <a class="atalho" href="/expec.html">EXPEC</a>
             <a class="atalho" href="/trabalhos.html">Trabalhos & Pesquisas</a>
-            <a class="atalho" href="/login.html">Login</a>
         </nav>
     </section>
 
     <footer class="home-footer">Agenda auruda · Central de páginas</footer>
 </main>
-<script src="temas.js?v=20260908-home2"></script>
-<script>
-(() => {
-    const select = document.getElementById('tema-select');
-    const chave = 'agenda-auruda-tema';
-    const temas = [
-        ['ruby','Ruby'],['ocean','Ocean'],['violet','Violet'],['emerald','Emerald'],['amber','Amber'],['ice','Ice'],
-        ['midnight','Midnight'],['bordeaux','Bordeaux'],['ancient','Ancient'],['forest','Forest'],['sakura','Sakura'],['arctic','Arctic'],['turkey','Turkey'],
-        ['ruby-light','Ruby Light'],['ocean-light','Ocean Light'],['violet-light','Violet Light'],['emerald-light','Emerald Light'],['amber-light','Amber Light'],['ice-light','Ice Light'],['system','Sistema']
-    ];
-    temas.forEach(([id,nome]) => {
-        const option = document.createElement('option');
-        option.value = id;
-        option.textContent = nome;
-        select.appendChild(option);
-    });
-    select.value = localStorage.getItem(chave) || 'ruby';
-    select.addEventListener('change', () => {
-        localStorage.setItem(chave, select.value);
-        document.documentElement.dataset.theme = select.value;
-    });
-})();
-</script>
+<script src="temas.js?v=20260908-home3"></script>
+<script src="index-admin.js?v=20260908-1"></script>
 </body>
 </html>
