@@ -6,7 +6,7 @@
     <link rel="icon" href="/imagens/favicon.ico">
     <title>Trabalhos & Pesquisas</title>
     <link rel="stylesheet" href="themes.css?v=20260908-trabalhos2">
-    <link rel="stylesheet" href="trabalhos.css?v=20260908-2">
+    <link rel="stylesheet" href="trabalhos.css?v=20260908-3">
     <script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
 </head>
 <body>
@@ -34,7 +34,6 @@
                 <label>Título<input id="admin-titulo" type="text" maxlength="160" required></label>
                 <label>Matéria<input id="admin-materia" type="text" maxlength="80" required></label>
                 <label>Data de entrega<input id="admin-prazo" type="date" required></label>
-                <label>Status<select id="admin-status"><option value="pendente">Pendente</option><option value="em-andamento">Em andamento</option><option value="concluido">Concluído</option></select></label>
                 <label class="campo-descricao">Descrição<textarea id="admin-descricao" maxlength="1000" rows="3"></textarea></label>
                 <div class="botoes-admin-trabalho"><button type="submit" id="botao-salvar-trabalho">Criar trabalho</button><button type="button" id="botao-cancelar-trabalho" class="secundario" hidden>Cancelar edição</button></div>
             </form>
@@ -51,11 +50,11 @@
     <section class="filtros" aria-label="Filtros">
         <input id="busca" type="search" placeholder="Pesquisar por matéria ou trabalho...">
         <select id="filtroMateria"><option value="">Todas as matérias</option></select>
-        <select id="filtroStatus"><option value="">Todos os status</option><option value="pendente">Pendente</option><option value="em-andamento">Em andamento</option><option value="concluido">Concluído</option></select>
+        <select id="filtroPrioridade"><option value="">Todas as prioridades</option><option value="minima">Prioridade mínima</option><option value="media">Prioridade média</option><option value="maxima">Prioridade máxima</option><option value="atrasado">Atrasado</option></select>
     </section>
 
     <section id="listaTrabalhos" class="lista-trabalhos" aria-live="polite"></section>
 </main>
-<script src="trabalhos.js?v=20260908-2"></script>
+<script src="trabalhos.js?v=20260908-3"></script>
 </body>
 </html>
