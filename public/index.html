@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/imagens/favicon.ico">
     <title>Agenda auruda — Início</title>
-    <link rel="stylesheet" href="themes.css?v=20260908-home">
-    <link rel="stylesheet" href="home.css?v=20260908-home">
+    <link rel="stylesheet" href="themes.css?v=20260908-home2">
+    <link rel="stylesheet" href="home.css?v=20260908-home2">
     <script>
         document.documentElement.dataset.theme = localStorage.getItem('agenda-auruda-tema') || 'ruby';
     </script>
@@ -43,6 +43,15 @@
     </section>
 
     <section class="home-section">
+        <h2>Personalização</h2>
+        <p>Escolha o tema visual que você quer usar no site.</p>
+        <div class="tema-controles">
+            <label for="tema-select">Tema</label>
+            <select id="tema-select" aria-label="Escolher tema"></select>
+        </div>
+    </section>
+
+    <section class="home-section">
         <h2>Atalhos</h2>
         <p>As páginas principais também ficam disponíveis aqui para facilitar a navegação.</p>
         <nav class="atalhos" aria-label="Atalhos">
@@ -55,5 +64,28 @@
 
     <footer class="home-footer">Agenda auruda · Central de páginas</footer>
 </main>
+<script src="temas.js?v=20260908-home2"></script>
+<script>
+(() => {
+    const select = document.getElementById('tema-select');
+    const chave = 'agenda-auruda-tema';
+    const temas = [
+        ['ruby','Ruby'],['ocean','Ocean'],['violet','Violet'],['emerald','Emerald'],['amber','Amber'],['ice','Ice'],
+        ['midnight','Midnight'],['bordeaux','Bordeaux'],['ancient','Ancient'],['forest','Forest'],['sakura','Sakura'],['arctic','Arctic'],['turkey','Turkey'],
+        ['ruby-light','Ruby Light'],['ocean-light','Ocean Light'],['violet-light','Violet Light'],['emerald-light','Emerald Light'],['amber-light','Amber Light'],['ice-light','Ice Light'],['system','Sistema']
+    ];
+    temas.forEach(([id,nome]) => {
+        const option = document.createElement('option');
+        option.value = id;
+        option.textContent = nome;
+        select.appendChild(option);
+    });
+    select.value = localStorage.getItem(chave) || 'ruby';
+    select.addEventListener('change', () => {
+        localStorage.setItem(chave, select.value);
+        document.documentElement.dataset.theme = select.value;
+    });
+})();
+</script>
 </body>
 </html>
