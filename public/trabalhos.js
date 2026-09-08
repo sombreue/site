@@ -24,6 +24,24 @@ function escaparHtml(valor){
     return String(valor ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
 }
 
+async function lerRespostaJson(resposta, mensagemPadrao){
+    const tipo = resposta.headers.get('content-type') || '';
+    const texto = await resposta.text();
+    if(!tipo.toLowerCase().includes('application/json')){
+        throw new Error('A API de trabalhos não está disponível no servidor publicado. Faça um novo deploy do backend.');
+    }
+    let dados;
+    try{
+        dados = JSON.parse(texto);
+    }catch{
+        throw new Error('O servidor retornou uma resposta inválida.');
+    }
+    if(!resposta.ok || !dados.sucesso){
+        throw new Error(dados.mensagem || mensagemPadrao);
+    }
+    return dados;
+}
+
 function atualizarMaterias(){
     const atual = filtroMateria.value;
     const materias = [...new Set(trabalhos.map(t => t.materia).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
@@ -73,14 +91,13 @@ function renderizar(){
 async function carregarTrabalhos(){
     try{
         const resposta = await fetch('/api/trabalhos');
-        const dados = await resposta.json();
-        if(!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || 'Falha ao carregar trabalhos.');
+        const dados = await lerRespostaJson(resposta, 'Falha ao carregar trabalhos.');
         trabalhos = dados.trabalhos || [];
         atualizarMaterias();
         renderizar();
     }catch(erro){
         console.error(erro);
-        lista.innerHTML = '<div class="vazio">Não foi possível carregar os trabalhos.</div>';
+        lista.innerHTML = `<div class="vazio">${escaparHtml(erro.message || 'Não foi possível carregar os trabalhos.')}</div>`;
     }
 }
 
@@ -112,8 +129,7 @@ formAdmin.addEventListener('submit', async evento => {
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify(payload)
         });
-        const dados = await resposta.json();
-        if(!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || 'Não foi possível salvar.');
+        const dados = await lerRespostaJson(resposta, 'Não foi possível salvar.');
         statusAdmin.textContent = id ? 'Trabalho atualizado.' : 'Trabalho criado.';
         preencherFormulario(null);
         await carregarTrabalhos();
@@ -142,8 +158,7 @@ lista.addEventListener('click', async evento => {
         if(!confirm('Tem certeza que deseja excluir este trabalho?')) return;
         try{
             const resposta = await fetch(`/api/trabalhos/${id}`, {method:'DELETE'});
-            const dados = await resposta.json();
-            if(!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || 'Não foi possível excluir.');
+            await lerRespostaJson(resposta, 'Não foi possível excluir.');
             statusAdmin.textContent = 'Trabalho excluído.';
             await carregarTrabalhos();
         }catch(erro){
@@ -164,7 +179,7 @@ botaoMinAdmin.addEventListener('click', () => {
 async function inicializar(){
     try{
         const resposta = await fetch('/api/sessao');
-        const sessao = await resposta.json();
+        const sessao = await lerRespostaJson(resposta, 'Não foi possível verificar a sessão.');
         usuarioSessao = sessao.logado ? sessao : null;
         if(usuarioSessao?.tipo === 'admin'){
             painelAdmin.hidden = false;
