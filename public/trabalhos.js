@@ -4,7 +4,7 @@ let usuarioSessao = null;
 const lista = document.getElementById('listaTrabalhos');
 const busca = document.getElementById('busca');
 const filtroMateria = document.getElementById('filtroMateria');
-const filtroStatus = document.getElementById('filtroStatus');
+const filtroPrioridade = document.getElementById('filtroPrioridade');
 const painelAdmin = document.getElementById('painel-trabalhos-admin');
 const conteudoAdmin = document.getElementById('conteudo-trabalhos-admin');
 const botaoMinAdmin = document.getElementById('botao-minimizar-trabalhos-admin');
@@ -16,8 +16,25 @@ function formatarData(data){
     return new Date(`${data}T12:00:00`).toLocaleDateString('pt-BR');
 }
 
-function normalizarStatus(status){
-    return status || 'pendente';
+function calcularPrioridade(prazo){
+    if(!prazo) return {nivel:'minima', nome:'Sem prazo', dias:null, classe:'prioridade-minima'};
+    const hoje = new Date();
+    hoje.setHours(0,0,0,0);
+    const entrega = new Date(`${prazo}T00:00:00`);
+    const dias = Math.ceil((entrega - hoje) / 86400000);
+    if(dias < 1) return {nivel:'atrasado', nome:'Atrasado', dias, classe:'prioridade-atrasado'};
+    if(dias <= 4) return {nivel:'maxima', nome:'Prioridade máxima', dias, classe:'prioridade-maxima'};
+    if(dias <= 9) return {nivel:'media', nome:'Prioridade média', dias, classe:'prioridade-media'};
+    return {nivel:'minima', nome:'Prioridade mínima', dias, classe:'prioridade-minima'};
+}
+
+function textoPrazo(prazo){
+    const p = calcularPrioridade(prazo);
+    if(p.dias === null) return 'Sem prazo definido';
+    if(p.dias < 0) return `Atrasado há ${Math.abs(p.dias)} ${Math.abs(p.dias) === 1 ? 'dia' : 'dias'}`;
+    if(p.dias === 0) return 'Entrega hoje';
+    if(p.dias === 1) return 'Falta 1 dia';
+    return `Faltam ${p.dias} dias`;
 }
 
 function escaparHtml(valor){
@@ -31,14 +48,9 @@ async function lerRespostaJson(resposta, mensagemPadrao){
         throw new Error('A API de trabalhos não está disponível no servidor publicado. Faça um novo deploy do backend.');
     }
     let dados;
-    try{
-        dados = JSON.parse(texto);
-    }catch{
-        throw new Error('O servidor retornou uma resposta inválida.');
-    }
-    if(!resposta.ok || !dados.sucesso){
-        throw new Error(dados.mensagem || mensagemPadrao);
-    }
+    try{ dados = JSON.parse(texto); }
+    catch{ throw new Error('O servidor retornou uma resposta inválida.'); }
+    if(!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || mensagemPadrao);
     return dados;
 }
 
@@ -58,17 +70,18 @@ function atualizarMaterias(){
 function renderizar(){
     const termo = busca.value.trim().toLowerCase();
     const materia = filtroMateria.value;
-    const status = filtroStatus.value;
+    const prioridadeFiltro = filtroPrioridade.value;
     const filtrados = trabalhos.filter(t => {
         const texto = `${t.titulo} ${t.materia} ${t.descricao || ''}`.toLowerCase();
-        return (!termo || texto.includes(termo)) && (!materia || t.materia === materia) && (!status || normalizarStatus(t.status) === status);
+        const prioridade = calcularPrioridade(t.prazo);
+        return (!termo || texto.includes(termo)) && (!materia || t.materia === materia) && (!prioridadeFiltro || prioridade.nivel === prioridadeFiltro);
     });
 
     document.getElementById('total').textContent = trabalhos.length;
-    document.getElementById('pendentes').textContent = trabalhos.filter(t => normalizarStatus(t.status) !== 'concluido').length;
+    document.getElementById('pendentes').textContent = trabalhos.filter(t => calcularPrioridade(t.prazo).nivel !== 'atrasado').length;
     const hoje = new Date();
     hoje.setHours(0,0,0,0);
-    document.getElementById('proximos').textContent = trabalhos.filter(t => normalizarStatus(t.status) !== 'concluido' && t.prazo && new Date(`${t.prazo}T12:00:00`) >= hoje).length;
+    document.getElementById('proximos').textContent = trabalhos.filter(t => t.prazo && new Date(`${t.prazo}T12:00:00`) >= hoje).length;
 
     if(!filtrados.length){
         lista.innerHTML = '<div class="vazio">Nenhum trabalho encontrado com esses filtros.</div>';
@@ -76,13 +89,12 @@ function renderizar(){
     }
 
     lista.innerHTML = filtrados.map(t => {
-        const s = normalizarStatus(t.status);
-        const nomeStatus = s === 'em-andamento' ? 'Em andamento' : s === 'concluido' ? 'Concluído' : 'Pendente';
+        const prioridade = calcularPrioridade(t.prazo);
         const controles = usuarioSessao?.tipo === 'admin' ? `<div class="controles-trabalho"><button type="button" data-editar="${t.id}">Editar</button><button type="button" class="excluir" data-excluir="${t.id}">Excluir</button></div>` : '';
         return `<article class="trabalho">
-            <div class="trabalho-topo"><div><div class="materia">${escaparHtml(t.materia)}</div><h2>${escaparHtml(t.titulo)}</h2></div><span class="status status-${escaparHtml(s)}">${nomeStatus}</span></div>
+            <div class="trabalho-topo"><div><div class="materia">${escaparHtml(t.materia)}</div><h2>${escaparHtml(t.titulo)}</h2></div><span class="prioridade ${prioridade.classe}">${prioridade.nome}</span></div>
             <p class="descricao">${escaparHtml(t.descricao || '')}</p>
-            <div class="meta"><span class="tag">Prazo: ${formatarData(t.prazo)}</span><span class="tag">Vale ponto</span></div>
+            <div class="meta"><span class="tag">Prazo: ${formatarData(t.prazo)}</span><span class="tag">${textoPrazo(t.prazo)}</span><span class="tag">Vale ponto</span></div>
             ${controles}
         </article>`;
     }).join('');
@@ -106,7 +118,6 @@ function preencherFormulario(trabalho){
     document.getElementById('admin-titulo').value = trabalho?.titulo || '';
     document.getElementById('admin-materia').value = trabalho?.materia || '';
     document.getElementById('admin-prazo').value = trabalho?.prazo || '';
-    document.getElementById('admin-status').value = normalizarStatus(trabalho?.status);
     document.getElementById('admin-descricao').value = trabalho?.descricao || '';
     document.getElementById('botao-salvar-trabalho').textContent = trabalho ? 'Salvar alterações' : 'Criar trabalho';
     document.getElementById('botao-cancelar-trabalho').hidden = !trabalho;
@@ -119,7 +130,6 @@ formAdmin.addEventListener('submit', async evento => {
         titulo: document.getElementById('admin-titulo').value.trim(),
         materia: document.getElementById('admin-materia').value.trim(),
         prazo: document.getElementById('admin-prazo').value,
-        status: document.getElementById('admin-status').value,
         descricao: document.getElementById('admin-descricao').value.trim()
     };
     statusAdmin.textContent = id ? 'Salvando...' : 'Criando...';
@@ -129,13 +139,11 @@ formAdmin.addEventListener('submit', async evento => {
             headers: {'Content-Type':'application/json'},
             body: JSON.stringify(payload)
         });
-        const dados = await lerRespostaJson(resposta, 'Não foi possível salvar.');
+        await lerRespostaJson(resposta, 'Não foi possível salvar.');
         statusAdmin.textContent = id ? 'Trabalho atualizado.' : 'Trabalho criado.';
         preencherFormulario(null);
         await carregarTrabalhos();
-    }catch(erro){
-        statusAdmin.textContent = erro.message;
-    }
+    }catch(erro){ statusAdmin.textContent = erro.message; }
 });
 
 document.getElementById('botao-cancelar-trabalho').addEventListener('click', () => {
@@ -161,9 +169,7 @@ lista.addEventListener('click', async evento => {
             await lerRespostaJson(resposta, 'Não foi possível excluir.');
             statusAdmin.textContent = 'Trabalho excluído.';
             await carregarTrabalhos();
-        }catch(erro){
-            statusAdmin.textContent = erro.message;
-        }
+        }catch(erro){ statusAdmin.textContent = erro.message; }
     }
 });
 
@@ -174,7 +180,7 @@ botaoMinAdmin.addEventListener('click', () => {
     botaoMinAdmin.setAttribute('aria-expanded', String(minimizado));
 });
 
-[busca, filtroMateria, filtroStatus].forEach(el => el.addEventListener('input', renderizar));
+[busca, filtroMateria, filtroPrioridade].forEach(el => el.addEventListener('input', renderizar));
 
 async function inicializar(){
     try{
@@ -185,9 +191,7 @@ async function inicializar(){
             painelAdmin.hidden = false;
             preencherFormulario(null);
         }
-    }catch(erro){
-        usuarioSessao = null;
-    }
+    }catch(erro){ usuarioSessao = null; }
     await carregarTrabalhos();
 }
 
