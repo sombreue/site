@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/imagens/favicon.ico">
+    <title>Trabalhos & Pesquisas</title>
+    <link rel="stylesheet" href="themes.css?v=20260908-trabalhos">
+    <link rel="stylesheet" href="trabalhos.css?v=20260908-1">
+    <script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
+</head>
+<body>
+<header class="trabalhos-header">
+    <div>
+        <a href="/" class="voltar">← Início</a>
+        <h1>Trabalhos & Pesquisas</h1>
+        <p>Atividades que valem ponto, organizadas por prazo e matéria.</p>
+    </div>
+    <a href="/agenda.html" class="botao-agenda">Abrir Agenda</a>
+</header>
+
+<main>
+    <section class="resumo">
+        <div><strong id="total">0</strong><span>total</span></div>
+        <div><strong id="pendentes">0</strong><span>pendentes</span></div>
+        <div><strong id="proximos">0</strong><span>próximos</span></div>
+    </section>
+
+    <section class="filtros" aria-label="Filtros">
+        <input id="busca" type="search" placeholder="Pesquisar por matéria ou trabalho...">
+        <select id="filtroMateria"><option value="">Todas as matérias</option></select>
+        <select id="filtroStatus">
+            <option value="">Todos os status</option>
+            <option value="pendente">Pendente</option>
+            <option value="em-andamento">Em andamento</option>
+            <option value="concluido">Concluído</option>
+        </select>
+    </section>
+
+    <section id="listaTrabalhos" class="lista-trabalhos" aria-live="polite"></section>
+</main>
+<script src="trabalhos.js?v=20260908-1"></script>
+</body>
+</html>
