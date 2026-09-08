@@ -26,8 +26,10 @@ async function prepararTrabalhos() {
             materia TEXT NOT NULL,
             prazo TEXT NOT NULL,
             status TEXT NOT NULL DEFAULT 'pendente',
-            descricao TEXT NOT NULL DEFAULT ''
+            descricao TEXT NOT NULL DEFAULT '',
+            vale_ponto BOOLEAN NOT NULL DEFAULT TRUE
         );
+        ALTER TABLE trabalhos ADD COLUMN IF NOT EXISTS vale_ponto BOOLEAN NOT NULL DEFAULT TRUE;
     \`);
 }
 
@@ -38,7 +40,7 @@ app.get('/api/trabalhos', exigirLogin, async (req, res) => {
     try {
         await tabelaTrabalhosPronta;
         const resultado = await pool.query(\`
-            SELECT id, titulo, materia, prazo, status, descricao
+            SELECT id, titulo, materia, prazo, descricao, vale_ponto
             FROM trabalhos
             ORDER BY prazo ASC, id ASC
         \`);
@@ -55,22 +57,18 @@ app.post('/api/trabalhos', exigirAdmin, async (req, res) => {
         const titulo = String(req.body.titulo || '').trim();
         const materia = String(req.body.materia || '').trim();
         const prazo = String(req.body.prazo || '').trim();
-        const status = String(req.body.status || 'pendente').trim();
         const descricao = String(req.body.descricao || '').trim();
-        const permitidos = ['pendente', 'em-andamento', 'concluido'];
+        const valePonto = req.body.vale_ponto !== false;
 
         if (!titulo || !materia || !prazo) {
             return res.status(400).json({ sucesso: false, mensagem: 'Título, matéria e prazo são obrigatórios.' });
         }
-        if (!permitidos.includes(status)) {
-            return res.status(400).json({ sucesso: false, mensagem: 'Status inválido.' });
-        }
 
         const resultado = await pool.query(\`
-            INSERT INTO trabalhos (titulo, materia, prazo, status, descricao)
+            INSERT INTO trabalhos (titulo, materia, prazo, descricao, vale_ponto)
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING *
-        \`, [titulo, materia, prazo, status, descricao]);
+            RETURNING id, titulo, materia, prazo, descricao, vale_ponto
+        \`, [titulo, materia, prazo, descricao, valePonto]);
 
         res.status(201).json({ sucesso: true, trabalho: resultado.rows[0] });
     } catch (erro) {
@@ -86,23 +84,22 @@ app.put('/api/trabalhos/:id', exigirAdmin, async (req, res) => {
         const titulo = String(req.body.titulo || '').trim();
         const materia = String(req.body.materia || '').trim();
         const prazo = String(req.body.prazo || '').trim();
-        const status = String(req.body.status || 'pendente').trim();
         const descricao = String(req.body.descricao || '').trim();
-        const permitidos = ['pendente', 'em-andamento', 'concluido'];
+        const valePonto = req.body.vale_ponto !== false;
 
         if (!Number.isInteger(id) || id <= 0) {
             return res.status(400).json({ sucesso: false, mensagem: 'ID inválido.' });
         }
-        if (!titulo || !materia || !prazo || !permitidos.includes(status)) {
+        if (!titulo || !materia || !prazo) {
             return res.status(400).json({ sucesso: false, mensagem: 'Preencha os campos corretamente.' });
         }
 
         const resultado = await pool.query(\`
             UPDATE trabalhos
-            SET titulo = $1, materia = $2, prazo = $3, status = $4, descricao = $5
+            SET titulo = $1, materia = $2, prazo = $3, descricao = $4, vale_ponto = $5
             WHERE id = $6
-            RETURNING *
-        \`, [titulo, materia, prazo, status, descricao, id]);
+            RETURNING id, titulo, materia, prazo, descricao, vale_ponto
+        \`, [titulo, materia, prazo, descricao, valePonto, id]);
 
         if (!resultado.rows.length) {
             return res.status(404).json({ sucesso: false, mensagem: 'Trabalho não encontrado.' });
