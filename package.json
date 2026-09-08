@@ -4,8 +4,8 @@
   "description": "Sistema de tarefas da turma",
   "main": "server-sugestoes.js",
   "scripts": {
-    "postinstall": "node fix-expec-route.js && node corrigir-meme.js && node fix-trabalhos-server.js",
-    "prestart": "node fix-expec-route.js && node corrigir-meme.js && node fix-trabalhos-server.js",
+    "postinstall": "node fix-expec-route.js && node corrigir-meme.js && node fix-trabalhos-server.js && node fix-login-protection.js",
+    "prestart": "node fix-expec-route.js && node corrigir-meme.js && node fix-trabalhos-server.js && node fix-login-protection.js",
     "start": "node server-sugestoes.js"
   },
   "dependencies": {
