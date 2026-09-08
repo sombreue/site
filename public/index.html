@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/imagens/favicon.ico">
+    <title>Agenda auruda — Início</title>
+    <link rel="stylesheet" href="themes.css?v=20260908-home">
+    <link rel="stylesheet" href="home.css?v=20260908-home">
+    <script>
+        document.documentElement.dataset.theme = localStorage.getItem('agenda-auruda-tema') || 'ruby';
+    </script>
+</head>
+<body>
+<main class="home">
+    <header class="home-header">
+        <img src="https://i.imgur.com/NKvDhdY.png" alt="Logo" class="home-logo">
+        <h1>Agenda auruda</h1>
+        <p>Central do site — escolha o que você quer acessar.</p>
+    </header>
+
+    <section class="pagina-grid" aria-label="Páginas do site">
+        <a class="pagina-card" href="/agenda.html">
+            <span class="pagina-icone">📅</span>
+            <h2>Agenda</h2>
+            <p>Veja tarefas, provas, trabalhos, compromissos e o horário de aulas.</p>
+            <span class="pagina-link">Acessar Agenda →</span>
+        </a>
+
+        <a class="pagina-card" href="/expec.html">
+            <span class="pagina-icone">🎯</span>
+            <h2>EXPEC</h2>
+            <p>Acesse a contagem regressiva, decoração e equipes da EXPEC.</p>
+            <span class="pagina-link">Acessar EXPEC →</span>
+        </a>
+
+        <a class="pagina-card" href="/trabalhos.html">
+            <span class="pagina-icone">📚</span>
+            <h2>Trabalhos & Pesquisas</h2>
+            <p>Confira trabalhos e pesquisas que valem ponto, com matéria, prazo e situação.</p>
+            <span class="pagina-link">Ver trabalhos →</span>
+        </a>
+    </section>
+
+    <section class="home-section">
+        <h2>Atalhos</h2>
+        <p>As páginas principais também ficam disponíveis aqui para facilitar a navegação.</p>
+        <nav class="atalhos" aria-label="Atalhos">
+            <a class="atalho" href="/agenda.html">Agenda</a>
+            <a class="atalho" href="/expec.html">EXPEC</a>
+            <a class="atalho" href="/trabalhos.html">Trabalhos & Pesquisas</a>
+            <a class="atalho" href="/login.html">Login</a>
+        </nav>
+    </section>
+
+    <footer class="home-footer">Agenda auruda · Central de páginas</footer>
+</main>
+</body>
+</html>
