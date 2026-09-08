@@ -6,7 +6,7 @@
     <link rel="icon" href="/imagens/favicon.ico">
     <title>Trabalhos & Pesquisas</title>
     <link rel="stylesheet" href="themes.css?v=20260908-trabalhos2">
-    <link rel="stylesheet" href="trabalhos.css?v=20260908-3">
+    <link rel="stylesheet" href="trabalhos.css?v=20260908-4">
     <script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
 </head>
 <body>
@@ -18,14 +18,10 @@
     </div>
     <a href="/agenda.html" class="botao-agenda">Abrir Agenda</a>
 </header>
-
 <main>
     <section id="painel-trabalhos-admin" class="painel-trabalhos-admin" hidden>
         <div class="painel-trabalhos-admin-cabecalho">
-            <div>
-                <h2>Administração dos trabalhos</h2>
-                <p>Somente administradores podem criar, editar ou excluir trabalhos.</p>
-            </div>
+            <div><h2>Administração dos trabalhos</h2><p>Somente administradores podem criar, editar ou excluir trabalhos.</p></div>
             <button type="button" id="botao-minimizar-trabalhos-admin" aria-expanded="true" aria-controls="conteudo-trabalhos-admin">−</button>
         </div>
         <div id="conteudo-trabalhos-admin">
@@ -34,27 +30,17 @@
                 <label>Título<input id="admin-titulo" type="text" maxlength="160" required></label>
                 <label>Matéria<input id="admin-materia" type="text" maxlength="80" required></label>
                 <label>Data de entrega<input id="admin-prazo" type="date" required></label>
+                <label class="opcao-vale-ponto"><input id="admin-vale-ponto" type="checkbox" checked> Vale ponto</label>
                 <label class="campo-descricao">Descrição<textarea id="admin-descricao" maxlength="1000" rows="3"></textarea></label>
                 <div class="botoes-admin-trabalho"><button type="submit" id="botao-salvar-trabalho">Criar trabalho</button><button type="button" id="botao-cancelar-trabalho" class="secundario" hidden>Cancelar edição</button></div>
             </form>
             <p id="status-admin-trabalhos" class="status-admin-trabalhos" aria-live="polite"></p>
         </div>
     </section>
-
-    <section class="resumo">
-        <div><strong id="total">0</strong><span>total</span></div>
-        <div><strong id="pendentes">0</strong><span>pendentes</span></div>
-        <div><strong id="proximos">0</strong><span>próximos</span></div>
-    </section>
-
-    <section class="filtros" aria-label="Filtros">
-        <input id="busca" type="search" placeholder="Pesquisar por matéria ou trabalho...">
-        <select id="filtroMateria"><option value="">Todas as matérias</option></select>
-        <select id="filtroPrioridade"><option value="">Todas as prioridades</option><option value="minima">Prioridade mínima</option><option value="media">Prioridade média</option><option value="maxima">Prioridade máxima</option><option value="atrasado">Atrasado</option></select>
-    </section>
-
+    <section class="resumo"><div><strong id="total">0</strong><span>total</span></div><div><strong id="pendentes">0</strong><span>pendentes</span></div><div><strong id="proximos">0</strong><span>próximos</span></div></section>
+    <section class="filtros" aria-label="Filtros"><input id="busca" type="search" placeholder="Pesquisar por matéria ou trabalho..."><select id="filtroMateria"><option value="">Todas as matérias</option></select><select id="filtroPrioridade"><option value="">Todas as prioridades</option><option value="minima">Prioridade mínima</option><option value="media">Prioridade média</option><option value="maxima">Prioridade máxima</option><option value="atrasado">Atrasado</option></select></section>
     <section id="listaTrabalhos" class="lista-trabalhos" aria-live="polite"></section>
 </main>
-<script src="trabalhos.js?v=20260908-3"></script>
+<script src="trabalhos.js?v=20260908-4"></script>
 </body>
 </html>
