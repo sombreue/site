@@ -12,6 +12,11 @@
     <link rel="stylesheet" href="meme-do-dia.css?v=20260907-1">
     <link rel="stylesheet" href="light-theme-hard-fix.css?v=20260907-1">
     <style>.tema-opcao[data-tema="forest"],.tema-opcao[data-tema="arctic"],.tema-opcao[data-tema="ancient"]{display:none!important;}</style>
+    <style>
+        .filtro-agenda { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+        .filtro-agenda .filtro-campo { display:flex; align-items:center; gap:8px; }
+        .filtro-agenda select { min-width:180px; }
+    </style>
 </head>
 <body>
 <header>
@@ -25,11 +30,101 @@
     <div id="conteudo-horario-aulas" class="horario-conteudo"><div class="horario-tabela-wrap"><table class="horario-tabela"><thead><tr><th>Horário</th><th>Segunda</th><th>Terça</th><th>Quarta</th><th>Quinta</th><th>Sexta</th></tr></thead><tbody><tr><td>07:00 - 07:50</td><td>Ciências</td><td>Redação</td><td>Ed. Física</td><td>Gramática</td><td>Geografia</td></tr><tr><td>07:50 - 08:40</td><td>Português</td><td>Redação</td><td>Ed. Física</td><td>História</td><td>Física</td></tr><tr><td>08:40 - 09:30</td><td>Matemática</td><td>Bilíngue</td><td>Socioemocional</td><td>História</td><td>Geografia</td></tr><tr class="intervalo"><td>09:30 - 09:50</td><td>INTERVALO</td><td>INTERVALO</td><td>INTERVALO</td><td>INTERVALO</td><td>INTERVALO</td></tr><tr><td>09:50 - 10:40</td><td>Português</td><td>Artes</td><td>Literatura</td><td>Matemática</td><td>Física</td></tr><tr><td>10:40 - 11:30</td><td>Matemática</td><td>Matemática</td><td>Matemática</td><td>Bilíngue</td><td>Gramática</td></tr><tr><td>11:30 - 12:20</td><td class="vazio">—</td><td>Robótica</td><td class="vazio">—</td><td>Química</td><td>Ciências</td></tr></tbody></table></div></div>
 </section>
 <main>
-    <section class="filtro"><label for="data">Pesquisar por data:</label><input type="date" id="data" onchange="filtrarPorData()"><button onclick="limparFiltro()">Mostrar todas</button></section>
+    <section class="filtro filtro-agenda">
+        <div class="filtro-campo">
+            <label for="data">Pesquisar por data:</label>
+            <input type="date" id="data" onchange="filtrarPorData()">
+        </div>
+        <div class="filtro-campo">
+            <label for="materia-filtro">Pesquisar por matéria:</label>
+            <select id="materia-filtro" onchange="filtrarPorMateria()">
+                <option value="">Todas as matérias</option>
+                <option value="Artes">Artes</option>
+                <option value="Bilíngue">Bilíngue</option>
+                <option value="Ciências">Ciências</option>
+                <option value="Ed. Física">Ed. Física</option>
+                <option value="Física">Física</option>
+                <option value="Geografia">Geografia</option>
+                <option value="Gramática">Gramática</option>
+                <option value="História">História</option>
+                <option value="Literatura">Literatura</option>
+                <option value="Matemática">Matemática</option>
+                <option value="Português">Português</option>
+                <option value="Química">Química</option>
+                <option value="Redação">Redação</option>
+                <option value="Robótica">Robótica</option>
+                <option value="Socioemocional">Socioemocional</option>
+            </select>
+        </div>
+        <button onclick="limparFiltro()">Mostrar todas</button>
+    </section>
     <div class="area-adicionar" id="area-adicionar" style="display: none;"><button class="botao-adicionar" onclick="abrirFormulario()">+ Adicionar tarefas</button></div>
     <section id="formulario" class="formulario" style="display: none;"><h2>Adicionar tarefas</h2><label for="nova-data">Data:</label><input type="date" id="nova-data" onchange="mostrarMateriasDoDia()"><div id="lista-materias-formulario"></div><div class="botoes-formulario"><button onclick="adicionarTarefasDoDia()">Adicionar tarefas</button><button class="cancelar" onclick="fecharFormulario()">Cancelar</button></div></section>
     <section id="lista-tarefas"></section>
     <section id="modal-senha" class="modal-senha"><div class="conteudo-modal"><h2>Alterar senha</h2><p id="usuario-senha"></p><input type="password" id="senha-alterada" placeholder="Digite a nova senha"><div class="botoes-modal"><button onclick="confirmarAlteracaoSenha()">Alterar senha</button><button class="cancelar" onclick="fecharModalSenha()">Cancelar</button></div></div></section>
 </main>
 <script src="script.js?v=20260909-agenda-fix"></script><script src="temas.js?v=20260907-lightfix5"></script><script src="theme-bridge.js?v=20260907-3"></script><script src="admin-panel.js?v=20260907-1"></script><script src="horario-aulas.js?v=20260907-1"></script><script src="meme-do-dia.js?v=20260907-1"></script>
+<script>
+(function () {
+    function obterFiltros() {
+        return {
+            data: document.getElementById("data")?.value || "",
+            materia: document.getElementById("materia-filtro")?.value || ""
+        };
+    }
+
+    window.filtrarPorData = function () { aplicarFiltros(); };
+    window.filtrarPorMateria = function () { aplicarFiltros(); };
+
+    window.limparFiltro = function () {
+        const data = document.getElementById("data");
+        const materia = document.getElementById("materia-filtro");
+        if (data) data.value = "";
+        if (materia) materia.value = "";
+        aplicarFiltros();
+    };
+
+    async function aplicarFiltros() {
+        const lista = document.getElementById("lista-tarefas");
+        if (!lista) return;
+
+        const { data, materia } = obterFiltros();
+
+        try {
+            const resposta = await fetch("/api/tarefas");
+            const dados = await resposta.json();
+            if (!dados.sucesso) {
+                console.error(dados.mensagem);
+                return;
+            }
+
+            lista.innerHTML = "";
+            const tarefas = dados.tarefas
+                .filter(tarefa => !data || tarefa.data === data)
+                .filter(tarefa => !materia || tarefa.materia === materia)
+                .sort((a, b) => {
+                    const comparacaoData = b.data.localeCompare(a.data);
+                    return comparacaoData !== 0 ? comparacaoData : b.id - a.id;
+                });
+
+            tarefas.forEach(tarefa => {
+                criarTarefa(tarefa.id, tarefa.data, tarefa.materia, tarefa.descricao);
+            });
+
+            if (tarefas.length === 0) {
+                const mensagem = document.createElement("p");
+                mensagem.textContent = data || materia
+                    ? "Nenhuma tarefa encontrada com esses filtros."
+                    : "Nenhuma tarefa cadastrada.";
+                lista.appendChild(mensagem);
+            }
+        } catch (erro) {
+            console.error("Erro ao filtrar tarefas:", erro);
+        }
+    }
+
+    // Mantém os filtros ativos após adicionar, editar ou excluir tarefas.
+    window.carregarTarefas = aplicarFiltros;
+})();
+</script>
 </body></html>
