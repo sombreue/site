@@ -12,8 +12,9 @@ const criarTabelaNotas = async pool => {
         );
     `);
 
-    // Migração segura caso a tabela já exista de uma versão antiga.
-    // Algumas versões anteriores podiam ter somente parte dessas colunas.
+    // A tabela notas_pessoais existia antes como tabela de notas escolares.
+    // Mantemos os dados antigos, mas removemos as restrições antigas que
+    // impediriam uma Sticky Note de ser criada sem matéria/nota/período.
     await pool.query(`
         ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS usuario_id INTEGER;
         ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS titulo TEXT NOT NULL DEFAULT '';
@@ -22,6 +23,13 @@ const criarTabelaNotas = async pool => {
         ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS fixada BOOLEAN NOT NULL DEFAULT false;
         ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS criada_em TIMESTAMPTZ NOT NULL DEFAULT NOW();
         ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS atualizada_em TIMESTAMPTZ NOT NULL DEFAULT NOW();
+        ALTER TABLE notas_pessoais ALTER COLUMN materia DROP NOT NULL;
+        ALTER TABLE notas_pessoais ALTER COLUMN materia SET DEFAULT '';
+        ALTER TABLE notas_pessoais ALTER COLUMN periodo DROP NOT NULL;
+        ALTER TABLE notas_pessoais ALTER COLUMN periodo SET DEFAULT '1º bimestre';
+        ALTER TABLE notas_pessoais ALTER COLUMN nota DROP NOT NULL;
+        ALTER TABLE notas_pessoais ALTER COLUMN peso DROP NOT NULL;
+        ALTER TABLE notas_pessoais ALTER COLUMN descricao DROP NOT NULL;
     `);
 };
 
