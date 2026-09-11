@@ -8,22 +8,21 @@
     <title>Login - Tarefas da Turma</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .campo-senha-login {
-            display: flex;
-            align-items: stretch;
-            gap: 8px;
-        }
-
-        .campo-senha-login input {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .botao-mostrar-senha {
-            flex: 0 0 auto;
-            padding: 0 12px;
-            cursor: pointer;
-        }
+        .campo-senha-login { display:flex; align-items:stretch; gap:8px; }
+        .campo-senha-login input { flex:1; min-width:0; }
+        .botao-mostrar-senha { flex:0 0 auto; padding:0 12px; cursor:pointer; }
+        .botao-adicionar-conta { width:100%; margin-top:10px; padding:10px 14px; border:1px solid currentColor; border-radius:8px; background:transparent; color:inherit; font:inherit; font-weight:700; cursor:pointer; }
+        .modal-conta { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(0,0,0,.65); z-index:1000; }
+        .modal-conta[hidden] { display:none; }
+        .modal-conta-caixa { width:min(100%,420px); padding:24px; border-radius:16px; background:var(--theme-surface,#19191f); color:var(--theme-text,#f4f4f5); border:1px solid var(--theme-border,#2c2c34); box-shadow:0 20px 60px rgba(0,0,0,.35); }
+        .modal-conta-caixa h2 { margin-top:0; }
+        .modal-conta-caixa p { color:var(--theme-muted,#a1a1aa); }
+        .modal-conta-caixa input { width:100%; box-sizing:border-box; margin:6px 0 12px; padding:11px 12px; border-radius:9px; border:1px solid var(--theme-border,#2c2c34); background:var(--theme-input,#202027); color:var(--theme-text,#f4f4f5); font:inherit; }
+        .botoes-modal-conta { display:flex; gap:10px; justify-content:flex-end; }
+        .botoes-modal-conta button { padding:10px 14px; border:0; border-radius:9px; font:inherit; font-weight:700; cursor:pointer; }
+        #cancelar-pedido-conta { background:var(--theme-button,#303039); color:var(--theme-text,#f4f4f5); }
+        #enviar-pedido-conta { background:var(--theme-accent,#ef3340); color:#fff; }
+        #status-pedido-conta { min-height:20px; margin:4px 0 12px; }
     </style>
 </head>
 
@@ -45,20 +44,78 @@
 
                 <button type="submit">Entrar</button>
 
+                <button type="button" class="botao-adicionar-conta" id="botao-adicionar-conta">Adicionar conta</button>
                 <p id="mensagem-login" class="mensagem-login"></p>
             </form>
         </section>
     </main>
 
+    <div id="modal-conta" class="modal-conta" hidden>
+        <section class="modal-conta-caixa" role="dialog" aria-modal="true" aria-labelledby="titulo-pedido-conta">
+            <h2 id="titulo-pedido-conta">Pedir uma conta</h2>
+            <p>Preencha os dados. O pedido será enviado ao administrador para aprovação.</p>
+            <form id="form-pedido-conta">
+                <label for="novo-usuario-conta">Usuário</label>
+                <input type="text" id="novo-usuario-conta" minlength="3" maxlength="50" autocomplete="username" required>
+                <label for="nova-senha-conta">Senha</label>
+                <input type="password" id="nova-senha-conta" minlength="4" maxlength="200" autocomplete="new-password" required>
+                <p id="status-pedido-conta" aria-live="polite"></p>
+                <div class="botoes-modal-conta">
+                    <button type="button" id="cancelar-pedido-conta">Cancelar</button>
+                    <button type="submit" id="enviar-pedido-conta">Enviar pedido</button>
+                </div>
+            </form>
+        </section>
+    </div>
+
     <script>
         const campoSenha = document.getElementById("senha");
         const botaoMostrarSenha = document.getElementById("botao-mostrar-senha");
+        const modalConta = document.getElementById("modal-conta");
+        const statusPedido = document.getElementById("status-pedido-conta");
 
         botaoMostrarSenha.addEventListener("click", () => {
             const mostrando = campoSenha.type === "text";
             campoSenha.type = mostrando ? "password" : "text";
             botaoMostrarSenha.textContent = mostrando ? "Mostrar" : "Ocultar";
             botaoMostrarSenha.setAttribute("aria-label", mostrando ? "Mostrar senha" : "Ocultar senha");
+        });
+
+        document.getElementById("botao-adicionar-conta").addEventListener("click", () => {
+            statusPedido.textContent = "";
+            modalConta.hidden = false;
+            document.getElementById("novo-usuario-conta").focus();
+        });
+
+        document.getElementById("cancelar-pedido-conta").addEventListener("click", () => {
+            modalConta.hidden = true;
+            document.getElementById("form-pedido-conta").reset();
+        });
+
+        modalConta.addEventListener("click", evento => {
+            if (evento.target === modalConta) document.getElementById("cancelar-pedido-conta").click();
+        });
+
+        document.getElementById("form-pedido-conta").addEventListener("submit", async evento => {
+            evento.preventDefault();
+            const usuario = document.getElementById("novo-usuario-conta").value.trim();
+            const senha = document.getElementById("nova-senha-conta").value;
+            statusPedido.textContent = "Enviando pedido...";
+
+            try {
+                const resposta = await fetch("/api/pedidos-conta", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ usuario, senha })
+                });
+                const dados = await resposta.json();
+                if (!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || "Não foi possível enviar o pedido.");
+                statusPedido.textContent = dados.mensagem;
+                document.getElementById("form-pedido-conta").reset();
+            } catch (erro) {
+                console.error(erro);
+                statusPedido.textContent = erro.message || "Erro ao conectar ao servidor.";
+            }
         });
 
         document.getElementById("form-login").addEventListener("submit", async (evento) => {
