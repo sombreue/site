@@ -1,6 +1,6 @@
 module.exports = function registrarNotas(app, pool, exigirLogin) {
     let tabelaPronta = pool.query(`
-        CREATE TABLE IF NOT EXISTS notas_pessoais (
+        CREATE TABLE IF NOT EXISTS notas_escolares (
             id SERIAL PRIMARY KEY,
             usuario_id INTEGER NOT NULL,
             materia TEXT NOT NULL,
@@ -17,7 +17,7 @@ module.exports = function registrarNotas(app, pool, exigirLogin) {
             await tabelaPronta;
             const r = await pool.query(`
                 SELECT id, materia, periodo, nota, peso, descricao, criado_em
-                FROM notas_pessoais
+                FROM notas_escolares
                 WHERE usuario_id = $1
                 ORDER BY materia ASC, CASE periodo
                     WHEN '1º bimestre' THEN 1
@@ -48,7 +48,7 @@ module.exports = function registrarNotas(app, pool, exigirLogin) {
             if (!Number.isFinite(peso) || peso <= 0 || peso > 100) return res.status(400).json({ sucesso: false, mensagem: 'O peso deve ser maior que 0.' });
 
             const r = await pool.query(`
-                INSERT INTO notas_pessoais(usuario_id, materia, periodo, nota, peso, descricao)
+                INSERT INTO notas_escolares(usuario_id, materia, periodo, nota, peso, descricao)
                 VALUES ($1, $2, $3, $4, $5, $6)
                 RETURNING *
             `, [req.session.usuario.id, materia, periodo, nota, peso, descricao]);
@@ -75,7 +75,7 @@ module.exports = function registrarNotas(app, pool, exigirLogin) {
             if (!Number.isFinite(peso) || peso <= 0 || peso > 100) return res.status(400).json({ sucesso: false, mensagem: 'O peso deve ser maior que 0.' });
 
             const r = await pool.query(`
-                UPDATE notas_pessoais
+                UPDATE notas_escolares
                 SET materia=$1, periodo=$2, nota=$3, peso=$4, descricao=$5
                 WHERE id=$6 AND usuario_id=$7
                 RETURNING *
@@ -92,7 +92,7 @@ module.exports = function registrarNotas(app, pool, exigirLogin) {
         try {
             await tabelaPronta;
             const id = Number(req.params.id);
-            const r = await pool.query(`DELETE FROM notas_pessoais WHERE id=$1 AND usuario_id=$2`, [id, req.session.usuario.id]);
+            const r = await pool.query(`DELETE FROM notas_escolares WHERE id=$1 AND usuario_id=$2`, [id, req.session.usuario.id]);
             if (!r.rowCount) return res.status(404).json({ sucesso: false, mensagem: 'Nota não encontrada.' });
             res.json({ sucesso: true });
         } catch (e) {
