@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="/imagens/favicon.ico"><title>Minhas tarefas — Agenda auruda</title><link rel="stylesheet" href="themes.css?v=20260908"><link rel="stylesheet" href="tarefas-pessoais.css?v=20260911"><script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
+</head>
+<body>
+<header class="topo"><a href="/" class="voltar">← Início</a><div><h1>Minhas tarefas</h1><p>Organize o que você quer fazer e quando pretende fazer.</p></div><button id="sair" type="button">Sair</button></header>
+<main>
+<section class="resumo"><div><strong id="total">0</strong><span>Total</span></div><div><strong id="pendentes">0</strong><span>Pendentes</span></div><div><strong id="planejadas">0</strong><span>Planejadas</span></div><div><strong id="concluidas">0</strong><span>Concluídas</span></div></section>
+<section class="barra"><button id="nova">+ Nova tarefa</button><select id="filtro-status"><option value="">Todos os status</option><option value="a-fazer">A fazer</option><option value="em-andamento">Em andamento</option><option value="concluida">Concluídas</option></select><select id="filtro-prioridade"><option value="">Todas as prioridades</option><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option></select></section>
+<section id="formulario" class="painel" hidden><h2 id="titulo-form">Nova tarefa</h2><form id="form"><div class="grid"><label>Título<input id="titulo" maxlength="160" required placeholder="Ex.: Fazer exercícios de Física"></label><label>Matéria<input id="materia" maxlength="80" placeholder="Ex.: Física"></label><label>Prazo de entrega<input id="prazo" type="date"></label><label>Quero fazer em<input id="planejada" type="date"><small>Essa é a data em que você pretende realizar a tarefa.</small></label><label>Prioridade<select id="prioridade"><option value="baixa">Baixa</option><option value="media" selected>Média</option><option value="alta">Alta</option></select></label><label>Status<select id="status"><option value="a-fazer">A fazer</option><option value="em-andamento">Em andamento</option><option value="concluida">Concluída</option></select></label></div><label>Descrição <span>(Markdown)</span><textarea id="descricao" rows="10" placeholder="# O que preciso fazer\n\n- Parte 1\n- Parte 2\n\n**Lembrete:** levar o material.\n\nUse Markdown para organizar como quiser."></textarea><div class="botoes"><button type="submit">Salvar tarefa</button><button type="button" class="secundario" id="cancelar">Cancelar</button></div><p id="mensagem"></p></form></section>
+<section id="lista" class="lista"></section>
+</main><script src="temas.js?v=20260911"></script><script src="tarefas-pessoais.js?v=20260911"></script>
+</body></html>
