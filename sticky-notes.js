@@ -12,9 +12,10 @@ const criarTabelaNotas = async pool => {
         );
     `);
 
-    // A tabela pode já existir por uma versão anterior do sistema.
-    // Garante que todas as colunas usadas pelas Sticky Notes estejam presentes.
+    // Migração segura caso a tabela já exista de uma versão antiga.
+    // Algumas versões anteriores podiam ter somente parte dessas colunas.
     await pool.query(`
+        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS usuario_id INTEGER;
         ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS titulo TEXT NOT NULL DEFAULT '';
         ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS conteudo TEXT NOT NULL DEFAULT '';
         ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS cor TEXT NOT NULL DEFAULT 'amarela';
@@ -26,6 +27,7 @@ const criarTabelaNotas = async pool => {
 
 function registrarNotasPessoais(app, pool, exigirLogin) {
     const bancoPronto = criarTabelaNotas(pool);
+    bancoPronto.catch(erro => console.error('Erro ao preparar tabela de notas pessoais:', erro));
 
     app.get('/api/notas-pessoais', exigirLogin, async (req, res) => {
         try {
