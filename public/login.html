@@ -2,147 +2,95 @@
 <html lang="pt-BR">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-<link rel="icon" href="/imagens/favicon.ico">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/imagens/favicon.ico">
     <title>Login - Tarefas da Turma</title>
-
     <link rel="stylesheet" href="style.css">
+    <style>
+        .campo-senha-login {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+        }
 
+        .campo-senha-login input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .botao-mostrar-senha {
+            flex: 0 0 auto;
+            padding: 0 12px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
-
 <body>
-
     <main class="login-container">
-
         <section class="login-box">
-
             <h1>Tarefas da Turma</h1>
-
             <p>Entre para acessar as tarefas.</p>
 
-
             <form id="form-login">
+                <label for="usuario">Usuário</label>
+                <input type="text" id="usuario" autocomplete="username" required>
 
-                <label for="usuario">
-                    Usuário
-                </label>
+                <label for="senha">Senha</label>
+                <div class="campo-senha-login">
+                    <input type="password" id="senha" autocomplete="current-password" required>
+                    <button type="button" class="botao-mostrar-senha" id="botao-mostrar-senha" aria-label="Mostrar senha">Mostrar</button>
+                </div>
 
-                <input
-                    type="text"
-                    id="usuario"
-                    autocomplete="username"
-                    required
-                >
+                <button type="submit">Entrar</button>
 
-
-                <label for="senha">
-                    Senha
-                </label>
-
-                <input
-                    type="password"
-                    id="senha"
-                    autocomplete="current-password"
-                    required
-                >
-
-
-                <button type="submit">
-                    Entrar
-                </button>
-
-
-                <p
-                    id="mensagem-login"
-                    class="mensagem-login"
-                ></p>
-
+                <p id="mensagem-login" class="mensagem-login"></p>
             </form>
-
         </section>
-
     </main>
 
-
     <script>
+        const campoSenha = document.getElementById("senha");
+        const botaoMostrarSenha = document.getElementById("botao-mostrar-senha");
 
-        document
-            .getElementById("form-login")
-            .addEventListener("submit", async (evento) => {
+        botaoMostrarSenha.addEventListener("click", () => {
+            const mostrando = campoSenha.type === "text";
+            campoSenha.type = mostrando ? "password" : "text";
+            botaoMostrarSenha.textContent = mostrando ? "Mostrar" : "Ocultar";
+            botaoMostrarSenha.setAttribute("aria-label", mostrando ? "Mostrar senha" : "Ocultar senha");
+        });
 
-                evento.preventDefault();
+        document.getElementById("form-login").addEventListener("submit", async (evento) => {
+            evento.preventDefault();
 
+            const usuario = document.getElementById("usuario").value;
+            const senha = campoSenha.value;
+            const mensagem = document.getElementById("mensagem-login");
 
-                const usuario =
-                    document.getElementById("usuario").value;
+            mensagem.textContent = "Entrando...";
 
-                const senha =
-                    document.getElementById("senha").value;
+            try {
+                const resposta = await fetch("/api/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ usuario, senha })
+                });
 
-                const mensagem =
-                    document.getElementById("mensagem-login");
+                const dados = await resposta.json();
 
-
-                mensagem.textContent = "Entrando...";
-
-
-                try {
-
-                    const resposta = await fetch(
-                        "/api/login",
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body: JSON.stringify({
-                                usuario: usuario,
-                                senha: senha
-                            })
-                        }
-                    );
-
-
-                    const dados =
-                        await resposta.json();
-
-
-                    if (!dados.sucesso) {
-
-                        mensagem.textContent =
-                            dados.mensagem;
-
-                        return;
-                    }
-
-
-                    // Login realizado.
-
-                    window.location.href = "/";
-
-                } catch (erro) {
-
-                    console.error(erro);
-
-                    mensagem.textContent =
-                        "Erro ao conectar ao servidor.";
-
+                if (!dados.sucesso) {
+                    mensagem.textContent = dados.mensagem;
+                    return;
                 }
 
-            });
-
+                window.location.href = "/";
+            } catch (erro) {
+                console.error(erro);
+                mensagem.textContent = "Erro ao conectar ao servidor.";
+            }
+        });
     </script>
-
 </body>
 
 </html>
