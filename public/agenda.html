@@ -13,9 +13,11 @@
     <link rel="stylesheet" href="light-theme-hard-fix.css?v=20260907-1">
     <style>.tema-opcao[data-tema="forest"],.tema-opcao[data-tema="arctic"],.tema-opcao[data-tema="ancient"]{display:none!important;}</style>
     <style>
-        .filtro-agenda { display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
-        .filtro-agenda .filtro-campo { display:flex; align-items:center; gap:8px; }
-        .filtro-agenda select { min-width:180px; }
+        .filtro-agenda { display:flex; flex-wrap:wrap; align-items:flex-end; gap:10px; }
+        .filtro-agenda .filtro-campo { display:flex; flex-direction:column; gap:8px; }
+        .filtro-agenda select { min-width:220px; }
+        #materia-filtro { min-height:120px; }
+        .ajuda-materias { margin:0; font-size:.85rem; opacity:.75; }
     </style>
 </head>
 <body>
@@ -37,8 +39,7 @@
         </div>
         <div class="filtro-campo">
             <label for="materia-filtro">Pesquisar por matéria:</label>
-            <select id="materia-filtro" onchange="filtrarPorMateria()">
-                <option value="">Todas as matérias</option>
+            <select id="materia-filtro" multiple size="6" onchange="filtrarPorMateria()" aria-label="Selecione uma ou mais matérias">
                 <option value="Artes">Artes</option>
                 <option value="Bilíngue">Bilíngue</option>
                 <option value="Ciências">Ciências</option>
@@ -55,6 +56,7 @@
                 <option value="Robótica">Robótica</option>
                 <option value="Socioemocional">Socioemocional</option>
             </select>
+            <p class="ajuda-materias">Segure Ctrl (ou Command no Mac) para selecionar várias.</p>
         </div>
         <button onclick="limparFiltro()">Mostrar todas</button>
     </section>
@@ -67,9 +69,12 @@
 <script>
 (function () {
     function obterFiltros() {
+        const materiaSelect = document.getElementById("materia-filtro");
         return {
             data: document.getElementById("data")?.value || "",
-            materia: document.getElementById("materia-filtro")?.value || ""
+            materias: materiaSelect
+                ? Array.from(materiaSelect.selectedOptions).map(opcao => opcao.value)
+                : []
         };
     }
 
@@ -80,7 +85,7 @@
         const data = document.getElementById("data");
         const materia = document.getElementById("materia-filtro");
         if (data) data.value = "";
-        if (materia) materia.value = "";
+        if (materia) Array.from(materia.options).forEach(opcao => opcao.selected = false);
         aplicarFiltros();
     };
 
@@ -88,7 +93,7 @@
         const lista = document.getElementById("lista-tarefas");
         if (!lista) return;
 
-        const { data, materia } = obterFiltros();
+        const { data, materias } = obterFiltros();
 
         try {
             const resposta = await fetch("/api/tarefas");
@@ -101,7 +106,7 @@
             lista.innerHTML = "";
             const tarefas = dados.tarefas
                 .filter(tarefa => !data || tarefa.data === data)
-                .filter(tarefa => !materia || tarefa.materia === materia)
+                .filter(tarefa => materias.length === 0 || materias.includes(tarefa.materia))
                 .sort((a, b) => {
                     const comparacaoData = b.data.localeCompare(a.data);
                     return comparacaoData !== 0 ? comparacaoData : b.id - a.id;
@@ -113,7 +118,7 @@
 
             if (tarefas.length === 0) {
                 const mensagem = document.createElement("p");
-                mensagem.textContent = data || materia
+                mensagem.textContent = data || materias.length > 0
                     ? "Nenhuma tarefa encontrada com esses filtros."
                     : "Nenhuma tarefa cadastrada.";
                 lista.appendChild(mensagem);
@@ -123,7 +128,6 @@
         }
     }
 
-    // Mantém os filtros ativos após adicionar, editar ou excluir tarefas.
     window.carregarTarefas = aplicarFiltros;
 })();
 </script>
