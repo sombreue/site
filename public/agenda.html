@@ -111,11 +111,13 @@
     window.filtrarPorData = function () { aplicarFiltros(); };
     window.filtrarPorMateria = aplicarFiltroMateria;
 
-    // "Mostrar todas" limpa SOMENTE o filtro de matérias.
-    // O filtro de data permanece como está, permitindo ver todas as matérias naquela data.
+    // "Mostrar todas" limpa TODOS os filtros: data e matérias.
     window.limparFiltro = function () {
+        const data = document.getElementById("data");
         const painel = document.getElementById("painel-materias");
         const botao = document.getElementById("botao-materias");
+
+        if (data) data.value = "";
 
         materias().forEach(c => {
             c.checked = false;
