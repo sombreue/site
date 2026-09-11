@@ -7,10 +7,23 @@
     const status = document.getElementById('status-admin-index');
     const botaoMin = document.getElementById('botao-minimizar-admin-index');
     const conteudo = document.getElementById('conteudo-admin-index');
+    const campoNovaSenha = document.getElementById('nova-senha-index');
+    const botaoMostrarNovaSenha = document.getElementById('botao-mostrar-nova-senha-index');
 
     function textoSeguro(valor) {
         return String(valor ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     }
+
+    function alternarVisibilidadeSenha(campo, botao) {
+        const mostrando = campo.type === 'text';
+        campo.type = mostrando ? 'password' : 'text';
+        botao.textContent = mostrando ? 'Mostrar' : 'Ocultar';
+        botao.setAttribute('aria-label', mostrando ? 'Mostrar senha' : 'Ocultar senha');
+    }
+
+    botaoMostrarNovaSenha.addEventListener('click', () => {
+        alternarVisibilidadeSenha(campoNovaSenha, botaoMostrarNovaSenha);
+    });
 
     async function carregarUsuarios() {
         try {
@@ -45,7 +58,7 @@
         evento.preventDefault();
         status.textContent = 'Criando usuário...';
         const usuario = document.getElementById('novo-usuario-index').value.trim();
-        const senha = document.getElementById('nova-senha-index').value;
+        const senha = campoNovaSenha.value;
         try {
             const resposta = await fetch('/api/usuarios', {
                 method: 'POST',
@@ -56,6 +69,9 @@
             if (!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || 'Não foi possível criar o usuário.');
             status.textContent = 'Usuário criado com sucesso.';
             form.reset();
+            campoNovaSenha.type = 'password';
+            botaoMostrarNovaSenha.textContent = 'Mostrar';
+            botaoMostrarNovaSenha.setAttribute('aria-label', 'Mostrar senha');
             carregarUsuarios();
         } catch (erro) {
             status.textContent = erro.message;
