@@ -32,7 +32,10 @@
             </nav>
             <form id="form-criar-usuario-index" class="form-criar-usuario-index">
                 <input id="novo-usuario-index" type="text" placeholder="Nome de usuário" minlength="3" required>
-                <input id="nova-senha-index" type="password" placeholder="Senha" minlength="4" required>
+                <div class="campo-senha-admin-index">
+                    <input id="nova-senha-index" type="password" placeholder="Senha" minlength="4" required>
+                    <button type="button" id="botao-mostrar-nova-senha-index" aria-label="Mostrar senha">Mostrar</button>
+                </div>
                 <button type="submit">Criar conta</button>
             </form>
             <p id="status-admin-index" class="status-admin-index" aria-live="polite"></p>
@@ -82,7 +85,7 @@
     <footer class="home-footer">Agenda auruda · Central de páginas</footer>
 </main>
 <script src="temas.js?v=20260908-home3"></script>
-<script src="index-admin.js?v=20260908-2"></script>
+<script src="index-admin.js?v=20260911-senhas1"></script>
 <script src="sugestoes.js?v=20260908-rodape2"></script>
 </body>
 </html>
