@@ -11,13 +11,25 @@ const criarTabelaNotas = async pool => {
             atualizada_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
     `);
+
+    // A tabela pode já existir por uma versão anterior do sistema.
+    // Garante que todas as colunas usadas pelas Sticky Notes estejam presentes.
+    await pool.query(`
+        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS titulo TEXT NOT NULL DEFAULT '';
+        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS conteudo TEXT NOT NULL DEFAULT '';
+        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS cor TEXT NOT NULL DEFAULT 'amarela';
+        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS fixada BOOLEAN NOT NULL DEFAULT false;
+        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS criada_em TIMESTAMPTZ NOT NULL DEFAULT NOW();
+        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS atualizada_em TIMESTAMPTZ NOT NULL DEFAULT NOW();
+    `);
 };
 
 function registrarNotasPessoais(app, pool, exigirLogin) {
-    criarTabelaNotas(pool).catch(erro => console.error('Erro ao criar tabela notas_pessoais:', erro));
+    const bancoPronto = criarTabelaNotas(pool);
 
     app.get('/api/notas-pessoais', exigirLogin, async (req, res) => {
         try {
+            await bancoPronto;
             const resultado = await pool.query(`
                 SELECT id, titulo, conteudo, cor, fixada, criada_em, atualizada_em
                 FROM notas_pessoais
@@ -33,6 +45,7 @@ function registrarNotasPessoais(app, pool, exigirLogin) {
 
     app.post('/api/notas-pessoais', exigirLogin, async (req, res) => {
         try {
+            await bancoPronto;
             const { titulo = '', conteudo = '', cor = 'amarela', fixada = false } = req.body;
             const cores = ['amarela', 'azul', 'verde', 'rosa', 'roxa', 'laranja'];
             if (!cores.includes(cor)) return res.status(400).json({ sucesso: false, mensagem: 'Cor inválida.' });
@@ -51,6 +64,7 @@ function registrarNotasPessoais(app, pool, exigirLogin) {
 
     app.put('/api/notas-pessoais/:id', exigirLogin, async (req, res) => {
         try {
+            await bancoPronto;
             const id = Number(req.params.id);
             if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ sucesso: false, mensagem: 'ID inválido.' });
             const { titulo = '', conteudo = '', cor = 'amarela', fixada = false } = req.body;
@@ -73,6 +87,7 @@ function registrarNotasPessoais(app, pool, exigirLogin) {
 
     app.delete('/api/notas-pessoais/:id', exigirLogin, async (req, res) => {
         try {
+            await bancoPronto;
             const id = Number(req.params.id);
             if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ sucesso: false, mensagem: 'ID inválido.' });
             const resultado = await pool.query(`DELETE FROM notas_pessoais WHERE id = $1 AND usuario_id = $2`, [id, req.session.usuario.id]);
