@@ -13,11 +13,22 @@
     <link rel="stylesheet" href="light-theme-hard-fix.css?v=20260907-1">
     <style>.tema-opcao[data-tema="forest"],.tema-opcao[data-tema="arctic"],.tema-opcao[data-tema="ancient"]{display:none!important;}</style>
     <style>
-        .filtro-agenda { display:flex; flex-wrap:wrap; align-items:flex-end; gap:10px; }
+        .filtro-agenda { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px; }
         .filtro-agenda .filtro-campo { display:flex; flex-direction:column; gap:8px; }
-        .filtro-agenda select { min-width:220px; }
-        #materia-filtro { min-height:120px; }
-        .ajuda-materias { margin:0; font-size:.85rem; opacity:.75; }
+        .filtro-agenda input[type="date"] { min-width:180px; }
+        .seletor-materias { position:relative; min-width:260px; }
+        .botao-materias { width:100%; min-height:42px; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 13px; border:1px solid var(--border); border-radius:10px; background:var(--surface-2); color:var(--text); cursor:pointer; text-align:left; transition:var(--transition); }
+        .botao-materias:hover, .botao-materias.aberto { border-color:var(--accent); background:var(--surface-3); }
+        .botao-materias .seta { font-size:.8rem; transition:transform var(--transition); opacity:.75; }
+        .botao-materias.aberto .seta { transform:rotate(180deg); }
+        .resumo-materias { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .painel-materias { position:absolute; z-index:50; top:calc(100% + 7px); left:0; width:100%; max-height:300px; overflow-y:auto; padding:8px; display:none; background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:var(--shadow); }
+        .painel-materias.aberto { display:block; }
+        .opcao-materia { display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px; cursor:pointer; user-select:none; }
+        .opcao-materia:hover { background:var(--surface-2); }
+        .opcao-materia input { width:17px; height:17px; accent-color:var(--accent); cursor:pointer; flex:0 0 auto; }
+        .ajuda-materias { margin:0; font-size:.82rem; opacity:.7; }
+        @media (max-width:600px) { .seletor-materias { width:100%; min-width:0; } .filtro-agenda .filtro-campo { width:100%; } .filtro-agenda input[type="date"] { width:100%; } }
     </style>
 </head>
 <body>
@@ -38,27 +49,33 @@
             <input type="date" id="data" onchange="filtrarPorData()">
         </div>
         <div class="filtro-campo">
-            <label for="materia-filtro">Pesquisar por matéria:</label>
-            <select id="materia-filtro" multiple size="6" onchange="filtrarPorMateria()" aria-label="Selecione uma ou mais matérias">
-                <option value="Artes">Artes</option>
-                <option value="Bilíngue">Bilíngue</option>
-                <option value="Ciências">Ciências</option>
-                <option value="Ed. Física">Ed. Física</option>
-                <option value="Física">Física</option>
-                <option value="Geografia">Geografia</option>
-                <option value="Gramática">Gramática</option>
-                <option value="História">História</option>
-                <option value="Literatura">Literatura</option>
-                <option value="Matemática">Matemática</option>
-                <option value="Português">Português</option>
-                <option value="Química">Química</option>
-                <option value="Redação">Redação</option>
-                <option value="Robótica">Robótica</option>
-                <option value="Socioemocional">Socioemocional</option>
-            </select>
-            <p class="ajuda-materias">Segure Ctrl (ou Command no Mac) para selecionar várias.</p>
+            <label for="botao-materias">Pesquisar por matéria:</label>
+            <div class="seletor-materias">
+                <button type="button" id="botao-materias" class="botao-materias" aria-expanded="false" aria-controls="painel-materias">
+                    <span id="resumo-materias" class="resumo-materias">Todas as matérias</span>
+                    <span class="seta">▼</span>
+                </button>
+                <div id="painel-materias" class="painel-materias">
+                    <label class="opcao-materia"><input type="checkbox" value="Artes"><span>Artes</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Bilíngue"><span>Bilíngue</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Ciências"><span>Ciências</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Ed. Física"><span>Ed. Física</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Física"><span>Física</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Geografia"><span>Geografia</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Gramática"><span>Gramática</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="História"><span>História</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Literatura"><span>Literatura</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Matemática"><span>Matemática</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Português"><span>Português</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Química"><span>Química</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Redação"><span>Redação</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Robótica"><span>Robótica</span></label>
+                    <label class="opcao-materia"><input type="checkbox" value="Socioemocional"><span>Socioemocional</span></label>
+                </div>
+            </div>
+            <p class="ajuda-materias">Selecione quantas matérias quiser.</p>
         </div>
-        <button onclick="limparFiltro()">Mostrar todas</button>
+        <button type="button" onclick="limparFiltro()">Mostrar todas</button>
     </section>
     <div class="area-adicionar" id="area-adicionar" style="display: none;"><button class="botao-adicionar" onclick="abrirFormulario()">+ Adicionar tarefas</button></div>
     <section id="formulario" class="formulario" style="display: none;"><h2>Adicionar tarefas</h2><label for="nova-data">Data:</label><input type="date" id="nova-data" onchange="mostrarMateriasDoDia()"><div id="lista-materias-formulario"></div><div class="botoes-formulario"><button onclick="adicionarTarefasDoDia()">Adicionar tarefas</button><button class="cancelar" onclick="fecharFormulario()">Cancelar</button></div></section>
@@ -68,33 +85,51 @@
 <script src="script.js?v=20260909-agenda-fix"></script><script src="temas.js?v=20260907-lightfix5"></script><script src="theme-bridge.js?v=20260907-3"></script><script src="admin-panel.js?v=20260907-1"></script><script src="horario-aulas.js?v=20260907-1"></script><script src="meme-do-dia.js?v=20260907-1"></script>
 <script>
 (function () {
+    const materias = () => Array.from(document.querySelectorAll('#painel-materias input[type="checkbox"]'));
+
     function obterFiltros() {
-        const materiaSelect = document.getElementById("materia-filtro");
         return {
             data: document.getElementById("data")?.value || "",
-            materias: materiaSelect
-                ? Array.from(materiaSelect.selectedOptions).map(opcao => opcao.value)
-                : []
+            materias: materias().filter(c => c.checked).map(c => c.value)
         };
     }
 
+    function atualizarResumo() {
+        const selecionadas = materias().filter(c => c.checked).map(c => c.value);
+        const resumo = document.getElementById("resumo-materias");
+        if (!resumo) return;
+        if (selecionadas.length === 0) resumo.textContent = "Todas as matérias";
+        else if (selecionadas.length <= 2) resumo.textContent = selecionadas.join(", ");
+        else resumo.textContent = `${selecionadas.length} matérias selecionadas`;
+    }
+
+    function aplicarFiltroMateria() {
+        atualizarResumo();
+        aplicarFiltros();
+    }
+
     window.filtrarPorData = function () { aplicarFiltros(); };
-    window.filtrarPorMateria = function () { aplicarFiltros(); };
+    window.filtrarPorMateria = aplicarFiltroMateria;
 
     window.limparFiltro = function () {
         const data = document.getElementById("data");
-        const materia = document.getElementById("materia-filtro");
+        const painel = document.getElementById("painel-materias");
+        const botao = document.getElementById("botao-materias");
         if (data) data.value = "";
-        if (materia) Array.from(materia.options).forEach(opcao => opcao.selected = false);
+        materias().forEach(c => c.checked = false);
+        atualizarResumo();
+        if (painel) painel.classList.remove("aberto");
+        if (botao) {
+            botao.classList.remove("aberto");
+            botao.setAttribute("aria-expanded", "false");
+        }
         aplicarFiltros();
     };
 
     async function aplicarFiltros() {
         const lista = document.getElementById("lista-tarefas");
         if (!lista) return;
-
-        const { data, materias } = obterFiltros();
-
+        const { data, materias: materiasSelecionadas } = obterFiltros();
         try {
             const resposta = await fetch("/api/tarefas");
             const dados = await resposta.json();
@@ -102,23 +137,18 @@
                 console.error(dados.mensagem);
                 return;
             }
-
             lista.innerHTML = "";
             const tarefas = dados.tarefas
                 .filter(tarefa => !data || tarefa.data === data)
-                .filter(tarefa => materias.length === 0 || materias.includes(tarefa.materia))
+                .filter(tarefa => materiasSelecionadas.length === 0 || materiasSelecionadas.includes(tarefa.materia))
                 .sort((a, b) => {
                     const comparacaoData = b.data.localeCompare(a.data);
                     return comparacaoData !== 0 ? comparacaoData : b.id - a.id;
                 });
-
-            tarefas.forEach(tarefa => {
-                criarTarefa(tarefa.id, tarefa.data, tarefa.materia, tarefa.descricao);
-            });
-
+            tarefas.forEach(tarefa => criarTarefa(tarefa.id, tarefa.data, tarefa.materia, tarefa.descricao));
             if (tarefas.length === 0) {
                 const mensagem = document.createElement("p");
-                mensagem.textContent = data || materias.length > 0
+                mensagem.textContent = data || materiasSelecionadas.length > 0
                     ? "Nenhuma tarefa encontrada com esses filtros."
                     : "Nenhuma tarefa cadastrada.";
                 lista.appendChild(mensagem);
@@ -126,6 +156,24 @@
         } catch (erro) {
             console.error("Erro ao filtrar tarefas:", erro);
         }
+    }
+
+    const botaoMaterias = document.getElementById("botao-materias");
+    const painelMaterias = document.getElementById("painel-materias");
+    if (botaoMaterias && painelMaterias) {
+        botaoMaterias.addEventListener("click", function () {
+            const aberto = painelMaterias.classList.toggle("aberto");
+            botaoMaterias.classList.toggle("aberto", aberto);
+            botaoMaterias.setAttribute("aria-expanded", String(aberto));
+        });
+        document.addEventListener("click", function (evento) {
+            if (!evento.target.closest(".seletor-materias")) {
+                painelMaterias.classList.remove("aberto");
+                botaoMaterias.classList.remove("aberto");
+                botaoMaterias.setAttribute("aria-expanded", "false");
+            }
+        });
+        materias().forEach(c => c.addEventListener("change", aplicarFiltroMateria));
     }
 
     window.carregarTarefas = aplicarFiltros;
