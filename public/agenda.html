@@ -75,7 +75,7 @@
             </div>
             <p class="ajuda-materias">Selecione quantas matérias quiser.</p>
         </div>
-        <button type="button" id="botao-mostrar-todas" onclick="limparFiltro()">Mostrar todas</button>
+        <button type="button" id="botao-mostrar-todas">Mostrar todas</button>
     </section>
     <div class="area-adicionar" id="area-adicionar" style="display: none;"><button class="botao-adicionar" onclick="abrirFormulario()">+ Adicionar tarefas</button></div>
     <section id="formulario" class="formulario" style="display: none;"><h2>Adicionar tarefas</h2><label for="nova-data">Data:</label><input type="date" id="nova-data" onchange="mostrarMateriasDoDia()"><div id="lista-materias-formulario"></div><div class="botoes-formulario"><button onclick="adicionarTarefasDoDia()">Adicionar tarefas</button><button class="cancelar" onclick="fecharFormulario()">Cancelar</button></div></section>
@@ -111,16 +111,26 @@
     window.filtrarPorData = function () { aplicarFiltros(); };
     window.filtrarPorMateria = aplicarFiltroMateria;
 
-    // "Mostrar todas" limpa TODOS os filtros: data e matérias.
-    window.limparFiltro = function () {
+    // Limpa os dois filtros de forma direta, sem depender de onclick inline.
+    function limparTodosOsFiltros(evento) {
+        if (evento) {
+            evento.preventDefault();
+            evento.stopPropagation();
+        }
+
         const data = document.getElementById("data");
         const painel = document.getElementById("painel-materias");
         const botao = document.getElementById("botao-materias");
 
-        if (data) data.value = "";
+        if (data) {
+            data.value = "";
+            data.dispatchEvent(new Event("input", { bubbles: true }));
+        }
 
         materias().forEach(c => {
             c.checked = false;
+            c.defaultChecked = false;
+            c.removeAttribute("checked");
         });
 
         atualizarResumo();
@@ -132,7 +142,9 @@
         }
 
         aplicarFiltros();
-    };
+    }
+
+    window.limparFiltro = limparTodosOsFiltros;
 
     async function aplicarFiltros() {
         const lista = document.getElementById("lista-tarefas");
@@ -168,6 +180,12 @@
 
     const botaoMaterias = document.getElementById("botao-materias");
     const painelMaterias = document.getElementById("painel-materias");
+    const botaoMostrarTodas = document.getElementById("botao-mostrar-todas");
+
+    if (botaoMostrarTodas) {
+        botaoMostrarTodas.addEventListener("click", limparTodosOsFiltros);
+    }
+
     if (botaoMaterias && painelMaterias) {
         botaoMaterias.addEventListener("click", function () {
             const aberto = painelMaterias.classList.toggle("aberto");
