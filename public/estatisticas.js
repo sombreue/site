@@ -11,7 +11,7 @@ async function carregar(){
  const x=d.resumo;
  $('media-geral').textContent=fmt(x.mediaGeral); $('concluidas').textContent=x.concluidas; $('atrasadas').textContent=x.atrasadas; $('percentual').textContent=`${Math.round(x.percentualConclusao)}%`; $('concluidas-semana').textContent=x.concluidasSemana; $('criadas-semana').textContent=x.criadasSemana; $('pendentes').textContent=x.pendentes;
  $('bimestres').innerHTML=d.bimestres.map(b=>`<div class="bimestre"><div class="bimestre-top"><span>${esc(b.periodo)}</span><strong>${fmt(b.media)}</strong></div><div class="barra"><i style="width:${b.media==null?0:Math.max(0,Math.min(100,b.media*10))}%"></i></div></div>`).join('');
- $('materias').innerHTML=d.materias.length?d.materias.map((m,i)=>`<div class="materia"><div><strong>${esc(m.materia)}</strong><small>${m.lancamentos} ${m.lancamentos===1?'avaliação':'avaliações'}</small></div><strong>${fmt(m.media)}</strong></div>`).join(''):'<div class="vazio">Ainda não há notas cadastradas.</div>';
+ $('materias').innerHTML=d.materias.length?d.materias.map(m=>`<div class="materia"><div><strong>${esc(m.materia)}</strong><small>${m.lancamentos} ${m.lancamentos===1?'avaliação':'avaliações'}</small></div><strong>${fmt(m.media)}</strong></div>`).join(''):'<div class="vazio">Ainda não há notas cadastradas.</div>';
  const insights=[];
  if(x.atrasadas>0) insights.push(`<strong>Você tem ${x.atrasadas} tarefa${x.atrasadas===1?' atrasada':'s atrasadas'}.</strong> Vale a pena resolver isso antes de acumular mais pendências.`);
  if(d.melhorMateria) insights.push(`<strong>Melhor matéria: ${esc(d.melhorMateria.materia)} (${fmt(d.melhorMateria.media)}).</strong> Continue mantendo esse ritmo.`);
