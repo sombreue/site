@@ -85,17 +85,17 @@
 <script src="script.js?v=20260909-agenda-fix"></script><script src="temas.js?v=20260907-lightfix5"></script><script src="theme-bridge.js?v=20260907-3"></script><script src="admin-panel.js?v=20260907-1"></script><script src="horario-aulas.js?v=20260907-1"></script><script src="meme-do-dia.js?v=20260907-1"></script>
 <script>
 (function () {
-    const obterCaixasMaterias = () => Array.from(document.querySelectorAll('#painel-materias input[type="checkbox"]'));
+    const materias = () => Array.from(document.querySelectorAll('#painel-materias input[type="checkbox"]'));
 
     function obterFiltros() {
         return {
             data: document.getElementById("data")?.value || "",
-            materias: obterCaixasMaterias().filter(c => c.checked).map(c => c.value)
+            materias: materias().filter(c => c.checked).map(c => c.value)
         };
     }
 
     function atualizarResumo() {
-        const selecionadas = obterCaixasMaterias().filter(c => c.checked).map(c => c.value);
+        const selecionadas = materias().filter(c => c.checked).map(c => c.value);
         const resumo = document.getElementById("resumo-materias");
         if (!resumo) return;
         if (selecionadas.length === 0) resumo.textContent = "Todas as matérias";
@@ -111,18 +111,16 @@
     window.filtrarPorData = function () { aplicarFiltros(); };
     window.filtrarPorMateria = aplicarFiltroMateria;
 
+    // "Mostrar todas" limpa SOMENTE o filtro de matérias.
+    // O filtro de data permanece como está, permitindo ver todas as matérias naquela data.
     window.limparFiltro = function () {
-        const data = document.getElementById("data");
         const painel = document.getElementById("painel-materias");
         const botao = document.getElementById("botao-materias");
 
-        // Reseta explicitamente todas as caixas, inclusive as que foram marcadas por teclado.
-        obterCaixasMaterias().forEach(caixa => {
-            caixa.checked = false;
-            caixa.removeAttribute("checked");
+        materias().forEach(c => {
+            c.checked = false;
         });
 
-        if (data) data.value = "";
         atualizarResumo();
 
         if (painel) painel.classList.remove("aberto");
@@ -181,7 +179,7 @@
                 botaoMaterias.setAttribute("aria-expanded", "false");
             }
         });
-        obterCaixasMaterias().forEach(c => c.addEventListener("change", aplicarFiltroMateria));
+        materias().forEach(c => c.addEventListener("change", aplicarFiltroMateria));
     }
 
     window.carregarTarefas = aplicarFiltros;
