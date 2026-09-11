@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const { Pool } = require("pg");
+const bcrypt = require("bcrypt");
 const expressOriginal = express;
 const apps = [];
 let escutaSolicitada = null;
@@ -42,6 +43,99 @@ app.delete("/api/sugestoes/:id", exigirAdminSugestoes, async (req, res) => {
     try { await tabelaSugestoesPronta; const id = Number(req.params.id); if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ sucesso:false, mensagem:"ID inválido." }); const resultado = await pool.query(`DELETE FROM sugestoes WHERE id = $1`, [id]); if (!resultado.rowCount) return res.status(404).json({ sucesso:false, mensagem:"Sugestão não encontrada." }); res.json({ sucesso:true, mensagem:"Enviado excluído com sucesso." }); }
     catch (erro) { console.error("Erro ao excluir sugestão:", erro); res.status(500).json({ sucesso:false, mensagem:"Erro interno do servidor." }); }
 });
+
+// =========================
+// PEDIDOS DE NOVA CONTA
+// =========================
+async function prepararPedidosConta() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS pedidos_conta (
+            id SERIAL PRIMARY KEY,
+            usuario TEXT NOT NULL,
+            senha_hash TEXT NOT NULL,
+            data TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+    `);
+}
+const tabelaPedidosContaPronta = prepararPedidosConta();
+tabelaPedidosContaPronta.catch(erro => console.error("Erro ao preparar pedidos de conta:", erro));
+
+app.post("/api/pedidos-conta", async (req, res) => {
+    try {
+        await tabelaPedidosContaPronta;
+        const usuario = String(req.body.usuario || "").trim();
+        const senha = String(req.body.senha || "");
+        if (!usuario || !senha) return res.status(400).json({ sucesso:false, mensagem:"Preencha usuário e senha." });
+        if (usuario.length < 3) return res.status(400).json({ sucesso:false, mensagem:"O usuário precisa ter pelo menos 3 caracteres." });
+        if (usuario.length > 50) return res.status(400).json({ sucesso:false, mensagem:"O usuário é muito longo." });
+        if (senha.length < 4) return res.status(400).json({ sucesso:false, mensagem:"A senha precisa ter pelo menos 4 caracteres." });
+        if (senha.length > 200) return res.status(400).json({ sucesso:false, mensagem:"A senha é muito longa." });
+
+        const existente = await pool.query(`SELECT id FROM usuarios WHERE LOWER(usuario) = LOWER($1)`, [usuario]);
+        if (existente.rows.length) return res.status(409).json({ sucesso:false, mensagem:"Esse usuário já existe." });
+
+        const pedidoExistente = await pool.query(`SELECT id FROM pedidos_conta WHERE LOWER(usuario) = LOWER($1)`, [usuario]);
+        if (pedidoExistente.rows.length) return res.status(409).json({ sucesso:false, mensagem:"Já existe um pedido pendente para esse usuário." });
+
+        const senhaHash = await bcrypt.hash(senha, 10);
+        await pool.query(`INSERT INTO pedidos_conta (usuario, senha_hash) VALUES ($1, $2)`, [usuario, senhaHash]);
+        res.status(201).json({ sucesso:true, mensagem:"Pedido enviado! Aguarde a aprovação do administrador." });
+    } catch (erro) {
+        console.error("Erro ao criar pedido de conta:", erro);
+        res.status(500).json({ sucesso:false, mensagem:"Erro interno do servidor." });
+    }
+});
+
+app.get("/api/pedidos-conta", exigirAdminSugestoes, async (req, res) => {
+    try {
+        await tabelaPedidosContaPronta;
+        const resultado = await pool.query(`SELECT id, usuario, data FROM pedidos_conta ORDER BY data ASC, id ASC`);
+        res.json({ sucesso:true, pedidos:resultado.rows });
+    } catch (erro) {
+        console.error("Erro ao carregar pedidos de conta:", erro);
+        res.status(500).json({ sucesso:false, mensagem:"Erro interno do servidor." });
+    }
+});
+
+app.post("/api/pedidos-conta/:id/aceitar", exigirAdminSugestoes, async (req, res) => {
+    try {
+        await tabelaPedidosContaPronta;
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ sucesso:false, mensagem:"ID inválido." });
+
+        const pedido = await pool.query(`SELECT id, usuario, senha_hash FROM pedidos_conta WHERE id = $1`, [id]);
+        if (!pedido.rows.length) return res.status(404).json({ sucesso:false, mensagem:"Pedido não encontrado." });
+
+        const dados = pedido.rows[0];
+        const existente = await pool.query(`SELECT id FROM usuarios WHERE LOWER(usuario) = LOWER($1)`, [dados.usuario]);
+        if (existente.rows.length) {
+            await pool.query(`DELETE FROM pedidos_conta WHERE id = $1`, [id]);
+            return res.status(409).json({ sucesso:false, mensagem:"Esse usuário já existe. O pedido foi removido." });
+        }
+
+        await pool.query(`INSERT INTO usuarios (usuario, senha, tipo) VALUES ($1, $2, 'usuario')`, [dados.usuario, dados.senha_hash]);
+        await pool.query(`DELETE FROM pedidos_conta WHERE id = $1`, [id]);
+        res.json({ sucesso:true, mensagem:`Conta de ${dados.usuario} aprovada.` });
+    } catch (erro) {
+        console.error("Erro ao aceitar pedido de conta:", erro);
+        res.status(500).json({ sucesso:false, mensagem:"Erro interno do servidor." });
+    }
+});
+
+app.delete("/api/pedidos-conta/:id", exigirAdminSugestoes, async (req, res) => {
+    try {
+        await tabelaPedidosContaPronta;
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id) || id <= 0) return res.status(400).json({ sucesso:false, mensagem:"ID inválido." });
+        const resultado = await pool.query(`DELETE FROM pedidos_conta WHERE id = $1`, [id]);
+        if (!resultado.rowCount) return res.status(404).json({ sucesso:false, mensagem:"Pedido não encontrado." });
+        res.json({ sucesso:true, mensagem:"Pedido recusado." });
+    } catch (erro) {
+        console.error("Erro ao recusar pedido de conta:", erro);
+        res.status(500).json({ sucesso:false, mensagem:"Erro interno do servidor." });
+    }
+});
+
 // =========================
 // TRABALHOS E PESQUISAS
 // =========================
