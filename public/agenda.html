@@ -75,7 +75,7 @@
             </div>
             <p class="ajuda-materias">Selecione quantas matérias quiser.</p>
         </div>
-        <button type="button" onclick="limparFiltro()">Mostrar todas</button>
+        <button type="button" id="botao-mostrar-todas" onclick="limparFiltro()">Mostrar todas</button>
     </section>
     <div class="area-adicionar" id="area-adicionar" style="display: none;"><button class="botao-adicionar" onclick="abrirFormulario()">+ Adicionar tarefas</button></div>
     <section id="formulario" class="formulario" style="display: none;"><h2>Adicionar tarefas</h2><label for="nova-data">Data:</label><input type="date" id="nova-data" onchange="mostrarMateriasDoDia()"><div id="lista-materias-formulario"></div><div class="botoes-formulario"><button onclick="adicionarTarefasDoDia()">Adicionar tarefas</button><button class="cancelar" onclick="fecharFormulario()">Cancelar</button></div></section>
@@ -85,17 +85,17 @@
 <script src="script.js?v=20260909-agenda-fix"></script><script src="temas.js?v=20260907-lightfix5"></script><script src="theme-bridge.js?v=20260907-3"></script><script src="admin-panel.js?v=20260907-1"></script><script src="horario-aulas.js?v=20260907-1"></script><script src="meme-do-dia.js?v=20260907-1"></script>
 <script>
 (function () {
-    const materias = () => Array.from(document.querySelectorAll('#painel-materias input[type="checkbox"]'));
+    const obterCaixasMaterias = () => Array.from(document.querySelectorAll('#painel-materias input[type="checkbox"]'));
 
     function obterFiltros() {
         return {
             data: document.getElementById("data")?.value || "",
-            materias: materias().filter(c => c.checked).map(c => c.value)
+            materias: obterCaixasMaterias().filter(c => c.checked).map(c => c.value)
         };
     }
 
     function atualizarResumo() {
-        const selecionadas = materias().filter(c => c.checked).map(c => c.value);
+        const selecionadas = obterCaixasMaterias().filter(c => c.checked).map(c => c.value);
         const resumo = document.getElementById("resumo-materias");
         if (!resumo) return;
         if (selecionadas.length === 0) resumo.textContent = "Todas as matérias";
@@ -115,14 +115,22 @@
         const data = document.getElementById("data");
         const painel = document.getElementById("painel-materias");
         const botao = document.getElementById("botao-materias");
+
+        // Reseta explicitamente todas as caixas, inclusive as que foram marcadas por teclado.
+        obterCaixasMaterias().forEach(caixa => {
+            caixa.checked = false;
+            caixa.removeAttribute("checked");
+        });
+
         if (data) data.value = "";
-        materias().forEach(c => c.checked = false);
         atualizarResumo();
+
         if (painel) painel.classList.remove("aberto");
         if (botao) {
             botao.classList.remove("aberto");
             botao.setAttribute("aria-expanded", "false");
         }
+
         aplicarFiltros();
     };
 
@@ -173,7 +181,7 @@
                 botaoMaterias.setAttribute("aria-expanded", "false");
             }
         });
-        materias().forEach(c => c.addEventListener("change", aplicarFiltroMateria));
+        obterCaixasMaterias().forEach(c => c.addEventListener("change", aplicarFiltroMateria));
     }
 
     window.carregarTarefas = aplicarFiltros;
