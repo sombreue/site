@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="/imagens/favicon.ico"><title>Estatísticas — Agenda auruda</title><link rel="stylesheet" href="themes.css?v=20260911"><link rel="stylesheet" href="area-do-aluno.css?v=20260911"><link rel="stylesheet" href="estatisticas.css?v=20260911"><script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
+</head>
+<body>
+<header class="topo"><a href="/area-do-aluno.html" class="voltar">← Área do aluno</a><div><h1>Meu desempenho</h1><p>Veja como você está se organizando e acompanhe sua evolução.</p></div><button id="sair" class="sair" type="button">Sair</button></header>
+<main>
+<section class="hero-estat"><span class="eyebrow">SEU DESEMPENHO</span><h2>Uma visão rápida do seu progresso</h2><p>Os números abaixo são calculados a partir das suas tarefas e notas.</p></section>
+<section class="cards-resumo" aria-label="Resumo do desempenho">
+<div class="stat-card"><span>📚</span><strong id="media-geral">—</strong><small>Média geral</small></div>
+<div class="stat-card"><span>✅</span><strong id="concluidas">0</strong><small>Tarefas concluídas</small></div>
+<div class="stat-card"><span>⏰</span><strong id="atrasadas">0</strong><small>Tarefas atrasadas</small></div>
+<div class="stat-card"><span>🎯</span><strong id="percentual">0%</strong><small>Taxa de conclusão</small></div>
+</section>
+<section class="grid-estat">
+<article class="painel-estat"><div class="cab"><div><span class="eyebrow">EVOLUÇÃO</span><h2>Médias por bimestre</h2></div></div><div id="bimestres" class="bimestres"></div></article>
+<article class="painel-estat"><div class="cab"><div><span class="eyebrow">TAREFAS</span><h2>Ritmo da semana</h2></div></div><div class="ritmo"><div><strong id="concluidas-semana">0</strong><span>concluídas</span></div><div><strong id="criadas-semana">0</strong><span>criadas</span></div><div><strong id="pendentes">0</strong><span>pendentes</span></div></div><p id="mensagem-tarefas" class="insight"></p></article>
+</section>
+<section class="painel-estat"><div class="cab"><div><span class="eyebrow">POR MATÉRIA</span><h2>Onde você está indo melhor?</h2></div></div><div id="materias" class="materias"></div></section>
+<section class="insights" id="insights"></section>
+</main><script src="temas.js?v=20260911"></script><script src="estatisticas.js?v=20260911"></script>
+</body></html>
