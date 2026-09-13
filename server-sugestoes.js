@@ -9,14 +9,13 @@ let escutaSolicitada = null;
 let rotasProntas = false;
 let servidorIniciado = false;
 
-// Corrige automaticamente a vírgula ausente na query de edição de equipes
-// antes de carregar o servidor principal.
+// Corrige a query de edição de equipes antes de carregar o servidor principal.
 try {
     const caminhoServer = require.resolve("./server.js");
     let codigoServer = fs.readFileSync(caminhoServer, "utf8");
     const codigoCorrigido = codigoServer.replace(
-        "                integrantes = $4\n            WHERE id = $6",
-        "                integrantes = $4,\n            WHERE id = $6"
+        "                integrantes = $4\n                WHERE id = $6",
+        "                lider = $4,\n                integrantes = $5\n                WHERE id = $6"
     );
     if (codigoCorrigido !== codigoServer) {
         fs.writeFileSync(caminhoServer, codigoCorrigido, "utf8");
@@ -101,14 +100,7 @@ app.delete("/api/sugestoes/:id", exigirAdminSugestoes, async (req, res) => {
 });
 
 async function prepararPedidosConta() {
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS pedidos_conta (
-            id SERIAL PRIMARY KEY,
-            usuario TEXT NOT NULL,
-            senha_hash TEXT NOT NULL,
-            data TIMESTAMPTZ NOT NULL DEFAULT NOW()
-        );
-    `);
+    await pool.query(`CREATE TABLE IF NOT EXISTS pedidos_conta (id SERIAL PRIMARY KEY, usuario TEXT NOT NULL, senha_hash TEXT NOT NULL, data TIMESTAMPTZ NOT NULL DEFAULT NOW());`);
 }
 const tabelaPedidosContaPronta = prepararPedidosConta();
 tabelaPedidosContaPronta.catch(erro => console.error("Erro ao preparar pedidos de conta:", erro));
