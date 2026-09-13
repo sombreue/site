@@ -1,0 +1,39 @@
+name: Corrigir edição de equipes
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Corrigir query SQL da equipe
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path("server.js")
+          s = p.read_text()
+          errado = '''                professor = $3,\n                integrantes = $4\n                lider = $5\n            WHERE id = $6'''
+          certo = '''                professor = $3,\n                lider = $4,\n                integrantes = $5\n            WHERE id = $6'''
+          if errado in s:
+              p.write_text(s.replace(errado, certo, 1))
+          PY
+
+      - name: Commit da correção
+        run: |
+          if git diff --quiet -- server.js; then
+            echo "Nenhuma correção necessária."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add server.js
+          git commit -m "Corrigir SQL da edição de equipes"
+          git push
