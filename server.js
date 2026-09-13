@@ -1090,8 +1090,8 @@ app.put("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
                 nome = $1,
                 tema = $2,
                 professor = $3,
-                integrantes = $4
-                lider = $5
+                lider = $4,
+                integrantes = $5
             WHERE id = $6
             RETURNING *
         `, [
