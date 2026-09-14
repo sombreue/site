@@ -31,15 +31,40 @@
             const dados = await resposta.json();
             if (!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || 'Não foi possível carregar os usuários.');
 
-            const usuarioLogadoId = dados.usuarioLogadoId;
+            const usuarioLogadoId = dados.usuarioLogadoId ?? null;
             lista.innerHTML = dados.usuarios.map(usuario => `
                 <div class="usuario-admin-item">
                     <div><strong>${textoSeguro(usuario.usuario)}</strong><span>${usuario.tipo === 'admin' ? 'Administrador' : 'Usuário'}</span></div>
-                    ${usuario.id === usuarioLogadoId ? '<em>Conta atual</em>' : `<button type="button" data-excluir-usuario="${usuario.id}">Excluir</button>`}
+                    <div class="acoes-usuario-admin">
+                        <button type="button" data-alterar-senha="${usuario.id}">Mudar senha</button>
+                        ${usuario.id === usuarioLogadoId ? '<em>Conta atual</em>' : `<button type="button" data-excluir-usuario="${usuario.id}">Excluir</button>`}
+                    </div>
                 </div>
             `).join('') || '<p>Nenhum usuário cadastrado.</p>';
         } catch (erro) {
             lista.innerHTML = `<p>${textoSeguro(erro.message)}</p>`;
+        }
+    }
+
+    async function alterarSenha(id, nomeUsuario) {
+        const novaSenha = prompt(`Digite a nova senha para ${nomeUsuario}:`);
+        if (novaSenha === null) return;
+        if (novaSenha.length < 4) {
+            status.textContent = 'A senha precisa ter pelo menos 4 caracteres.';
+            return;
+        }
+        try {
+            const resposta = await fetch(`/api/admin/usuarios/${id}/senha`, {
+                method: 'PUT',
+                credentials: 'same-origin',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ senha: novaSenha })
+            });
+            const dados = await resposta.json();
+            if (!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || 'Não foi possível alterar a senha.');
+            status.textContent = `Senha de ${nomeUsuario} alterada com sucesso.`;
+        } catch (erro) {
+            status.textContent = erro.message;
         }
     }
 
@@ -86,6 +111,14 @@
     });
 
     lista.addEventListener('click', async evento => {
+        const alterar = evento.target.closest('[data-alterar-senha]');
+        if (alterar) {
+            const item = alterar.closest('.usuario-admin-item');
+            const nome = item?.querySelector('strong')?.textContent || 'este usuário';
+            await alterarSenha(alterar.dataset.alterarSenha, nome);
+            return;
+        }
+
         const botao = evento.target.closest('[data-excluir-usuario]');
         if (!botao || !confirm('Excluir este usuário?')) return;
         try {
@@ -104,8 +137,6 @@
 
     async function inicializar() {
         try {
-            // O endpoint /api/sessao não existe no servidor atual.
-            // /api/usuario é o endpoint oficial e protegido pela sessão.
             const resposta = await fetch('/api/usuario', {
                 credentials: 'same-origin',
                 cache: 'no-store'
@@ -126,7 +157,6 @@
                 carregarUsuarios();
             }
         } catch (erro) {
-            // Só redireciona quando a sessão realmente não pôde ser validada.
             window.location.href = '/login.html';
         }
     }
