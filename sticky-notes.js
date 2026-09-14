@@ -1,8 +1,10 @@
-const criarTabelaNotas = async pool => {
+async function criarTabelaNotas(pool) {
+    // Tabela nova e independente das notas escolares. Se uma versão antiga
+    // da tabela já existir, a migração abaixo adiciona somente o necessário.
     await pool.query(`
         CREATE TABLE IF NOT EXISTS notas_pessoais (
             id SERIAL PRIMARY KEY,
-            usuario_id INTEGER NOT NULL,
+            usuario_id INTEGER,
             titulo TEXT NOT NULL DEFAULT '',
             conteudo TEXT NOT NULL DEFAULT '',
             cor TEXT NOT NULL DEFAULT 'amarela',
@@ -12,26 +14,28 @@ const criarTabelaNotas = async pool => {
         );
     `);
 
-    // A tabela notas_pessoais existia antes como tabela de notas escolares.
-    // Mantemos os dados antigos, mas removemos as restrições antigas que
-    // impediriam uma Sticky Note de ser criada sem matéria/nota/período.
-    await pool.query(`
-        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS usuario_id INTEGER;
-        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS titulo TEXT NOT NULL DEFAULT '';
-        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS conteudo TEXT NOT NULL DEFAULT '';
-        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS cor TEXT NOT NULL DEFAULT 'amarela';
-        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS fixada BOOLEAN NOT NULL DEFAULT false;
-        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS criada_em TIMESTAMPTZ NOT NULL DEFAULT NOW();
-        ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS atualizada_em TIMESTAMPTZ NOT NULL DEFAULT NOW();
-        ALTER TABLE notas_pessoais ALTER COLUMN materia DROP NOT NULL;
-        ALTER TABLE notas_pessoais ALTER COLUMN materia SET DEFAULT '';
-        ALTER TABLE notas_pessoais ALTER COLUMN periodo DROP NOT NULL;
-        ALTER TABLE notas_pessoais ALTER COLUMN periodo SET DEFAULT '1º bimestre';
-        ALTER TABLE notas_pessoais ALTER COLUMN nota DROP NOT NULL;
-        ALTER TABLE notas_pessoais ALTER COLUMN peso DROP NOT NULL;
-        ALTER TABLE notas_pessoais ALTER COLUMN descricao DROP NOT NULL;
+    await pool.query(`ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS usuario_id INTEGER;`);
+    await pool.query(`ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS titulo TEXT NOT NULL DEFAULT '';`);
+    await pool.query(`ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS conteudo TEXT NOT NULL DEFAULT '';`);
+    await pool.query(`ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS cor TEXT NOT NULL DEFAULT 'amarela';`);
+    await pool.query(`ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS fixada BOOLEAN NOT NULL DEFAULT false;`);
+    await pool.query(`ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS criada_em TIMESTAMPTZ NOT NULL DEFAULT NOW();`);
+    await pool.query(`ALTER TABLE notas_pessoais ADD COLUMN IF NOT EXISTS atualizada_em TIMESTAMPTZ NOT NULL DEFAULT NOW();`);
+
+    // Versões antigas podem ter criado campos de notas escolares. Eles não
+    // podem mais impedir a criação de uma Sticky Note.
+    const colunas = await pool.query(`
+        SELECT column_name
+        FROM information_schema.columns
+        WHERE table_schema = 'public' AND table_name = 'notas_pessoais'
     `);
-};
+    const existentes = new Set(colunas.rows.map(r => r.column_name));
+    for (const coluna of ['materia', 'periodo', 'nota', 'peso', 'descricao']) {
+        if (existentes.has(coluna)) {
+            await pool.query(`ALTER TABLE notas_pessoais ALTER COLUMN ${coluna} DROP NOT NULL`);
+        }
+    }
+}
 
 function registrarNotasPessoais(app, pool, exigirLogin) {
     const bancoPronto = criarTabelaNotas(pool);
@@ -65,7 +69,7 @@ function registrarNotasPessoais(app, pool, exigirLogin) {
                 VALUES ($1, $2, $3, $4, $5)
                 RETURNING id, titulo, conteudo, cor, fixada, criada_em, atualizada_em
             `, [req.session.usuario.id, String(titulo).trim(), String(conteudo), cor, Boolean(fixada)]);
-            res.json({ sucesso: true, nota: resultado.rows[0] });
+            res.status(201).json({ sucesso: true, nota: resultado.rows[0] });
         } catch (erro) {
             console.error('Erro ao criar nota pessoal:', erro);
             res.status(500).json({ sucesso: false, mensagem: 'Erro interno do servidor.' });
