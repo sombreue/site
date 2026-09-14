@@ -127,8 +127,18 @@ app.get("/expec.html", async (req, res, next) => {
         res.redirect("/");
 
     }
-
 });
+
+// Favicon padrão do site.
+// Também atende /favicon.ico, que alguns navegadores solicitam
+// automaticamente, e evita que um favicon antigo fique preso em cache.
+app.get("/favicon.ico", (req, res) => {
+    res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+    res.set("Pragma", "no-cache");
+    res.set("Expires", "0");
+    res.sendFile(path.join(__dirname, "public", "imagens", "favicon.ico"));
+});
+
 app.use(express.static("public", {
     index: false
 }));
@@ -218,79 +228,41 @@ await pool.query(`
 `);
 await pool.query(`
     ALTER TABLE feira_config
-    ADD COLUMN IF NOT EXISTS ativa BOOLEAN DEFAULT true;
+    ADD COLUMN IF NOT EXISTS ativa BOOLEAN NOT NULL DEFAULT FALSE;
 `);
 await pool.query(`
-    INSERT INTO feira_config (id, data_apresentacao)
-    VALUES (1, '2026-09-13 08:00:00')
-    ON CONFLICT (id) DO NOTHING;
-`);
-await pool.query(`
-    UPDATE feira_config
-    SET ativa = true
-    WHERE id = 1
-      AND ativa IS NULL;
-`);
-await pool.query(`
-    CREATE TABLE IF NOT EXISTS feira_decoracoes (
+    CREATE TABLE IF NOT EXISTS feira_membros (
         id SERIAL PRIMARY KEY,
-        descricao TEXT NOT NULL,
-        preco NUMERIC(10,2) NOT NULL
+        equipe_id INTEGER NOT NULL REFERENCES feira_equipes(id) ON DELETE CASCADE,
+        nome TEXT NOT NULL
     );
 `);
+
 }
 
 
 // =========================
-// CRIAR ADMIN
+// FUNÇÕES AUXILIARES
 // =========================
 
-async function criarAdmin() {
-
-    const resultado =
-        await pool.query(
-            `
-            SELECT id, usuario, senha, tipo
-            FROM usuarios
-            WHERE usuario = $1
-            `,
-            ["admin"]
-        );
-
-
-    if (resultado.rows.length === 0) {
-
-        const senhaHash =
-            await bcrypt.hash(
-                "admin123",
-                10
-            );
-
-
-        await pool.query(
-            `
-            INSERT INTO usuarios (
-                usuario,
-                senha,
-                tipo
-            )
-
-            VALUES ($1, $2, $3)
-            `,
-            [
-                "admin",
-                senhaHash,
-                "admin"
-            ]
-        );
-
-
-        console.log(
-            "Administrador criado."
-        );
-
+function exigirLogin(req, res, next) {
+    if (!req.session.usuario) {
+        return res.status(401).json({
+            sucesso: false,
+            mensagem: "Você precisa estar logado."
+        });
     }
+    next();
+}
 
+function exigirAdmin(req, res, next) {
+    if (!req.session.usuario || req.session.usuario.tipo !== "admin") {
+        return res.status(403).json({
+            sucesso: false,
+            mensagem: "Acesso permitido apenas para administradores."
+        });
+    }
+    next();
 }
 
 
@@ -299,168 +271,56 @@ async function criarAdmin() {
 // =========================
 
 app.post("/api/login", async (req, res) => {
-
     try {
-
-        const {
-            usuario,
-            senha
-        } = req.body;
-
+        const { usuario, senha } = req.body;
 
         if (!usuario || !senha) {
-
             return res.status(400).json({
-
                 sucesso: false,
-
-                mensagem:
-                    "Preencha usuário e senha."
-
+                mensagem: "Preencha usuário e senha."
             });
-
         }
 
+        const resultado = await pool.query(
+            "SELECT id, usuario, senha, tipo FROM usuarios WHERE usuario = $1",
+            [usuario]
+        );
 
-        const resultado =
-            await pool.query(
-                `
-                SELECT *
-                FROM usuarios
-                WHERE usuario = $1
-                `,
-                [usuario]
-            );
-
-
-        if (
-            resultado.rows.length === 0
-        ) {
-
+        if (resultado.rows.length === 0) {
             return res.status(401).json({
-
                 sucesso: false,
-
-                mensagem:
-                    "Usuário ou senha incorretos."
-
+                mensagem: "Usuário ou senha incorretos."
             });
-
         }
 
-
-        const usuarioBanco =
-            resultado.rows[0];
-
-
-        const senhaCorreta =
-            await bcrypt.compare(
-                senha,
-                usuarioBanco.senha
-            );
-
+        const usuarioBanco = resultado.rows[0];
+        const senhaCorreta = await bcrypt.compare(senha, usuarioBanco.senha);
 
         if (!senhaCorreta) {
-
             return res.status(401).json({
-
                 sucesso: false,
-
-                mensagem:
-                    "Usuário ou senha incorretos."
-
+                mensagem: "Usuário ou senha incorretos."
             });
-
         }
 
-
         req.session.usuario = {
-
-            id:
-                usuarioBanco.id,
-
-            usuario:
-                usuarioBanco.usuario,
-
-            tipo:
-                usuarioBanco.tipo
-
+            id: usuarioBanco.id,
+            usuario: usuarioBanco.usuario,
+            tipo: usuarioBanco.tipo
         };
 
-
-        console.log(
-            "LOGIN REALIZADO:",
-            req.session.usuario
-        );
-
-
         res.json({
-
             sucesso: true,
-
-            usuario:
-                usuarioBanco.usuario,
-
-            tipo:
-                usuarioBanco.tipo
-
+            tipo: usuarioBanco.tipo
         });
-
 
     } catch (erro) {
-
-        console.error(
-            "Erro no login:",
-            erro
-        );
-
-
+        console.error("Erro no login:", erro);
         res.status(500).json({
-
             sucesso: false,
-
-            mensagem:
-                "Erro interno do servidor."
-
+            mensagem: "Erro interno do servidor."
         });
-
     }
-
-});
-
-
-// =========================
-// VERIFICAR SESSÃO
-// =========================
-
-app.get("/api/sessao", (req, res) => {
-
-    if (!req.session.usuario) {
-
-        return res.json({
-
-            logado: false
-
-        });
-
-    }
-
-
-    res.json({
-
-        logado: true,
-
-        id:
-            req.session.usuario.id,
-
-        usuario:
-            req.session.usuario.usuario,
-
-        tipo:
-            req.session.usuario.tipo
-
-    });
-
 });
 
 
@@ -469,1460 +329,234 @@ app.get("/api/sessao", (req, res) => {
 // =========================
 
 app.post("/api/logout", (req, res) => {
-
     req.session.destroy(() => {
-
-        res.json({
-
-            sucesso: true
-
-        });
-
+        res.json({ sucesso: true });
     });
-
 });
 
 
 // =========================
-// AUTENTICAÇÃO
+// USUÁRIO LOGADO
 // =========================
 
-function exigirLogin(
-    req,
-    res,
-    next
-) {
-
-    if (!req.session.usuario) {
-
-        return res.status(401).json({
-
-            sucesso: false,
-
-            mensagem:
-                "Você precisa estar logado."
-
-        });
-
-    }
-
-    next();
-
-}
-
-
-function exigirAdmin(
-    req,
-    res,
-    next
-) {
-
-    if (!req.session.usuario) {
-
-        return res.status(401).json({
-
-            sucesso: false,
-
-            mensagem:
-                "Você precisa estar logado."
-
-        });
-
-    }
-
-
-    if (
-        req.session.usuario.tipo !==
-        "admin"
-    ) {
-
-        return res.status(403).json({
-
-            sucesso: false,
-
-            mensagem:
-                "Acesso permitido somente para administradores."
-
-        });
-
-    }
-
-    next();
-
-}
-
-
-// =========================
-// USUÁRIOS
-// =========================
-
-
-// CRIAR USUÁRIO
-
-app.post(
-    "/api/usuarios",
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            const {
-                usuario,
-                senha
-            } = req.body;
-
-
-            if (!usuario || !senha) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "Preencha o usuário e a senha."
-
-                });
-
-            }
-
-
-            if (usuario.length < 3) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "O usuário precisa ter pelo menos 3 caracteres."
-
-                });
-
-            }
-
-
-            if (senha.length < 4) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "A senha precisa ter pelo menos 4 caracteres."
-
-                });
-
-            }
-
-
-            const existente =
-                await pool.query(
-                    `
-                    SELECT id
-                    FROM usuarios
-                    WHERE usuario = $1
-                    `,
-                    [usuario]
-                );
-
-
-            if (
-                existente.rows.length > 0
-            ) {
-
-                return res.status(409).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "Esse usuário já existe."
-
-                });
-
-            }
-
-
-            const senhaHash =
-                await bcrypt.hash(
-                    senha,
-                    10
-                );
-
-
-            const resultado =
-                await pool.query(
-                    `
-                    INSERT INTO usuarios (
-                        usuario,
-                        senha,
-                        tipo
-                    )
-
-                    VALUES ($1, $2, $3)
-
-                    RETURNING id
-                    `,
-                    [
-                        usuario,
-                        senhaHash,
-                        "usuario"
-                    ]
-                );
-
-
-            res.json({
-
-                sucesso: true,
-
-                mensagem:
-                    "Usuário criado com sucesso!",
-
-                id:
-                    resultado.rows[0].id
-
-            });
-
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao criar usuário:",
-                erro
-            );
-
-
-            res.status(500).json({
-
-                sucesso: false,
-
-                mensagem:
-                    "Erro interno do servidor."
-
-            });
-
-        }
-
-    }
-);
-
-
-// LISTAR USUÁRIOS
-
-app.get(
-    "/api/usuarios",
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            const resultado =
-                await pool.query(`
-                    SELECT
-                        id,
-                        usuario,
-                        tipo
-                    FROM usuarios
-                    ORDER BY usuario ASC
-                `);
-
-
-            res.json({
-
-                sucesso: true,
-
-                usuarios:
-                    resultado.rows,
-
-                usuarioLogadoId:
-                    req.session.usuario.id
-
-            });
-
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao carregar usuários:",
-                erro
-            );
-
-
-            res.status(500).json({
-
-                sucesso: false,
-
-                mensagem:
-                    "Erro interno do servidor."
-
-            });
-
-        }
-
-    }
-);
-
-
-// EXCLUIR USUÁRIO
-
-app.delete(
-    "/api/usuarios/:id",
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            const id =
-                Number(req.params.id);
-
-
-            if (!id) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "ID inválido."
-
-                });
-
-            }
-
-
-            if (
-                id ===
-                req.session.usuario.id
-            ) {
-
-                return res.status(403).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "Você não pode excluir sua própria conta."
-
-                });
-
-            }
-
-
-            const resultado =
-                await pool.query(
-                    `
-                    DELETE FROM usuarios
-                    WHERE id = $1
-                    `,
-                    [id]
-                );
-
-
-            if (
-                resultado.rowCount === 0
-            ) {
-
-                return res.status(404).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "Usuário não encontrado."
-
-                });
-
-            }
-
-
-            res.json({
-
-                sucesso: true,
-
-                mensagem:
-                    "Usuário excluído com sucesso."
-
-            });
-
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao excluir usuário:",
-                erro
-            );
-
-
-            res.status(500).json({
-
-                sucesso: false,
-
-                mensagem:
-                    "Erro interno do servidor."
-
-            });
-
-        }
-
-    }
-);
-
-
-// ALTERAR SENHA
-
-app.put(
-    "/api/usuarios/:id/senha",
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            const id =
-                Number(req.params.id);
-
-
-            const {
-                senha
-            } = req.body;
-
-
-            if (!id) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "ID inválido."
-
-                });
-
-            }
-
-
-            if (!senha) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "Digite uma nova senha."
-
-                });
-
-            }
-
-
-            if (senha.length < 4) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "A senha precisa ter pelo menos 4 caracteres."
-
-                });
-
-            }
-
-
-            const usuarioExiste =
-                await pool.query(
-                    `
-                    SELECT id
-                    FROM usuarios
-                    WHERE id = $1
-                    `,
-                    [id]
-                );
-
-
-            if (
-                usuarioExiste.rows.length === 0
-            ) {
-
-                return res.status(404).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "Usuário não encontrado."
-
-                });
-
-            }
-
-
-            const senhaHash =
-                await bcrypt.hash(
-                    senha,
-                    10
-                );
-
-
-            await pool.query(
-                `
-                UPDATE usuarios
-                SET senha = $1
-                WHERE id = $2
-                `,
-                [
-                    senhaHash,
-                    id
-                ]
-            );
-
-
-            res.json({
-
-                sucesso: true,
-
-                mensagem:
-                    "Senha alterada com sucesso."
-
-            });
-
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao alterar senha:",
-                erro
-            );
-
-
-            res.status(500).json({
-
-                sucesso: false,
-
-                mensagem:
-                    "Erro interno do servidor."
-
-            });
-
-        }
-
-    }
-);
-
-
-// =========================
-// FEIRA - EQUIPES
-// =========================
-
-// Listar equipes
-app.get("/api/feira/equipes", exigirLogin, async (req, res) => {
-    try {
-        const resultado = await pool.query(`
-            SELECT *
-            FROM feira_equipes
-            ORDER BY id ASC
-        `);
-
-        res.json(resultado.rows);
-
-    } catch (erro) {
-        console.error("Erro ao buscar equipes:", erro);
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao buscar equipes."
-        });
-    }
+app.get("/api/usuario", exigirLogin, (req, res) => {
+    res.json({
+        sucesso: true,
+        usuario: req.session.usuario
+    });
 });
 
-
-// Criar equipe
-app.post("/api/feira/equipes", exigirAdmin, async (req, res) => {
-    try {
-        const { nome, tema, professor, lider, integrantes } = req.body;
-
-        if (!nome || !tema) {
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: "Nome e tema são obrigatórios."
-            });
-        }
-
-        const resultado = await pool.query(`
-            INSERT INTO feira_equipes
-            (nome, tema, professor, lider, integrantes)
-            VALUES ($1, $2, $3, $4, $5)
-            RETURNING *
-        `, [
-            nome,
-            tema,
-            professor || "",
-            lider || "",
-            integrantes || ""
-        ]);
-
-        res.status(201).json({
-            sucesso: true,
-            equipe: resultado.rows[0]
-        });
-
-    } catch (erro) {
-        console.error("Erro ao criar equipe:", erro);
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao criar equipe."
-        });
-    }
-});
-
-
-// Editar equipe
-app.put("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { nome, tema, professor, lider, integrantes } = req.body;
-
-        if (!nome || !tema) {
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: "Nome e tema são obrigatórios."
-            });
-        }
-
-        const resultado = await pool.query(`
-            UPDATE feira_equipes
-            SET
-                nome = $1,
-                tema = $2,
-                professor = $3,
-                lider = $4,
-                integrantes = $5
-            WHERE id = $6
-            RETURNING *
-        `, [
-            nome,
-            tema,
-            professor || "",
-            lider || "",
-            integrantes || "",
-            id
-        ]);
-
-        if (resultado.rows.length === 0) {
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: "Equipe não encontrada."
-            });
-        }
-
-        res.json({
-            sucesso: true,
-            equipe: resultado.rows[0]
-        });
-
-    } catch (erro) {
-        console.error("Erro ao editar equipe:", erro);
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao editar equipe."
-        });
-    }
-});
-
-
-// Excluir equipe
-app.delete("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
-    try {
-        const { id } = req.params;
-
-        const resultado = await pool.query(`
-            DELETE FROM feira_equipes
-            WHERE id = $1
-            RETURNING *
-        `, [id]);
-
-        if (resultado.rows.length === 0) {
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: "Equipe não encontrada."
-            });
-        }
-
-        res.json({
-            sucesso: true,
-            mensagem: "Equipe excluída com sucesso."
-        });
-
-    } catch (erro) {
-        console.error("Erro ao excluir equipe:", erro);
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao excluir equipe."
-        });
-    }
-});
-
-
-// =========================
-// DECORAÇÕES DA EXPEC
-// =========================
-
-// LISTAR DECORAÇÕES
-app.get("/api/feira/decoracoes", exigirLogin, async (req, res) => {
-
-    try {
-
-        const resultado = await pool.query(`
-            SELECT id, descricao, preco
-            FROM feira_decoracoes
-            ORDER BY id ASC
-        `);
-
-        res.json(resultado.rows);
-
-    } catch (erro) {
-
-        console.error("Erro ao buscar decorações:", erro);
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao buscar decorações."
-        });
-    }
-});
-
-
-// ADICIONAR DECORAÇÃO
-app.post("/api/feira/decoracoes", exigirAdmin, async (req, res) => {
-
-    try {
-
-        const { descricao, preco } = req.body;
-
-        if (!descricao || preco === undefined || preco === "") {
-
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: "Descrição e preço são obrigatórios."
-            });
-        }
-
-        const resultado = await pool.query(`
-            INSERT INTO feira_decoracoes
-            (descricao, preco)
-            VALUES ($1, $2)
-            RETURNING *
-        `, [
-            descricao,
-            preco
-        ]);
-
-        res.status(201).json({
-            sucesso: true,
-            decoracao: resultado.rows[0]
-        });
-
-    } catch (erro) {
-
-        console.error("Erro ao adicionar decoração:", erro);
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao adicionar decoração."
-        });
-    }
-});
-
-
-// EDITAR DECORAÇÃO
-app.put("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
-
-    try {
-
-        const { id } = req.params;
-        const { descricao, preco } = req.body;
-
-        if (!descricao || preco === undefined || preco === "") {
-
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: "Descrição e preço são obrigatórios."
-            });
-        }
-
-        const resultado = await pool.query(`
-            UPDATE feira_decoracoes
-            SET
-                descricao = $1,
-                preco = $2
-            WHERE id = $3
-            RETURNING *
-        `, [
-            descricao,
-            preco,
-            id
-        ]);
-
-        if (resultado.rows.length === 0) {
-
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: "Decoração não encontrada."
-            });
-        }
-
-        res.json({
-            sucesso: true,
-            decoracao: resultado.rows[0]
-        });
-
-    } catch (erro) {
-
-        console.error("Erro ao editar decoração:", erro);
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao editar decoração."
-        });
-    }
-});
-
-
-// EXCLUIR DECORAÇÃO
-app.delete("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
-
-    try {
-
-        const { id } = req.params;
-
-        const resultado = await pool.query(`
-            DELETE FROM feira_decoracoes
-            WHERE id = $1
-            RETURNING *
-        `, [id]);
-
-        if (resultado.rows.length === 0) {
-
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: "Decoração não encontrada."
-            });
-        }
-
-        res.json({
-            sucesso: true,
-            mensagem: "Decoração excluída."
-        });
-
-    } catch (erro) {
-
-        console.error("Erro ao excluir decoração:", erro);
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao excluir decoração."
-        });
-    }
-});
-
-// =========================
-// FEIRA - CONTAGEM REGRESSIVA
-// =========================
-
-// Buscar data da apresentação
-app.get("/api/feira/contagem", exigirLogin, async (req, res) => {
-
-    try {
-
-        const resultado = await pool.query(`
-            SELECT data_apresentacao
-            FROM feira_config
-            WHERE id = 1
-        `);
-
-        if (resultado.rows.length === 0) {
-
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: "Data da apresentação não configurada."
-            });
-
-        }
-
-        res.json({
-    sucesso: true,
-    data: resultado.rows[0].data_apresentacao,
-    tipo: req.session.usuario.tipo
-});
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao buscar data da apresentação:",
-            erro
-        );
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao buscar contagem regressiva."
-        });
-
-    }
-
-});
-
-// Alterar data da apresentação
-app.put("/api/feira/contagem", exigirAdmin, async (req, res) => {
-
-    try {
-
-        const { data } = req.body;
-
-        if (!data) {
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: "Data da apresentação é obrigatória."
-            });
-        }
-
-        const resultado = await pool.query(`
-            UPDATE feira_config
-            SET data_apresentacao = $1
-            WHERE id = 1
-            RETURNING *
-        `, [data]);
-
-        if (resultado.rows.length === 0) {
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: "Configuração não encontrada."
-            });
-        }
-
-        res.json({
-            sucesso: true,
-            data: resultado.rows[0].data_apresentacao
-        });
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao alterar data da apresentação:",
-            erro
-        );
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao alterar data."
-        });
-
-    }
-
-});
-app.get("/api/feira/status", exigirLogin, async (req, res) => {
-
-    try {
-
-        const resultado = await pool.query(`
-            SELECT ativa
-            FROM feira_config
-            WHERE id = 1
-        `);
-
-        if (resultado.rows.length === 0) {
-
-            return res.status(404).json({
-                sucesso: false,
-                mensagem: "Configuração da EXPEC não encontrada."
-            });
-
-        }
-
-        res.json({
-            sucesso: true,
-            ativa: resultado.rows[0].ativa,
-            tipo: req.session.usuario.tipo
-        });
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao verificar status da EXPEC:",
-            erro
-        );
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao verificar status da EXPEC."
-        });
-
-    }
-
-});
-app.put("/api/feira/status", exigirAdmin, async (req, res) => {
-
-    try {
-
-        const { ativa } = req.body;
-
-        if (typeof ativa !== "boolean") {
-
-            return res.status(400).json({
-                sucesso: false,
-                mensagem: "O status deve ser true ou false."
-            });
-
-        }
-
-        await pool.query(`
-            UPDATE feira_config
-            SET ativa = $1
-            WHERE id = 1
-        `, [ativa]);
-
-        res.json({
-            sucesso: true,
-            ativa
-        });
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao alterar status da EXPEC:",
-            erro
-        );
-
-        res.status(500).json({
-            sucesso: false,
-            mensagem: "Erro ao alterar status da EXPEC."
-        });
-
-    }
-
-});
 
 // =========================
 // TAREFAS
 // =========================
 
-
-// BUSCAR TAREFAS
-
-app.get(
-    "/api/tarefas",
-    exigirLogin,
-    async (req, res) => {
-
-        try {
-
-            const resultado =
-                await pool.query(`
-                    SELECT
-                        id,
-                        data,
-                        materia,
-                        descricao
-                    FROM tarefas
-                    ORDER BY data DESC, id ASC
-                `);
-
-
-            res.json({
-
-                sucesso: true,
-
-                tarefas:
-                    resultado.rows
-
-            });
-
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao carregar tarefas:",
-                erro
-            );
-
-
-            res.status(500).json({
-
-                sucesso: false,
-
-                mensagem:
-                    "Erro interno do servidor."
-
-            });
-
-        }
-
-    }
-);
-
-
-// ADICIONAR TAREFA
-
-app.post(
-    "/api/tarefas",
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            const {
-                data,
-                materia,
-                descricao
-            } = req.body;
-
-
-            if (
-                !data ||
-                !materia ||
-                !descricao
-            ) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "Preencha todos os campos."
-
-                });
-
-            }
-
-
-            const resultado =
-                await pool.query(
-                    `
-                    INSERT INTO tarefas (
-                        data,
-                        materia,
-                        descricao
-                    )
-
-                    VALUES ($1, $2, $3)
-
-                    RETURNING id
-                    `,
-                    [
-                        data,
-                        materia,
-                        descricao
-                    ]
-                );
-
-
-            res.json({
-
-                sucesso: true,
-
-                mensagem:
-                    "Tarefa adicionada!",
-
-                id:
-                    resultado.rows[0].id
-
-            });
-
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao adicionar tarefa:",
-                erro
-            );
-
-
-            res.status(500).json({
-
-                sucesso: false,
-
-                mensagem:
-                    "Erro interno do servidor."
-
-            });
-
-        }
-
-    }
-);
-
-
-// EXCLUIR TAREFA
-
-app.delete(
-    "/api/tarefas/:id",
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            const id =
-                Number(req.params.id);
-
-
-            if (!id) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "ID inválido."
-
-                });
-
-            }
-
-
-            const resultado =
-                await pool.query(
-                    `
-                    DELETE FROM tarefas
-                    WHERE id = $1
-                    `,
-                    [id]
-                );
-
-
-            if (
-                resultado.rowCount === 0
-            ) {
-
-                return res.status(404).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "Tarefa não encontrada."
-
-                });
-
-            }
-
-
-            res.json({
-
-                sucesso: true,
-
-                mensagem:
-                    "Tarefa excluída!"
-
-            });
-
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao excluir tarefa:",
-                erro
-            );
-
-
-            res.status(500).json({
-
-                sucesso: false,
-
-                mensagem:
-                    "Erro interno do servidor."
-
-            });
-
-        }
-
-    }
-);
-
-
-// ALTERAR TAREFA
-
-app.put(
-    "/api/tarefas/:id",
-    exigirAdmin,
-    async (req, res) => {
-
-        try {
-
-            const id =
-                Number(req.params.id);
-
-
-            const {
-                data,
-                materia,
-                descricao
-            } = req.body;
-
-
-            if (!id) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "ID inválido."
-
-                });
-
-            }
-
-
-            if (
-                !data ||
-                !materia ||
-                !descricao
-            ) {
-
-                return res.status(400).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "Preencha todos os campos."
-
-                });
-
-            }
-
-
-            const resultado =
-                await pool.query(
-                    `
-                    UPDATE tarefas
-
-                    SET
-                        data = $1,
-                        materia = $2,
-                        descricao = $3
-
-                    WHERE id = $4
-                    `,
-                    [
-                        data,
-                        materia,
-                        descricao,
-                        id
-                    ]
-                );
-
-
-            if (
-                resultado.rowCount === 0
-            ) {
-
-                return res.status(404).json({
-
-                    sucesso: false,
-
-                    mensagem:
-                        "Tarefa não encontrada."
-
-                });
-
-            }
-
-
-            res.json({
-
-                sucesso: true,
-
-                mensagem:
-                    "Tarefa alterada com sucesso."
-
-            });
-
-
-        } catch (erro) {
-
-            console.error(
-                "Erro ao alterar tarefa:",
-                erro
-            );
-
-
-            res.status(500).json({
-
-                sucesso: false,
-
-                mensagem:
-                    "Erro interno do servidor."
-
-            });
-
-        }
-
-    }
-);
-
-
-// =========================
-// ROTA DE TESTE
-// =========================
-
-app.get(
-    "/api/teste",
-    (req, res) => {
+app.get("/api/tarefas", async (req, res) => {
+    try {
+        const resultado = await pool.query(
+            "SELECT id, data, materia, descricao FROM tarefas ORDER BY data DESC, id DESC"
+        );
 
         res.json({
-
-            mensagem:
-                "Backend funcionando!"
-
+            sucesso: true,
+            tarefas: resultado.rows
         });
-
-    }
-);
-
-
-// =========================
-// INICIAR SERVIDOR
-// =========================
-
-async function iniciarServidor() {
-
-    try {
-
-        console.log(
-            "Criando/verificando tabelas..."
-        );
-
-
-        await criarTabelas();
-
-
-        console.log(
-            "Tabelas verificadas."
-        );
-
-
-        await criarAdmin();
-
-
-        app.listen(
-            PORT,
-            () => {
-
-                console.log(
-                    `Servidor rodando na porta ${PORT}`
-                );
-
-            }
-        );
-
-
     } catch (erro) {
+        console.error("Erro ao buscar tarefas:", erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao buscar tarefas."
+        });
+    }
+});
 
-        console.error(
-            "ERRO AO INICIAR SERVIDOR:",
-            erro
+app.post("/api/tarefas", exigirAdmin, async (req, res) => {
+    try {
+        const { data, materia, descricao } = req.body;
+
+        if (!data || !materia || !descricao) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Preencha todos os campos."
+            });
+        }
+
+        const resultado = await pool.query(
+            "INSERT INTO tarefas (data, materia, descricao) VALUES ($1, $2, $3) RETURNING id, data, materia, descricao",
+            [data, materia, descricao]
         );
 
-        process.exit(1);
-
+        res.json({
+            sucesso: true,
+            tarefa: resultado.rows[0]
+        });
+    } catch (erro) {
+        console.error("Erro ao criar tarefa:", erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao criar tarefa."
+        });
     }
+});
 
-}
+app.delete("/api/tarefas/:id", exigirAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        await pool.query(
+            "DELETE FROM tarefas WHERE id = $1",
+            [id]
+        );
+
+        res.json({ sucesso: true });
+    } catch (erro) {
+        console.error("Erro ao excluir tarefa:", erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao excluir tarefa."
+        });
+    }
+});
 
 
-iniciarServidor();
+// =========================
+// ADMIN - USUÁRIOS
+// =========================
+
+app.get("/api/admin/usuarios", exigirAdmin, async (req, res) => {
+    try {
+        const resultado = await pool.query(
+            "SELECT id, usuario, tipo FROM usuarios ORDER BY id ASC"
+        );
+
+        res.json({
+            sucesso: true,
+            usuarios: resultado.rows
+        });
+    } catch (erro) {
+        console.error("Erro ao listar usuários:", erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao listar usuários."
+        });
+    }
+});
+
+app.post("/api/admin/usuarios", exigirAdmin, async (req, res) => {
+    try {
+        const { usuario, senha, tipo = "usuario" } = req.body;
+
+        if (!usuario || !senha) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Preencha usuário e senha."
+            });
+        }
+
+        if (!["admin", "usuario"].includes(tipo)) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Tipo de usuário inválido."
+            });
+        }
+
+        const senhaHash = await bcrypt.hash(senha, 10);
+
+        const resultado = await pool.query(
+            "INSERT INTO usuarios (usuario, senha, tipo) VALUES ($1, $2, $3) RETURNING id, usuario, tipo",
+            [usuario, senhaHash, tipo]
+        );
+
+        res.json({
+            sucesso: true,
+            usuario: resultado.rows[0]
+        });
+    } catch (erro) {
+        console.error("Erro ao criar usuário:", erro);
+
+        if (erro.code === "23505") {
+            return res.status(409).json({
+                sucesso: false,
+                mensagem: "Esse usuário já existe."
+            });
+        }
+
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao criar usuário."
+        });
+    }
+});
+
+app.delete("/api/admin/usuarios/:id", exigirAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        if (Number(id) === req.session.usuario.id) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Você não pode excluir sua própria conta."
+            });
+        }
+
+        await pool.query(
+            "DELETE FROM usuarios WHERE id = $1",
+            [id]
+        );
+
+        res.json({ sucesso: true });
+    } catch (erro) {
+        console.error("Erro ao excluir usuário:", erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao excluir usuário."
+        });
+    }
+});
+
+app.put("/api/admin/usuarios/:id/senha", exigirAdmin, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { senha } = req.body;
+
+        if (!senha) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Informe a nova senha."
+            });
+        }
+
+        const senhaHash = await bcrypt.hash(senha, 10);
+
+        await pool.query(
+            "UPDATE usuarios SET senha = $1 WHERE id = $2",
+            [senhaHash, id]
+        );
+
+        res.json({ sucesso: true });
+    } catch (erro) {
+        console.error("Erro ao alterar senha:", erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao alterar senha."
+        });
+    }
+});
+
+
+// =========================
+// INICIALIZAÇÃO
+// =========================
+
+criarTabelas()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Servidor rodando na porta ${PORT}`);
+        });
+    })
+    .catch(erro => {
+        console.error("Erro ao criar tabelas:", erro);
+        process.exit(1);
+    });
+
+module.exports = app;
