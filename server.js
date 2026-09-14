@@ -94,15 +94,10 @@ app.use(session({
 // =========================
 // ARQUIVOS DO SITE
 // =========================
-app.get("/expec.html", (req, res) => {
-    if (!req.session?.usuario) {
-        return res.redirect("/login.html");
-    }
 
-    res.sendFile(
-        path.join(__dirname, "public", "expec.html")
-    );
-});
+// A EXPEC é servida como qualquer outra página pelo express.static.
+// Não fazemos redirect no servidor aqui, pois isso estava criando o loop
+// de volta para o login antes de o navegador conseguir executar expec.js.
 
 // Favicon padrão do site.
 app.get("/favicon.ico", (req, res) => {
@@ -347,26 +342,6 @@ app.get("/api/sessao", (req, res) => {
 require("./rotas-sugestoes-contas")(app, pool);
 
 
-
-
-// Compatibilidade de sessão para páginas antigas
-app.get("/api/sessao", (req, res) => {
-    res.set("Cache-Control", "no-store");
-    if (!req.session || !req.session.usuario) {
-        return res.json({
-            logado: false,
-            tipo: null,
-            usuario: null
-        });
-    }
-
-    res.json({
-        logado: true,
-        tipo: req.session.usuario.tipo,
-        usuario: req.session.usuario
-    });
-});
-
 // =========================
 // TAREFAS
 // =========================
@@ -564,8 +539,6 @@ app.put("/api/admin/usuarios/:id/senha", exigirAdmin, async (req, res) => {
 });
 
 
-
-
 // =========================
 // EXPEC - API COMPLETA
 // =========================
@@ -608,16 +581,15 @@ app.get("/api/feira/contagem", exigirLogin, async (req, res) => {
 
 app.put("/api/feira/contagem", exigirAdmin, async (req, res) => {
     try {
-        const data = String(req.body?.data || "").trim();
+        const { data } = req.body;
 
         if (!data) {
             return res.status(400).json({
                 sucesso: false,
-                mensagem: "Data da apresentação é obrigatória."
+                mensagem: "Informe a data da apresentação."
             });
         }
 
-        // Cria a linha caso a instalação do banco ainda não tenha uma.
         await pool.query(`
             INSERT INTO feira_config (id, data_apresentacao, ativa)
             VALUES (1, $1, true)
@@ -625,21 +597,12 @@ app.put("/api/feira/contagem", exigirAdmin, async (req, res) => {
             DO UPDATE SET data_apresentacao = EXCLUDED.data_apresentacao
         `, [data]);
 
-        const resultado = await pool.query(`
-            SELECT data_apresentacao
-            FROM feira_config
-            WHERE id = 1
-        `);
-
-        res.json({
-            sucesso: true,
-            data: resultado.rows[0].data_apresentacao
-        });
+        res.json({ sucesso: true });
     } catch (erro) {
-        console.error("Erro ao alterar data da apresentação:", erro);
+        console.error("Erro ao salvar data da apresentação:", erro);
         res.status(500).json({
             sucesso: false,
-            mensagem: "Erro ao alterar data."
+            mensagem: "Erro ao salvar data da apresentação."
         });
     }
 });
@@ -652,32 +615,32 @@ app.get("/api/feira/status", exigirLogin, async (req, res) => {
             ON CONFLICT (id) DO NOTHING
         `);
 
-        const resultado = await pool.query(`
-            SELECT ativa
-            FROM feira_config
-            WHERE id = 1
-        `);
+        const resultado = await pool.query(
+            "SELECT ativa FROM feira_config WHERE id = 1"
+        );
 
         res.json({
             sucesso: true,
-            ativa: Boolean(resultado.rows[0]?.ativa),
+            ativa: resultado.rows[0]?.ativa ?? true,
             tipo: req.session.usuario.tipo
         });
     } catch (erro) {
-        console.error("Erro ao verificar status da EXPEC:", erro);
+        console.error("Erro ao buscar status da EXPEC:", erro);
         res.status(500).json({
             sucesso: false,
-            mensagem: "Erro ao verificar status da EXPEC."
+            mensagem: "Erro ao buscar status da EXPEC."
         });
     }
 });
 
 app.put("/api/feira/status", exigirAdmin, async (req, res) => {
     try {
-        if (typeof req.body?.ativa !== "boolean") {
+        const { ativa } = req.body;
+
+        if (typeof ativa !== "boolean") {
             return res.status(400).json({
                 sucesso: false,
-                mensagem: "O status deve ser true ou false."
+                mensagem: "Informe um valor booleano para ativa."
             });
         }
 
@@ -686,9 +649,9 @@ app.put("/api/feira/status", exigirAdmin, async (req, res) => {
             VALUES (1, '2026-09-13 08:00:00', $1)
             ON CONFLICT (id)
             DO UPDATE SET ativa = EXCLUDED.ativa
-        `, [req.body.ativa]);
+        `, [ativa]);
 
-        res.json({ sucesso: true, ativa: req.body.ativa });
+        res.json({ sucesso: true, ativa });
     } catch (erro) {
         console.error("Erro ao alterar status da EXPEC:", erro);
         res.status(500).json({
@@ -698,7 +661,6 @@ app.put("/api/feira/status", exigirAdmin, async (req, res) => {
     }
 });
 
-// EQUIPES
 app.get("/api/feira/equipes", exigirLogin, async (req, res) => {
     try {
         const resultado = await pool.query(`
@@ -706,138 +668,178 @@ app.get("/api/feira/equipes", exigirLogin, async (req, res) => {
             FROM feira_equipes
             ORDER BY id ASC
         `);
+
         res.json(resultado.rows);
     } catch (erro) {
         console.error("Erro ao buscar equipes:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar equipes." });
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao buscar equipes."
+        });
     }
 });
 
 app.post("/api/feira/equipes", exigirAdmin, async (req, res) => {
     try {
-        const { nome, tema, professor, lider, integrantes } = req.body || {};
+        const { nome, tema, professor, lider, integrantes } = req.body;
+
         if (!nome || !tema) {
-            return res.status(400).json({ sucesso: false, mensagem: "Nome e tema são obrigatórios." });
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Nome e tema são obrigatórios."
+            });
         }
+
         const resultado = await pool.query(`
             INSERT INTO feira_equipes (nome, tema, professor, lider, integrantes)
             VALUES ($1, $2, $3, $4, $5)
-            RETURNING *
+            RETURNING id, nome, tema, professor, lider, integrantes
         `, [nome, tema, professor || "", lider || "", integrantes || ""]);
-        res.status(201).json({ sucesso: true, equipe: resultado.rows[0] });
+
+        res.json({ sucesso: true, equipe: resultado.rows[0] });
     } catch (erro) {
         console.error("Erro ao criar equipe:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao criar equipe." });
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao criar equipe."
+        });
     }
 });
 
 app.put("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
     try {
-        const id = Number(req.params.id);
-        const { nome, tema, professor, lider, integrantes } = req.body || {};
-        if (!Number.isInteger(id) || id <= 0 || !nome || !tema) {
-            return res.status(400).json({ sucesso: false, mensagem: "Preencha os campos corretamente." });
+        const { id } = req.params;
+        const { nome, tema, professor, lider, integrantes } = req.body;
+
+        if (!nome || !tema) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Nome e tema são obrigatórios."
+            });
         }
+
         const resultado = await pool.query(`
             UPDATE feira_equipes
-            SET nome = $1, tema = $2, professor = $3, lider = $4, integrantes = $5
+            SET nome = $1,
+                tema = $2,
+                professor = $3,
+                lider = $4,
+                integrantes = $5
             WHERE id = $6
-            RETURNING *
+            RETURNING id, nome, tema, professor, lider, integrantes
         `, [nome, tema, professor || "", lider || "", integrantes || "", id]);
+
         if (!resultado.rows.length) {
-            return res.status(404).json({ sucesso: false, mensagem: "Equipe não encontrada." });
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Equipe não encontrada."
+            });
         }
+
         res.json({ sucesso: true, equipe: resultado.rows[0] });
     } catch (erro) {
         console.error("Erro ao editar equipe:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao editar equipe." });
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao editar equipe."
+        });
     }
 });
 
 app.delete("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
     try {
-        const resultado = await pool.query(
-            "DELETE FROM feira_equipes WHERE id = $1 RETURNING id",
-            [Number(req.params.id)]
+        const { id } = req.params;
+
+        await pool.query(
+            "DELETE FROM feira_equipes WHERE id = $1",
+            [id]
         );
-        if (!resultado.rows.length) {
-            return res.status(404).json({ sucesso: false, mensagem: "Equipe não encontrada." });
-        }
-        res.json({ sucesso: true, mensagem: "Equipe excluída com sucesso." });
+
+        res.json({ sucesso: true });
     } catch (erro) {
         console.error("Erro ao excluir equipe:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao excluir equipe." });
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao excluir equipe."
+        });
     }
 });
 
-// DECORAÇÕES
 app.get("/api/feira/decoracoes", exigirLogin, async (req, res) => {
     try {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS feira_decoracoes (
                 id SERIAL PRIMARY KEY,
                 descricao TEXT NOT NULL,
-                preco NUMERIC(10,2) NOT NULL
+                preco NUMERIC(10,2) NOT NULL DEFAULT 0
             )
         `);
-        const resultado = await pool.query("SELECT id, descricao, preco FROM feira_decoracoes ORDER BY id ASC");
+
+        const resultado = await pool.query(`
+            SELECT id, descricao, preco
+            FROM feira_decoracoes
+            ORDER BY id ASC
+        `);
+
         res.json(resultado.rows);
     } catch (erro) {
         console.error("Erro ao buscar decorações:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar decorações." });
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao buscar decorações."
+        });
     }
 });
 
 app.post("/api/feira/decoracoes", exigirAdmin, async (req, res) => {
     try {
-        const { descricao, preco } = req.body || {};
-        if (!descricao || preco === undefined || preco === "") {
-            return res.status(400).json({ sucesso: false, mensagem: "Descrição e preço são obrigatórios." });
+        const { descricao, preco } = req.body;
+
+        if (!descricao || preco === undefined || preco === null || preco === "") {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Preencha a descrição e o preço."
+            });
         }
+
         await pool.query(`
             CREATE TABLE IF NOT EXISTS feira_decoracoes (
                 id SERIAL PRIMARY KEY,
                 descricao TEXT NOT NULL,
-                preco NUMERIC(10,2) NOT NULL
+                preco NUMERIC(10,2) NOT NULL DEFAULT 0
             )
         `);
-        const resultado = await pool.query(
-            "INSERT INTO feira_decoracoes (descricao, preco) VALUES ($1, $2) RETURNING *",
-            [descricao, preco]
-        );
-        res.status(201).json({ sucesso: true, decoracao: resultado.rows[0] });
-    } catch (erro) {
-        console.error("Erro ao adicionar decoração:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao adicionar decoração." });
-    }
-});
 
-app.put("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
-    try {
-        const { descricao, preco } = req.body || {};
-        const resultado = await pool.query(
-            "UPDATE feira_decoracoes SET descricao = $1, preco = $2 WHERE id = $3 RETURNING *",
-            [descricao, preco, Number(req.params.id)]
-        );
-        if (!resultado.rows.length) return res.status(404).json({ sucesso: false, mensagem: "Decoração não encontrada." });
+        const resultado = await pool.query(`
+            INSERT INTO feira_decoracoes (descricao, preco)
+            VALUES ($1, $2)
+            RETURNING id, descricao, preco
+        `, [descricao, Number(preco)]);
+
         res.json({ sucesso: true, decoracao: resultado.rows[0] });
     } catch (erro) {
-        console.error("Erro ao editar decoração:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao editar decoração." });
+        console.error("Erro ao criar decoração:", erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao criar decoração."
+        });
     }
 });
 
 app.delete("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
     try {
-        const resultado = await pool.query(
-            "DELETE FROM feira_decoracoes WHERE id = $1 RETURNING id",
-            [Number(req.params.id)]
+        await pool.query(
+            "DELETE FROM feira_decoracoes WHERE id = $1",
+            [req.params.id]
         );
-        if (!resultado.rows.length) return res.status(404).json({ sucesso: false, mensagem: "Decoração não encontrada." });
-        res.json({ sucesso: true, mensagem: "Decoração excluída." });
+
+        res.json({ sucesso: true });
     } catch (erro) {
         console.error("Erro ao excluir decoração:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao excluir decoração." });
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao excluir decoração."
+        });
     }
 });
 
@@ -849,12 +851,12 @@ app.delete("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
 criarTabelas()
     .then(() => {
         app.listen(PORT, () => {
-            console.log(`Servidor rodando na porta ${PORT}`);
+            console.log("================================");
+            console.log("SERVIDOR ONLINE NA PORTA", PORT);
+            console.log("================================");
         });
     })
     .catch(erro => {
         console.error("Erro ao criar tabelas:", erro);
         process.exit(1);
     });
-
-module.exports = app;
