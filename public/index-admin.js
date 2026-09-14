@@ -27,13 +27,15 @@
 
     async function carregarUsuarios() {
         try {
-            const resposta = await fetch('/api/usuarios');
+            const resposta = await fetch('/api/admin/usuarios', { credentials: 'same-origin' });
             const dados = await resposta.json();
             if (!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || 'Não foi possível carregar os usuários.');
+
+            const usuarioLogadoId = dados.usuarioLogadoId;
             lista.innerHTML = dados.usuarios.map(usuario => `
                 <div class="usuario-admin-item">
                     <div><strong>${textoSeguro(usuario.usuario)}</strong><span>${usuario.tipo === 'admin' ? 'Administrador' : 'Usuário'}</span></div>
-                    ${usuario.id === dados.usuarioLogadoId ? '<em>Conta atual</em>' : `<button type="button" data-excluir-usuario="${usuario.id}">Excluir</button>`}
+                    ${usuario.id === usuarioLogadoId ? '<em>Conta atual</em>' : `<button type="button" data-excluir-usuario="${usuario.id}">Excluir</button>`}
                 </div>
             `).join('') || '<p>Nenhum usuário cadastrado.</p>';
         } catch (erro) {
@@ -42,7 +44,11 @@
     }
 
     async function sair() {
-        try { await fetch('/api/logout', { method: 'POST' }); } finally { window.location.href = '/login.html'; }
+        try {
+            await fetch('/api/logout', { method: 'POST', credentials: 'same-origin' });
+        } finally {
+            window.location.href = '/login.html';
+        }
     }
 
     botaoLogout.addEventListener('click', sair);
@@ -60,10 +66,11 @@
         const usuario = document.getElementById('novo-usuario-index').value.trim();
         const senha = campoNovaSenha.value;
         try {
-            const resposta = await fetch('/api/usuarios', {
+            const resposta = await fetch('/api/admin/usuarios', {
                 method: 'POST',
+                credentials: 'same-origin',
                 headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ usuario, senha })
+                body: JSON.stringify({ usuario, senha, tipo: 'usuario' })
             });
             const dados = await resposta.json();
             if (!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || 'Não foi possível criar o usuário.');
@@ -82,7 +89,10 @@
         const botao = evento.target.closest('[data-excluir-usuario]');
         if (!botao || !confirm('Excluir este usuário?')) return;
         try {
-            const resposta = await fetch(`/api/usuarios/${botao.dataset.excluirUsuario}`, { method: 'DELETE' });
+            const resposta = await fetch(`/api/admin/usuarios/${botao.dataset.excluirUsuario}`, {
+                method: 'DELETE',
+                credentials: 'same-origin'
+            });
             const dados = await resposta.json();
             if (!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || 'Não foi possível excluir.');
             status.textContent = 'Usuário excluído.';
@@ -94,19 +104,29 @@
 
     async function inicializar() {
         try {
-            const resposta = await fetch('/api/sessao');
-            const sessao = await resposta.json();
-            if (!sessao.logado) {
+            // O endpoint /api/sessao não existe no servidor atual.
+            // /api/usuario é o endpoint oficial e protegido pela sessão.
+            const resposta = await fetch('/api/usuario', {
+                credentials: 'same-origin',
+                cache: 'no-store'
+            });
+            const dados = await resposta.json();
+
+            if (!resposta.ok || !dados.sucesso || !dados.usuario) {
                 window.location.href = '/login.html';
                 return;
             }
-            usuarioLogado.textContent = `Logado como: ${sessao.usuario}${sessao.tipo === 'admin' ? ' (administrador)' : ''}`;
+
+            const usuario = dados.usuario;
+            usuarioLogado.textContent = `Logado como: ${usuario.usuario}${usuario.tipo === 'admin' ? ' (administrador)' : ''}`;
             botaoLogout.hidden = false;
-            if (sessao.tipo === 'admin') {
+
+            if (usuario.tipo === 'admin') {
                 painel.hidden = false;
                 carregarUsuarios();
             }
         } catch (erro) {
+            // Só redireciona quando a sessão realmente não pôde ser validada.
             window.location.href = '/login.html';
         }
     }
