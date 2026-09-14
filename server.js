@@ -98,6 +98,15 @@ async function criarTabelas() {
             nome TEXT NOT NULL
         );
     `);
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS feira_decoracoes (
+            id SERIAL PRIMARY KEY,
+            nome TEXT NOT NULL,
+            preco NUMERIC(10,2) NOT NULL DEFAULT 0,
+            criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+    `);
 }
 
 function exigirLogin(req, res, next) {
@@ -165,6 +174,14 @@ app.get("/api/sessao", (req, res) => {
 });
 
 require("./rotas-sugestoes-contas")(app, pool);
+
+// APIs individuais do aluno. Elas precisam ser registradas no processo real
+// do Render; os antigos scripts fix-*.js não devem ser executados em runtime.
+require("./calendario-pessoal")(app, pool, exigirLogin);
+require("./tarefas-pessoais")(app, pool, exigirLogin);
+require("./notas")(app, pool, exigirLogin);
+require("./estudos")(app, pool, exigirLogin);
+require("./sticky-notes")(app, pool, exigirLogin);
 
 app.get("/api/tarefas", async (req, res) => {
     try {
@@ -368,13 +385,63 @@ app.delete("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
     }
 });
 
+// =========================
+// EXPEC - DECORAÇÕES
+// =========================
+
 app.get("/api/feira/decoracoes", exigirLogin, async (req, res) => {
     try {
-        const resultado = await pool.query("SELECT id, nome, descricao FROM feira_membros ORDER BY id ASC");
+        const resultado = await pool.query("SELECT id, nome, preco FROM feira_decoracoes ORDER BY id ASC");
         res.json({ sucesso: true, decoracoes: resultado.rows });
     } catch (erro) {
         console.error("Erro ao buscar decorações:", erro);
         res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar decorações." });
+    }
+});
+
+app.post("/api/feira/decoracoes", exigirAdmin, async (req, res) => {
+    try {
+        const nome = String(req.body.nome ?? req.body.descricao ?? "").trim();
+        const preco = Number(req.body.preco ?? 0);
+        if (!nome) return res.status(400).json({ sucesso: false, mensagem: "Informe a decoração." });
+        if (!Number.isFinite(preco) || preco < 0) return res.status(400).json({ sucesso: false, mensagem: "Preço inválido." });
+        const resultado = await pool.query(
+            "INSERT INTO feira_decoracoes (nome, preco) VALUES ($1, $2) RETURNING id, nome, preco",
+            [nome, preco]
+        );
+        res.status(201).json({ sucesso: true, decoracao: resultado.rows[0] });
+    } catch (erro) {
+        console.error("Erro ao criar decoração:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao criar decoração." });
+    }
+});
+
+app.put("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
+    try {
+        const nome = String(req.body.nome ?? req.body.descricao ?? "").trim();
+        const preco = Number(req.body.preco ?? 0);
+        if (!nome) return res.status(400).json({ sucesso: false, mensagem: "Informe a decoração." });
+        if (!Number.isFinite(preco) || preco < 0) return res.status(400).json({ sucesso: false, mensagem: "Preço inválido." });
+        const resultado = await pool.query(
+            "UPDATE feira_decoracoes SET nome = $1, preco = $2, atualizado_em = NOW() WHERE id = $3 RETURNING id, nome, preco",
+            [nome, preco, req.params.id]
+        );
+        if (!resultado.rows.length) return res.status(404).json({ sucesso: false, mensagem: "Decoração não encontrada." });
+        res.json({ sucesso: true, decoracao: resultado.rows[0] });
+    } catch (erro) {
+        console.error("Erro ao editar decoração:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao editar decoração." });
+    }
+});
+
+app.delete("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
+    try {
+        const resultado = await pool.query("DELETE FROM feira_decoracoes WHERE id = $1", [req.params.id]);
+        if (!resultado.rowCount) return res.status(404).json({ sucesso: false, mensagem: "Decoração não encontrada." });
+        res.json({ sucesso: true });
+    } catch (erro) {
+        console.error("Erro ao excluir decoração:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao excluir decoração." });
     }
 });
 
