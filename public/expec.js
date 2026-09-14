@@ -28,25 +28,23 @@ async function verificarSessao() {
             if (botaoCriar) botaoCriar.style.display = "block";
         }
 
-        await Promise.allSettled([
-            carregarEquipes(tipo),
-            carregarDecoracoes(tipo)
-        ]);
+        const tarefas = [carregarEquipes(tipo)];
+        if (typeof carregarDecoracoes === "function") tarefas.push(carregarDecoracoes(tipo));
+        await Promise.allSettled(tarefas);
 
         return true;
     } catch (erro) {
         console.error("Erro ao verificar sessão:", erro);
-        // Erro de rede não significa logout.
         return false;
     }
 }
 
-// O restante da lógica da EXPEC usa as APIs normalmente.
 async function carregarEquipes(tipoUsuario) {
     try {
         const resposta = await fetch("/api/feira/equipes", { credentials: "same-origin" });
         if (!resposta.ok) throw new Error("Erro ao buscar equipes.");
-        const equipes = await resposta.json();
+        const payload = await resposta.json();
+        const equipes = Array.isArray(payload) ? payload : (payload.equipes || []);
         const lista = document.getElementById("listaEquipes");
         if (!lista) return;
         lista.innerHTML = "";
@@ -118,7 +116,9 @@ if (formEquipe) formEquipe.addEventListener("submit", async evento => {
 async function editarEquipe(id) {
     try {
         const resposta = await fetch("/api/feira/equipes", { credentials: "same-origin" });
-        const equipes = await resposta.json();
+        if (!resposta.ok) throw new Error("Erro ao buscar equipes.");
+        const payload = await resposta.json();
+        const equipes = Array.isArray(payload) ? payload : (payload.equipes || []);
         const equipe = equipes.find(item => item.id === id);
         if (!equipe) return alert("Equipe não encontrada.");
         equipeEditando = id;
@@ -129,7 +129,7 @@ async function editarEquipe(id) {
         document.getElementById("liderEquipe").value = equipe.lider || "";
         document.getElementById("integrantesEquipe").value = equipe.integrantes || "";
         document.getElementById("modalEquipe").style.display = "flex";
-    } catch (erro) { console.error("Erro ao editar equipe:", erro); }
+    } catch (erro) { console.error("Erro ao editar equipe:", erro); alert("Não foi possível carregar a equipe."); }
 }
 
 async function excluirEquipe(id) {
@@ -151,7 +151,18 @@ async function carregarContagem() {
             const config = document.getElementById("configContador");
             if (config) config.style.display = "block";
         }
-        const dataAlvo = new Date(dados.data);
+
+        // A API atual devolve data_apresentacao. Mantemos dados.data como fallback
+        // para compatibilidade, mas nunca criamos um contador com uma data inválida.
+        const dataValor = dados.data_apresentacao ?? dados.data;
+        const dataAlvo = new Date(dataValor);
+        if (Number.isNaN(dataAlvo.getTime())) {
+            throw new Error("Data da apresentação inválida recebida pela API.");
+        }
+
+        const campoData = document.getElementById("novaDataApresentacao");
+        if (campoData && dataValor) campoData.value = String(dataValor).slice(0, 16);
+
         const dataInicio = new Date();
         dataInicio.setHours(0, 0, 0, 0);
         function atualizarContador() {
@@ -224,7 +235,6 @@ async function carregarStatusExpec() {
     } catch (erro) { console.error("Erro no status da EXPEC:", erro); }
 }
 
-// As funções de decoração existentes continuam sendo usadas quando definidas.
 carregarContagem();
 verificarSessao();
 if (typeof carregarStatusExpec === "function") carregarStatusExpec();
