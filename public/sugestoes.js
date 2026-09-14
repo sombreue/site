@@ -27,13 +27,12 @@ async function lerRespostaSugestao(resposta) {
 
 async function enviarSugestao(evento) {
     evento.preventDefault();
-    const nome = document.getElementById("nome-sugestao")?.value.trim();
     const sugestao = document.getElementById("texto-sugestao")?.value.trim();
     const tipo = document.getElementById("tipo-sugestao")?.value || "sugestao";
     const status = document.getElementById("status-sugestao");
     const botao = evento.target.querySelector("button[type='submit']");
-    if (!nome || !sugestao) {
-        if (status) status.textContent = "Preencha seu nome e a mensagem.";
+    if (!sugestao) {
+        if (status) status.textContent = "Escreva a sugestão ou descreva o bug.";
         return;
     }
     if (botao) botao.disabled = true;
@@ -41,8 +40,9 @@ async function enviarSugestao(evento) {
         const resposta = await fetch("/api/sugestoes", {
             method: "POST",
             headers: { "Content-Type": "application/json", "Accept": "application/json" },
+            credentials: "same-origin",
             cache: "no-store",
-            body: JSON.stringify({ nome, sugestao, tipo })
+            body: JSON.stringify({ sugestao, tipo })
         });
         if (resposta.status === 401) throw new Error("Você precisa estar logado para enviar.");
         const dados = await lerRespostaSugestao(resposta);
