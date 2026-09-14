@@ -4,7 +4,7 @@
   "description": "Sistema de tarefas da turma",
   "main": "server-sugestoes.js",
   "scripts": {
-    "start": "node server-sugestoes.js"
+    "start": "node fix-favicons.js && node server-sugestoes.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
