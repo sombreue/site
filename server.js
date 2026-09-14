@@ -9,6 +9,11 @@ const { Pool } = require("pg");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// O Render fica atrás de um proxy HTTPS. Confiar no primeiro proxy permite
+// que express-session reconheça a conexão original como HTTPS e envie o
+// cookie de sessão com Secure corretamente.
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -258,76 +263,64 @@ app.get("/api/feira/contagem", exigirLogin, async (req, res) => {
             VALUES (1, '2026-09-13 08:00:00', true)
             ON CONFLICT (id) DO NOTHING
         `);
-
         const resultado = await pool.query(`
-            SELECT to_char(data_apresentacao, 'YYYY-MM-DD"T"HH24:MI:SS') || '-03:00' AS data_apresentacao
+            SELECT id,
+                   (to_char(data_apresentacao, 'YYYY-MM-DD"T"HH24:MI:SS') || '-03:00') AS data_apresentacao,
+                   ativa
             FROM feira_config
             WHERE id = 1
         `);
-
-        if (!resultado.rows.length) return res.status(404).json({ sucesso: false, mensagem: "Data da apresentação não configurada." });
-
-        // A coluna antiga é TIMESTAMP sem fuso. A data representa horário de Brasília.
-        // O offset explícito impede que o navegador interprete 07:00 como UTC e mostre 04:00.
-        res.json({ sucesso: true, data: resultado.rows[0].data_apresentacao, tipo: req.session.usuario.tipo });
+        res.json({ sucesso: true, ...resultado.rows[0] });
     } catch (erro) {
-        console.error("Erro ao buscar data da apresentação:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar contagem regressiva." });
+        console.error("Erro ao buscar contagem da EXPEC:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar contagem." });
     }
 });
 
 app.put("/api/feira/contagem", exigirAdmin, async (req, res) => {
     try {
-        const { data } = req.body;
+        const { data, ativa } = req.body;
         if (!data) return res.status(400).json({ sucesso: false, mensagem: "Informe a data da apresentação." });
-
-        // datetime-local não carrega fuso. Guardamos o horário digitado como horário de Brasília,
-        // sem deixar o fuso UTC do servidor alterar o valor.
         const dataLocal = String(data).slice(0, 16).replace("T", " ") + ":00";
-
-        await pool.query(`
-            INSERT INTO feira_config (id, data_apresentacao, ativa)
-            VALUES (1, $1::timestamp, true)
-            ON CONFLICT (id)
-            DO UPDATE SET data_apresentacao = EXCLUDED.data_apresentacao
-        `, [dataLocal]);
-
+        await pool.query(
+            `INSERT INTO feira_config (id, data_apresentacao, ativa)
+             VALUES (1, $1::timestamp, COALESCE($2, true))
+             ON CONFLICT (id) DO UPDATE SET data_apresentacao = EXCLUDED.data_apresentacao, ativa = COALESCE($2, feira_config.ativa)`,
+            [dataLocal, typeof ativa === "boolean" ? ativa : null]
+        );
         res.json({ sucesso: true });
     } catch (erro) {
-        console.error("Erro ao salvar data da apresentação:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao salvar data da apresentação." });
+        console.error("Erro ao atualizar contagem da EXPEC:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao atualizar contagem." });
     }
 });
 
 app.get("/api/feira/status", exigirLogin, async (req, res) => {
     try {
-        await pool.query(`
-            INSERT INTO feira_config (id, data_apresentacao, ativa)
-            VALUES (1, '2026-09-13 08:00:00', true)
-            ON CONFLICT (id) DO NOTHING
-        `);
         const resultado = await pool.query("SELECT ativa FROM feira_config WHERE id = 1");
-        res.json({ sucesso: true, ativa: resultado.rows[0]?.ativa ?? true, tipo: req.session.usuario.tipo });
+        res.json({ sucesso: true, ativa: resultado.rows[0]?.ativa ?? false });
     } catch (erro) {
         console.error("Erro ao buscar status da EXPEC:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar status da EXPEC." });
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar status." });
     }
 });
 
 app.put("/api/feira/status", exigirAdmin, async (req, res) => {
     try {
-        await pool.query("UPDATE feira_config SET ativa = $1 WHERE id = 1", [Boolean(req.body.ativa)]);
+        const { ativa } = req.body;
+        if (typeof ativa !== "boolean") return res.status(400).json({ sucesso: false, mensagem: "Status inválido." });
+        await pool.query("UPDATE feira_config SET ativa = $1 WHERE id = 1", [ativa]);
         res.json({ sucesso: true });
     } catch (erro) {
-        console.error("Erro ao alterar status da EXPEC:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao alterar status da EXPEC." });
+        console.error("Erro ao atualizar status da EXPEC:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao atualizar status." });
     }
 });
 
 app.get("/api/feira/equipes", exigirLogin, async (req, res) => {
     try {
-        const resultado = await pool.query("SELECT id, nome, tema, professor, lider, integrantes FROM feira_equipes ORDER BY id ASC");
-        res.json(resultado.rows);
+        const resultado = await pool.query("SELECT id, nome, tema, professor, integrantes, lider FROM feira_equipes ORDER BY id ASC");
+        res.json({ sucesso: true, equipes: resultado.rows });
     } catch (erro) {
         console.error("Erro ao buscar equipes:", erro);
         res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar equipes." });
@@ -336,11 +329,11 @@ app.get("/api/feira/equipes", exigirLogin, async (req, res) => {
 
 app.post("/api/feira/equipes", exigirAdmin, async (req, res) => {
     try {
-        const { nome, tema, professor, lider, integrantes } = req.body;
-        if (!nome || !tema) return res.status(400).json({ sucesso: false, mensagem: "Preencha nome e tema." });
+        const { nome, tema, professor = "", integrantes = "", lider = "" } = req.body;
+        if (!nome || !tema) return res.status(400).json({ sucesso: false, mensagem: "Preencha nome e tema da equipe." });
         const resultado = await pool.query(
-            "INSERT INTO feira_equipes (nome, tema, professor, lider, integrantes) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-            [nome, tema, professor || null, lider || null, integrantes || null]
+            "INSERT INTO feira_equipes (nome, tema, professor, integrantes, lider) VALUES ($1, $2, $3, $4, $5) RETURNING id, nome, tema, professor, integrantes, lider",
+            [nome, tema, professor, integrantes, lider]
         );
         res.json({ sucesso: true, equipe: resultado.rows[0] });
     } catch (erro) {
@@ -351,11 +344,11 @@ app.post("/api/feira/equipes", exigirAdmin, async (req, res) => {
 
 app.put("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
     try {
-        const { nome, tema, professor, lider, integrantes } = req.body;
-        if (!nome || !tema) return res.status(400).json({ sucesso: false, mensagem: "Preencha nome e tema." });
+        const { nome, tema, professor = "", integrantes = "", lider = "" } = req.body;
+        if (!nome || !tema) return res.status(400).json({ sucesso: false, mensagem: "Preencha nome e tema da equipe." });
         const resultado = await pool.query(
-            "UPDATE feira_equipes SET nome = $1, tema = $2, professor = $3, lider = $4, integrantes = $5 WHERE id = $6 RETURNING *",
-            [nome, tema, professor || null, lider || null, integrantes || null, req.params.id]
+            "UPDATE feira_equipes SET nome = $1, tema = $2, professor = $3, integrantes = $4, lider = $5 WHERE id = $6 RETURNING id, nome, tema, professor, integrantes, lider",
+            [nome, tema, professor, integrantes, lider, req.params.id]
         );
         if (!resultado.rows.length) return res.status(404).json({ sucesso: false, mensagem: "Equipe não encontrada." });
         res.json({ sucesso: true, equipe: resultado.rows[0] });
@@ -377,34 +370,11 @@ app.delete("/api/feira/equipes/:id", exigirAdmin, async (req, res) => {
 
 app.get("/api/feira/decoracoes", exigirLogin, async (req, res) => {
     try {
-        const resultado = await pool.query("SELECT * FROM feira_decoracoes ORDER BY id ASC");
-        res.json(resultado.rows);
+        const resultado = await pool.query("SELECT id, nome, descricao FROM feira_membros ORDER BY id ASC");
+        res.json({ sucesso: true, decoracoes: resultado.rows });
     } catch (erro) {
-        if (erro.code === "42P01") return res.json([]);
         console.error("Erro ao buscar decorações:", erro);
         res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar decorações." });
-    }
-});
-
-app.post("/api/feira/decoracoes", exigirAdmin, async (req, res) => {
-    try {
-        const { tipo, valor } = req.body;
-        await pool.query("CREATE TABLE IF NOT EXISTS feira_decoracoes (id SERIAL PRIMARY KEY, tipo TEXT NOT NULL, valor TEXT NOT NULL)");
-        const resultado = await pool.query("INSERT INTO feira_decoracoes (tipo, valor) VALUES ($1, $2) RETURNING *", [tipo, valor]);
-        res.json({ sucesso: true, decoracao: resultado.rows[0] });
-    } catch (erro) {
-        console.error("Erro ao criar decoração:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao criar decoração." });
-    }
-});
-
-app.delete("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
-    try {
-        await pool.query("DELETE FROM feira_decoracoes WHERE id = $1", [req.params.id]);
-        res.json({ sucesso: true });
-    } catch (erro) {
-        console.error("Erro ao excluir decoração:", erro);
-        res.status(500).json({ sucesso: false, mensagem: "Erro ao excluir decoração." });
     }
 });
 
