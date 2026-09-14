@@ -1,0 +1,36 @@
+name: Garantir rotas do servidor
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  garantir-rotas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Aplicar correções do servidor
+        run: |
+          node fix-expec-api.js
+          node fix-expec-acesso.js
+          node fix-session.js
+
+      - name: Salvar correções
+        run: |
+          if git diff --quiet; then
+            echo "Nenhuma correção adicional necessária."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add server.js
+          git commit -m "fix: aplicar rotas e acesso da EXPEC no servidor principal"
+          git push
