@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="/imagens/favicon.ico">
+    <link rel="icon" href="/favicon.ico?v=20260914" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico?v=20260914" type="image/x-icon">
     <title>Sugestões e contas — Administração</title>
     <link rel="stylesheet" href="style.css?v=20260907">
     <link rel="stylesheet" href="admin-sugestoes.css?v=20260907-1">
@@ -25,31 +26,22 @@
     <h1>Administração</h1>
     <a href="/" class="botao-voltar">Voltar ao site</a>
 </header>
-
 <main class="admin-sugestoes">
     <section class="pedidos-conta-admin">
         <div class="cabecalho-sugestoes">
-            <div>
-                <h2>Pedidos de novas contas</h2>
-                <p id="contador-pedidos-conta">Carregando...</p>
-            </div>
+            <div><h2>Pedidos de novas contas</h2><p id="contador-pedidos-conta">Carregando...</p></div>
             <button type="button" id="botao-atualizar-pedidos">Atualizar</button>
         </div>
         <div id="lista-pedidos-conta" aria-live="polite"></div>
     </section>
-
     <section>
         <div class="cabecalho-sugestoes">
-            <div>
-                <h2>Sugestões recebidas</h2>
-                <p id="contador-sugestoes">Carregando...</p>
-            </div>
+            <div><h2>Sugestões recebidas</h2><p id="contador-sugestoes">Carregando...</p></div>
             <button type="button" id="botao-atualizar">Atualizar</button>
         </div>
         <div id="lista-sugestoes" class="lista-sugestoes" aria-live="polite"></div>
     </section>
 </main>
-
 <script src="admin-sugestoes.js?v=20260911-contas1"></script>
 </body>
 </html>
