@@ -342,6 +342,26 @@ app.get("/api/sessao", (req, res) => {
 require("./rotas-sugestoes-contas")(app, pool);
 
 
+
+
+// Compatibilidade de sessão para páginas antigas
+app.get("/api/sessao", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (!req.session || !req.session.usuario) {
+        return res.json({
+            logado: false,
+            tipo: null,
+            usuario: null
+        });
+    }
+
+    res.json({
+        logado: true,
+        tipo: req.session.usuario.tipo,
+        usuario: req.session.usuario
+    });
+});
+
 // =========================
 // TAREFAS
 // =========================
