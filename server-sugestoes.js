@@ -3,6 +3,16 @@ const fs = require("fs");
 const express = require("express");
 const { Pool } = require("pg");
 const bcrypt = require("bcrypt");
+
+// Garante que a API da EXPEC seja instalada ANTES de carregar o server.js.
+// Isso torna a correção independente do Start Command configurado no Render.
+try {
+    require("./fix-expec-api.js");
+} catch (erro) {
+    console.error("Erro ao preparar a API da EXPEC:", erro);
+    process.exit(1);
+}
+
 const expressOriginal = express;
 const apps = [];
 let escutaSolicitada = null;
