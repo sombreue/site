@@ -7,7 +7,11 @@ async function inicializar(){
  try{
   const sessaoRes=await fetch('/api/sessao'); const sessao=await sessaoRes.json();
   if(!sessao.logado){location.href='/login.html';return;}
-  $('usuario').textContent=sessao.usuario;
+  // /api/sessao retorna o usuário como objeto; usar o nome salvo em usuario.
+  const nomeUsuario = typeof sessao.usuario === 'object'
+   ? (sessao.usuario?.usuario || sessao.usuario?.nome || 'aluno')
+   : sessao.usuario;
+  $('usuario').textContent=nomeUsuario || 'aluno';
   const tarefasRes=await fetch('/api/tarefas-pessoais'); const dados=await tarefasRes.json();
   if(!tarefasRes.ok||!dados.sucesso) throw new Error(dados.mensagem||'Não foi possível carregar suas tarefas.');
   const tarefas=dados.tarefas||[];
