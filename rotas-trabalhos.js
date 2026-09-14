@@ -34,10 +34,10 @@ module.exports = function instalarRotasTrabalhos(app, pool) {
             await tabelaPronta;
             const resultado = await pool.query(`
                 SELECT id, titulo, materia,
-                       TO_CHAR(prazo, 'YYYY-MM-DD') AS prazo,
+                       NULLIF(prazo, '') AS prazo,
                        descricao, vale_ponto
                 FROM trabalhos
-                ORDER BY prazo ASC NULLS LAST, id DESC
+                ORDER BY NULLIF(prazo, '') ASC NULLS LAST, id DESC
             `);
             res.json({ sucesso: true, trabalhos: resultado.rows });
         } catch (e) {
@@ -64,8 +64,8 @@ module.exports = function instalarRotasTrabalhos(app, pool) {
 
             const resultado = await pool.query(`
                 INSERT INTO trabalhos (titulo, materia, prazo, descricao, vale_ponto)
-                VALUES ($1, $2, $3::date, $4, $5)
-                RETURNING id, titulo, materia, TO_CHAR(prazo, 'YYYY-MM-DD') AS prazo, descricao, vale_ponto
+                VALUES ($1, $2, $3, $4, $5)
+                RETURNING id, titulo, materia, prazo, descricao, vale_ponto
             `, [titulo, materia, prazo, descricao, valePonto]);
             res.status(201).json({ sucesso: true, trabalho: resultado.rows[0] });
         } catch (e) {
@@ -97,9 +97,9 @@ module.exports = function instalarRotasTrabalhos(app, pool) {
 
             const resultado = await pool.query(`
                 UPDATE trabalhos
-                SET titulo = $1, materia = $2, prazo = $3::date, descricao = $4, vale_ponto = $5
+                SET titulo = $1, materia = $2, prazo = $3, descricao = $4, vale_ponto = $5
                 WHERE id = $6
-                RETURNING id, titulo, materia, TO_CHAR(prazo, 'YYYY-MM-DD') AS prazo, descricao, vale_ponto
+                RETURNING id, titulo, materia, prazo, descricao, vale_ponto
             `, [titulo, materia, prazo, descricao, valePonto, id]);
 
             if (!resultado.rows.length) {
