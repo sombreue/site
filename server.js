@@ -130,8 +130,6 @@ app.get("/expec.html", async (req, res, next) => {
 });
 
 // Favicon padrão do site.
-// Também atende /favicon.ico, que alguns navegadores solicitam
-// automaticamente, e evita que um favicon antigo fique preso em cache.
 app.get("/favicon.ico", (req, res) => {
     res.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
     res.set("Pragma", "no-cache");
@@ -309,9 +307,18 @@ app.post("/api/login", async (req, res) => {
             tipo: usuarioBanco.tipo
         };
 
-        res.json({
-            sucesso: true,
-            tipo: usuarioBanco.tipo
+        req.session.save((erroSessao) => {
+            if (erroSessao) {
+                console.error("Erro ao salvar sessão de login:", erroSessao);
+                return res.status(500).json({
+                    sucesso: false,
+                    mensagem: "Não foi possível manter a sessão de login."
+                });
+            }
+            res.json({
+                sucesso: true,
+                tipo: usuarioBanco.tipo
+            });
         });
 
     } catch (erro) {
@@ -345,6 +352,24 @@ app.get("/api/usuario", exigirLogin, (req, res) => {
         usuario: req.session.usuario
     });
 });
+
+// Compatibilidade para páginas que ainda usam /api/sessao.
+app.get("/api/sessao", (req, res) => {
+    res.set("Cache-Control", "no-store");
+    if (!req.session?.usuario) {
+        return res.json({ logado: false, tipo: null, usuario: null });
+    }
+    res.json({
+        logado: true,
+        tipo: req.session.usuario.tipo,
+        usuario: req.session.usuario
+    });
+});
+
+// APIs de sugestões e pedidos de novas contas.
+// Instaladas diretamente no server.js porque o Render atualmente inicia
+// este arquivo diretamente, sem depender de scripts de pós-inicialização.
+require("./rotas-sugestoes-contas")(app, pool);
 
 
 // =========================
