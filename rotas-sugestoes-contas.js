@@ -45,13 +45,13 @@ module.exports = function instalarRotasSugestoesContas(app, pool) {
     app.post("/api/sugestoes", exigirLogin, async (req, res) => {
         try {
             await tabelaSugestoesPronta;
-            const nome = String(req.body.nome || "").trim();
+            const nomeUsuario = String(req.session.usuario.usuario || "").trim();
             const sugestao = String(req.body.sugestao || "").trim();
             const tipo = String(req.body.tipo || "sugestao").trim();
-            if (!nome || !sugestao) return res.status(400).json({ sucesso: false, mensagem: "Preencha seu nome e a mensagem." });
+            if (!nomeUsuario || !sugestao) return res.status(400).json({ sucesso: false, mensagem: "Não foi possível identificar seu usuário ou a mensagem está vazia." });
             if (!["sugestao", "bug"].includes(tipo)) return res.status(400).json({ sucesso: false, mensagem: "Tipo de envio inválido." });
-            if (nome.length > 80 || sugestao.length > 1000) return res.status(400).json({ sucesso: false, mensagem: "A mensagem ou o nome ultrapassou o limite permitido." });
-            await pool.query("INSERT INTO sugestoes (nome, sugestao, tipo) VALUES ($1, $2, $3)", [nome, sugestao, tipo]);
+            if (nomeUsuario.length > 80 || sugestao.length > 1000) return res.status(400).json({ sucesso: false, mensagem: "A mensagem ultrapassou o limite permitido." });
+            await pool.query("INSERT INTO sugestoes (nome, sugestao, tipo) VALUES ($1, $2, $3)", [nomeUsuario, sugestao, tipo]);
             res.status(201).json({ sucesso: true, mensagem: "Enviado com sucesso!" });
         } catch (e) {
             console.error("Erro ao salvar sugestão:", e);
