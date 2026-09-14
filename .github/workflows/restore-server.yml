@@ -1,0 +1,30 @@
+name: Restaurar server.js completo
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  restaurar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restaurar server.js da versão completa anterior
+        run: |
+          git checkout 2c7d6453865a966b01b3eff84f1801657d41c62e -- server.js
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add server.js
+          if git diff --cached --quiet; then
+            echo "server.js já está restaurado."
+          else
+            git commit -m "fix: restaurar servidor completo antes da correção da EXPEC"
+            git push
+          fi
