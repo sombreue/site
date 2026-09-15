@@ -28,7 +28,7 @@ module.exports = function instalarRotasTrabalhos(app, pool) {
     app.get("/api/trabalhos", exigirLogin, async (req, res) => {
         try {
             await tabelaPronta;
-            const resultado = await pool.query(`SELECT id, titulo, materia, prazo, descricao, vale_ponto FROM trabalhos ORDER BY prazo ASC NULLS LAST, id DESC`);
+            const resultado = await pool.query(`SELECT id, titulo, materia, prazo, descricao, vale_ponto, criado_em FROM trabalhos ORDER BY prazo ASC NULLS LAST, id DESC`);
             res.json({ sucesso: true, trabalhos: resultado.rows });
         } catch (e) {
             console.error("Erro ao buscar trabalhos:", e);
@@ -46,7 +46,7 @@ module.exports = function instalarRotasTrabalhos(app, pool) {
             const valePonto = req.body.vale_ponto !== false;
             if (!titulo || !materia) return res.status(400).json({ sucesso: false, mensagem: "Preencha título e matéria." });
             if (titulo.length > 160 || materia.length > 80 || descricao.length > 1000) return res.status(400).json({ sucesso: false, mensagem: "Um dos campos ultrapassou o limite permitido." });
-            const resultado = await pool.query(`INSERT INTO trabalhos (titulo, materia, prazo, descricao, vale_ponto) VALUES ($1, $2, $3, $4, $5) RETURNING id, titulo, materia, prazo, descricao, vale_ponto`, [titulo, materia, prazo, descricao, valePonto]);
+            const resultado = await pool.query(`INSERT INTO trabalhos (titulo, materia, prazo, descricao, vale_ponto) VALUES ($1, $2, $3, $4, $5) RETURNING id, titulo, materia, prazo, descricao, vale_ponto, criado_em`, [titulo, materia, prazo, descricao, valePonto]);
             res.status(201).json({ sucesso: true, trabalho: resultado.rows[0] });
         } catch (e) {
             console.error("Erro ao criar trabalho:", e);
@@ -66,7 +66,7 @@ module.exports = function instalarRotasTrabalhos(app, pool) {
             const valePonto = req.body.vale_ponto !== false;
             if (!titulo || !materia) return res.status(400).json({ sucesso: false, mensagem: "Preencha título e matéria." });
             if (titulo.length > 160 || materia.length > 80 || descricao.length > 1000) return res.status(400).json({ sucesso: false, mensagem: "Um dos campos ultrapassou o limite permitido." });
-            const resultado = await pool.query(`UPDATE trabalhos SET titulo = $1, materia = $2, prazo = $3, descricao = $4, vale_ponto = $5 WHERE id = $6 RETURNING id, titulo, materia, prazo, descricao, vale_ponto`, [titulo, materia, prazo, descricao, valePonto, id]);
+            const resultado = await pool.query(`UPDATE trabalhos SET titulo = $1, materia = $2, prazo = $3, descricao = $4, vale_ponto = $5 WHERE id = $6 RETURNING id, titulo, materia, prazo, descricao, vale_ponto, criado_em`, [titulo, materia, prazo, descricao, valePonto, id]);
             if (!resultado.rows.length) return res.status(404).json({ sucesso: false, mensagem: "Trabalho não encontrado." });
             res.json({ sucesso: true, trabalho: resultado.rows[0] });
         } catch (e) {
