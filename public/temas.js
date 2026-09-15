@@ -113,6 +113,54 @@
             color: var(--theme-text) !important;
             border-color: var(--theme-border) !important;
         }
+
+        html[data-theme="quarta-feira"] {
+            --theme-bg:#071006;
+            --theme-surface:#0d1a0a;
+            --theme-surface-2:#13260d;
+            --theme-surface-3:#1a3210;
+            --theme-border:#2e541a;
+            --theme-border-hover:#467b24;
+            --theme-text:#efffe8;
+            --theme-muted:#a8bf96;
+            --theme-accent:#8fe52f;
+            --theme-accent-hover:#adf653;
+            --theme-accent-dark:#4f8f16;
+            --theme-input:#091408;
+            --theme-header:#12250b;
+            --theme-header-2:#091708;
+            --theme-button:#1d3511;
+            --theme-button-hover:#29491a;
+        }
+
+        html[data-theme="quarta-feira"] body::before {
+            content:"";
+            position:fixed;
+            inset:0;
+            pointer-events:none;
+            z-index:-1;
+            opacity:.42;
+            background:
+                radial-gradient(circle at 50% -8%, rgba(143,229,47,.20), transparent 38%),
+                radial-gradient(circle at 15% 75%, rgba(91,181,24,.09), transparent 32%),
+                linear-gradient(135deg, rgba(111,197,24,.025), transparent 42%);
+        }
+
+        html[data-theme="quarta-feira"] header {
+            box-shadow:inset 0 -1px 0 rgba(143,229,47,.22),0 12px 38px rgba(0,0,0,.28);
+        }
+
+        html[data-theme="quarta-feira"] .seletor-tema-botao,
+        html[data-theme="quarta-feira"] .seletor-tema-lista {
+            border-color:#3d6820 !important;
+            box-shadow:0 12px 34px rgba(0,0,0,.32),0 0 22px rgba(143,229,47,.06);
+        }
+
+        html[data-theme="quarta-feira"] .logo,
+        html[data-theme="quarta-feira"] .home-logo {
+            object-fit:contain;
+            filter:drop-shadow(0 5px 14px rgba(0,0,0,.32));
+        }
     `;
     document.head.appendChild(estilo);
 
