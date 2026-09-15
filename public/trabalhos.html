@@ -29,7 +29,7 @@
                 <input type="hidden" id="trabalho-id">
                 <label>Título<input id="admin-titulo" type="text" maxlength="160" required></label>
                 <label>Matéria<input id="admin-materia" type="text" maxlength="80" required></label>
-                <label>Data de entrega<input id="admin-prazo" type="date" required></label>
+                <label>Data de entrega<input id="admin-prazo" type="date"></label>
                 <label class="opcao-vale-ponto"><input id="admin-vale-ponto" type="checkbox" checked> Vale ponto</label>
                 <label class="campo-descricao">Descrição<textarea id="admin-descricao" maxlength="1000" rows="3"></textarea></label>
                 <div class="botoes-admin-trabalho"><button type="submit" id="botao-salvar-trabalho">Criar trabalho</button><button type="button" id="botao-cancelar-trabalho" class="secundario" hidden>Cancelar edição</button></div>
@@ -41,6 +41,6 @@
     <section class="filtros" aria-label="Filtros"><input id="busca" type="search" placeholder="Pesquisar por matéria ou trabalho..."><select id="filtroMateria"><option value="">Todas as matérias</option></select><select id="filtroPrioridade"><option value="">Todas as prioridades</option><option value="minima">Prioridade mínima</option><option value="media">Prioridade média</option><option value="maxima">Prioridade máxima</option><option value="atrasado">Atrasado</option></select></section>
     <section id="listaTrabalhos" class="lista-trabalhos" aria-live="polite"></section>
 </main>
-<script src="trabalhos.js?v=20260908-4"></script>
+<script src="trabalhos.js?v=20260915-adminfix"></script>
 </body>
 </html>
