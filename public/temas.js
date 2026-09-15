@@ -10,6 +10,7 @@
         { id: "sakura", nome: "Sakura", icone: "✿", cor: "#ef78a5", grupo: "Especiais" },
         { id: "arctic", nome: "Arctic", icone: "❄", cor: "#62d9ff", grupo: "Especiais" },
         { id: "turkey", nome: "Turkey", icone: "☾", cor: "#e30a17", grupo: "Especiais" },
+        { id: "quarta-feira", nome: "Quarta-feira", icone: "🐸", cor: "#8fe52f", grupo: "Especiais" },
         { id: "ruby-light", nome: "Ruby Light", icone: "◆", cor: "#d92838", grupo: "Claros" },
         { id: "ocean-light", nome: "Ocean Light", icone: "●", cor: "#0878c9", grupo: "Claros" },
         { id: "violet-light", nome: "Violet Light", icone: "◆", cor: "#7c3dcc", grupo: "Claros" },
@@ -35,7 +36,7 @@
 
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "themes.css?v=20260907-lightfix3";
+    link.href = "themes.css?v=20260915-quarta-feira";
     document.head.appendChild(link);
 
     const estilo = document.createElement("style");
@@ -169,12 +170,24 @@
         root.style.setProperty("color-scheme", "light", "important");
     }
 
+    function atualizarLogos(id) {
+        const logoEspecial = "/imagens/quarta-feira.jpg";
+        document.querySelectorAll(".logo, .home-logo").forEach(logo => {
+            if (!logo.dataset.logoOriginal) {
+                logo.dataset.logoOriginal = logo.getAttribute("src") || "";
+            }
+            logo.src = id === "quarta-feira" ? logoEspecial : logo.dataset.logoOriginal;
+            logo.alt = id === "quarta-feira" ? "Quarta-feira" : "Logo";
+        });
+    }
+
     function aplicarTema(id) {
         if (!temas.some(t => t.id === id)) return;
 
         document.documentElement.classList.add("trocando-tema");
         document.documentElement.dataset.theme = id;
         forcarVariaveisClaras(id);
+        atualizarLogos(id);
         localStorage.setItem(chave, id);
 
         document.querySelectorAll(".tema-opcao").forEach(botao => {
