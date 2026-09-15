@@ -1,1 +1,89 @@
-(()=>{const $=id=>document.getElementById(id);let dados={materias:[],conteudos:[],sessoes:[]};const esc=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));const hoje=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};const materia=id=>dados.materias.find(m=>m.id===Number(id));const conteudo=id=>dados.conteudos.find(c=>c.id===Number(id));const msg=x=>{$('mensagem').textContent=x;setTimeout(()=>{$('mensagem').textContent=''},3000)};async function carregar(){const s=await(await fetch('/api/sessao')).json();if(!s.logado){location.href='/login.html';return}const r=await fetch('/api/estudos'),d=await r.json();if(!d.sucesso)throw Error(d.mensagem||'Não foi possível carregar os estudos.');dados=d;render()}function render(){const agora=new Date(),inicio=new Date(agora);inicio.setHours(0,0,0,0);inicio.setDate(inicio.getDate()-inicio.getDay());const fim=new Date(inicio);fim.setDate(fim.getDate()+7);const semana=dados.sessoes.filter(s=>{const d=new Date(`${s.data}T00:00:00`);return d>=inicio&&d<fim});const minutos=semana.reduce((n,s)=>n+(Number(s.duracao_real)||0),0);$('tempo-semana').textContent=`${Math.floor(minutos/60)}h${minutos%60?String(minutos%60).padStart(2,'0'):''}`;$('sessoes-semana').textContent=semana.length;$('planejadas').textContent=dados.sessoes.filter(s=>s.status==='planejada').length;$('aprendidos').textContent=dados.conteudos.filter(c=>c.status==='aprendido').length;renderMaterias();renderSessoes();preencherMaterias()}function renderMaterias(){const box=$('materias');if(!dados.materias.length){box.innerHTML='<div class="vazio">Nenhuma matéria ainda. Crie a primeira para começar.</div>';return}box.innerHTML=dados.materias.map(m=>{const cs=dados.conteudos.filter(c=>c.materia_id===m.id),apr=cs.filter(c=>c.status==='aprendido').length,p=cs.length?Math.round(apr/cs.length*100):0;return `<article class="materia"><div class="materia-top"><div><h3>${esc(m.nome)}</h3><p>${esc(m.descricao||'Sem descrição')}</p></div><span>${p}%</span></div><div class="barra"><i style="width:${p}%"></i></div><div class="materia-bottom"><small>${apr}/${cs.length} conteúdos aprendidos</small><button data-materia="${m.id}" class="add-conteudo">+ conteúdo</button></div><div class="conteudos">${cs.slice(0,5).map(c=>`<div class="conteudo"><span>${c.status==='aprendido'?'✓':c.status==='estudando'?'◐':'○'}</span><span>${esc(c.titulo)}</span><select data-conteudo="${c.id}"><option value="nao-iniciado" ${c.status==='nao-iniciado'?'selected':''}>Não iniciado</option><option value="estudando" ${c.status==='estudando'?'selected':''}>Estudando</option><option value="aprendido" ${c.status==='aprendido'?'selected':''}>Aprendido</option></select><button data-del-conteudo="${c.id}" aria-label="Excluir">×</button></div>`).join('')}</div></article>`}).join('');document.querySelectorAll('.add-conteudo').forEach(b=>b.onclick=()=>criarConteudo(b.dataset.materia));document.querySelectorAll('[data-conteudo]').forEach(s=>s.onchange=()=>atualizarConteudo(s.dataset.conteudo,s.value));document.querySelectorAll('[data-del-conteudo]').forEach(b=>b.onclick=()=>excluirConteudo(b.dataset.delConteudo))}function renderSessoes(){const box=$('sessoes'),lista=[...dados.sessoes].sort((a,b)=>a.data.localeCompare(b.data)||String(a.hora_inicio||'').localeCompare(String(b.hora_inicio||''))).filter(s=>s.status==='planejada'||s.status==='concluida').slice(0,12);if(!lista.length){box.innerHTML='<div class="vazio">Nenhuma sessão planejada.</div>';return}box.innerHTML=lista.map(s=>{const m=materia(s.materia_id),c=conteudo(s.conteudo_id);return `<article class="sessao ${s.status}"><div><strong>${esc(m?.nome||'Matéria')}</strong><h3>${esc(c?.titulo||'Estudo livre')}</h3><p>${esc(s.data.split('-').reverse().join('/'))}${s.hora_inicio?' · '+esc(s.hora_inicio):''}${s.hora_fim?'–'+esc(s.hora_fim):''} · ${s.duracao_real||s.duracao_planejada||0} min</p>${s.observacao?`<small>${esc(s.observacao)}</small>`:''}</div><div class="acoes-sessao">${s.status==='planejada'?`<button data-concluir="${s.id}" class="botao-principal pequeno">Concluir</button>`:''}<button data-del-sessao="${s.id}" class="botao-secundario pequeno">Excluir</button></div></article>`}).join('');document.querySelectorAll('[data-concluir]').forEach(b=>b.onclick=()=>concluir(b.dataset.concluir));document.querySelectorAll('[data-del-sessao]').forEach(b=>b.onclick=()=>excluirSessao(b.dataset.delSessao))}function preencherMaterias(){const s=$('materia');s.innerHTML=dados.materias.map(m=>`<option value="${m.id}">${esc(m.nome)}</option>`).join('');atualizarConteudosForm()}function atualizarConteudosForm(){const mid=Number($('materia').value),cs=dados.conteudos.filter(c=>c.materia_id===mid);$('conteudo').innerHTML='<option value="">Sem conteúdo específico</option>'+cs.map(c=>`<option value="${c.id}">${esc(c.titulo)}</option>`).join('')}async function api(url,method,body){const r=await fetch(url,{method,headers:{'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});const d=await r.json();if(!d.sucesso)throw Error(d.mensagem||'Operação não concluída.');return d}async function criarConteudo(mid){const titulo=prompt('Nome do conteúdo:');if(!titulo?.trim())return;try{await api('/api/estudos/conteudos','POST',{materia_id:Number(mid),titulo:titulo.trim()});await carregar()}catch(e){msg(e.message)}}async function atualizarConteudo(id,status){try{const c=conteudo(id);await api('/api/estudos/conteudos/'+id,'PUT',{titulo:c.titulo,status});await carregar()}catch(e){msg(e.message)}}async function excluirConteudo(id){if(!confirm('Excluir este conteúdo?'))return;try{await api('/api/estudos/conteudos/'+id,'DELETE');await carregar()}catch(e){msg(e.message)}}async function concluir(id){const s=dados.sessoes.find(x=>x.id===Number(id));const real=prompt(`Quantos minutos você estudou?`,String(s.duracao_planejada||60));if(real===null)return;try{await api('/api/estudos/sessoes/'+id,'PUT',{status:'concluida',duracao_real:Number(real)||0,observacao:s.observacao||''});await carregar()}catch(e){msg(e.message)}}async function excluirSessao(id){if(!confirm('Excluir esta sessão?'))return;try{await api('/api/estudos/sessoes/'+id,'DELETE');await carregar()}catch(e){msg(e.message)}}$('nova-materia').onclick=()=>$('modal-materia').hidden=false;$('fechar-materia').onclick=$('cancelar-materia').onclick=()=>{$('modal-materia').hidden=true};$('form-materia').onsubmit=async e=>{e.preventDefault();try{await api('/api/estudos/materias','POST',{nome:$('nome-materia').value,descricao:$('desc-materia').value});$('form-materia').reset();$('modal-materia').hidden=true;await carregar()}catch(x){msg(x.message)}};$('nova-sessao').onclick=()=>{if(!dados.materias.length){msg('Crie uma matéria primeiro.');return}$('form').reset();$('data').value=hoje();preencherMaterias();$('modal').hidden=false};$('fechar').onclick=$('cancelar').onclick=()=>{$('modal').hidden=true};$('materia').onchange=atualizarConteudosForm;$('form').onsubmit=async e=>{e.preventDefault();try{await api('/api/estudos/sessoes','POST',{materia_id:Number($('materia').value),conteudo_id:$('conteudo').value?Number($('conteudo').value):null,data:$('data').value,hora_inicio:$('inicio').value,hora_fim:$('fim').value,duracao_planejada:Number($('duracao').value)||0,observacao:$('observacao').value});$('modal').hidden=true;await carregar()}catch(x){msg(x.message)}};$('sair').onclick=async()=>{try{await fetch('/api/logout',{method:'POST'})}finally{location.href='/login.html'}};carregar().catch(e=>msg(e.message))})();
+const materiasEl=document.getElementById('materias');
+const sessoesEl=document.getElementById('sessoes');
+const modal=document.getElementById('modal');
+const modalMateria=document.getElementById('modal-materia');
+const mensagem=document.getElementById('mensagem');
+let materias=[];
+let sessoes=[];
+
+async function respostaJson(res){
+    const texto=await res.text();
+    let dados={};
+    try{dados=texto?JSON.parse(texto):{};}catch(e){throw new Error('Resposta inválida do servidor.');}
+    if(!res.ok) throw new Error(dados.mensagem||'Não foi possível concluir a operação.');
+    return dados;
+}
+function avisar(texto){mensagem.textContent=texto;mensagem.classList.add('visivel');setTimeout(()=>mensagem.classList.remove('visivel'),3000);}
+function escapeHtml(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+
+function renderMaterias(){
+    if(!materias.length){materiasEl.innerHTML='<p>Nenhuma matéria cadastrada.</p>';return;}
+    materiasEl.innerHTML=materias.map(m=>`
+        <article class="materia-card">
+            <div class="materia-info">
+                <h3>${escapeHtml(m.nome)}</h3>
+                ${m.descricao?`<p>${escapeHtml(m.descricao)}</p>`:''}
+                <small>${Number(m.total_conteudos||0)} conteúdo(s)</small>
+            </div>
+            <div class="materia-acoes">
+                <button type="button" class="botao-excluir-materia" data-excluir-materia="${m.id}" title="Excluir matéria">Excluir</button>
+            </div>
+        </article>`).join('');
+}
+
+async function carregarMaterias(){
+    const r=await fetch('/api/estudos/materias',{cache:'no-store'});
+    const d=await respostaJson(r);
+    materias=d.materias||[];
+    renderMaterias();
+    const select=document.getElementById('materia');
+    if(select) select.innerHTML=materias.map(m=>`<option value="${m.id}">${escapeHtml(m.nome)}</option>`).join('');
+}
+
+async function excluirMateria(id){
+    const materia=materias.find(m=>Number(m.id)===Number(id));
+    if(!materia)return;
+    const ok=confirm(`Excluir a matéria "${materia.nome}"?\n\nIsso também excluirá os conteúdos e sessões de estudo ligados a ela.`);
+    if(!ok)return;
+    try{
+        const r=await fetch(`/api/estudos/materias/${encodeURIComponent(id)}`,{method:'DELETE',headers:{'Accept':'application/json'},cache:'no-store'});
+        await respostaJson(r);
+        avisar('Matéria excluída com sucesso.');
+        await Promise.all([carregarMaterias(),carregarSessoes()]);
+    }catch(e){avisar(e.message);}
+}
+
+materiasEl.addEventListener('click',e=>{
+    const botao=e.target.closest('[data-excluir-materia]');
+    if(botao) excluirMateria(botao.dataset.excluirMateria);
+});
+
+async function carregarSessoes(){
+    try{
+        const r=await fetch('/api/estudos/sessoes',{cache:'no-store'});
+        const d=await respostaJson(r);
+        sessoes=d.sessoes||[];
+        renderSessoes();
+    }catch(e){sessoesEl.innerHTML=`<p>${escapeHtml(e.message)}</p>`;}
+}
+function renderSessoes(){
+    if(!sessoes.length){sessoesEl.innerHTML='<p>Nenhuma sessão planejada.</p>';return;}
+    sessoesEl.innerHTML=sessoes.map(s=>`<article class="sessao-card"><strong>${escapeHtml(s.materia_nome||s.materia||'Matéria')}</strong><span>${escapeHtml(s.conteudo_nome||s.conteudo||'Sem conteúdo específico')}</span><time>${escapeHtml(s.data||'')}</time></article>`).join('');
+}
+
+document.getElementById('nova-materia')?.addEventListener('click',()=>modalMateria.hidden=false);
+document.getElementById('fechar-materia')?.addEventListener('click',()=>modalMateria.hidden=true);
+document.getElementById('cancelar-materia')?.addEventListener('click',()=>modalMateria.hidden=true);
+document.getElementById('form-materia')?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    try{
+        const r=await fetch('/api/estudos/materias',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nome:document.getElementById('nome-materia').value.trim(),descricao:document.getElementById('desc-materia').value.trim()})});
+        await respostaJson(r);
+        e.target.reset();modalMateria.hidden=true;avisar('Matéria criada com sucesso.');await carregarMaterias();
+    }catch(err){avisar(err.message);}
+});
+
+async function inicializar(){
+    try{await carregarMaterias();await carregarSessoes();}catch(e){materiasEl.innerHTML=`<p>${escapeHtml(e.message)}</p>`;}
+}
+inicializar();
