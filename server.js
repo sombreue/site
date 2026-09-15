@@ -9,6 +9,8 @@ const { Pool } = require("pg");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+console.log(`[START] Iniciando servidor | NODE_ENV=${process.env.NODE_ENV || "development"} | PORT=${PORT}`);
+
 // O Render fica atrás de um proxy HTTPS. Confiar no primeiro proxy permite
 // que express-session reconheça a conexão original como HTTPS e envie o
 // cookie de sessão com Secure corretamente.
@@ -124,18 +126,28 @@ function exigirAdmin(req, res, next) {
 }
 
 app.post("/api/login", async (req, res) => {
+    const usuarioInformado = typeof req.body?.usuario === "string" ? req.body.usuario : "";
+    console.log(`[LOGIN] Tentativa | Usuário: ${usuarioInformado || "(vazio)"}`);
+
     try {
         const { usuario, senha } = req.body;
-        if (!usuario || !senha) return res.status(400).json({ sucesso: false, mensagem: "Preencha usuário e senha." });
+        if (!usuario || !senha) {
+            console.log(`[LOGIN] FALHA | Usuário: ${usuarioInformado || "(vazio)"} | Motivo: campos obrigatórios ausentes`);
+            return res.status(400).json({ sucesso: false, mensagem: "Preencha usuário e senha." });
+        }
 
         const resultado = await pool.query(
             "SELECT id, usuario, senha, tipo FROM usuarios WHERE usuario = $1",
             [usuario]
         );
-        if (!resultado.rows.length) return res.status(401).json({ sucesso: false, mensagem: "Usuário ou senha incorretos." });
+        if (!resultado.rows.length) {
+            console.log(`[LOGIN] FALHA | Usuário: ${usuarioInformado} | Motivo: usuário não encontrado`);
+            return res.status(401).json({ sucesso: false, mensagem: "Usuário ou senha incorretos." });
+        }
 
         const usuarioBanco = resultado.rows[0];
         if (!(await bcrypt.compare(senha, usuarioBanco.senha))) {
+            console.log(`[LOGIN] FALHA | Usuário: ${usuarioBanco.usuario} | Motivo: senha incorreta`);
             return res.status(401).json({ sucesso: false, mensagem: "Usuário ou senha incorretos." });
         }
 
@@ -150,6 +162,9 @@ app.post("/api/login", async (req, res) => {
                 console.error("Erro ao salvar sessão de login:", erroSessao);
                 return res.status(500).json({ sucesso: false, mensagem: "Não foi possível manter a sessão de login." });
             }
+
+            const tipoLog = usuarioBanco.tipo === "admin" ? "ADM" : "USER";
+            console.log(`[LOGIN] SUCESSO | Usuário: ${usuarioBanco.usuario} | Tipo: ${tipoLog}`);
             res.json({ sucesso: true, tipo: usuarioBanco.tipo });
         });
     } catch (erro) {
@@ -447,6 +462,7 @@ app.delete("/api/feira/decoracoes/:id", exigirAdmin, async (req, res) => {
 
 criarTabelas()
     .then(() => {
+        console.log("[START] Tabelas verificadas/criadas. Iniciando Express...");
         app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
     })
     .catch(erro => {
