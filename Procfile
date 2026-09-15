@@ -1,1 +1,1 @@
-web: node render-login-logger.js
+web: node start.js
