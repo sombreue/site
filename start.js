@@ -1,26 +1,49 @@
-// Inicializador do Render: registra logins de forma independente da rota /api/login.
+require("dotenv").config();
+
+// Ponto de entrada do Render. Instrumenta o Express ANTES de server.js ser carregado.
 const express = require("express");
+const originalExpress = express;
 
-// O middleware roda para toda requisição e registra somente logins bem-sucedidos.
-// Ele não registra senha nem outros dados sensíveis.
-const useOriginal = express.application.use;
-express.application.use = function (...args) {
-    const middleware = function (req, res, next) {
-        if (req.method === "POST" && req.path === "/api/login") {
-            const usuarioInformado = req.body?.usuario;
-            const finalizar = () => {
-                if (res.statusCode >= 200 && res.statusCode < 300 && usuarioInformado) {
-                    const usuarioSessao = req.session?.usuario;
-                    const tipo = usuarioSessao?.tipo === "admin" ? "ADM" : "USER";
-                    const nome = usuarioSessao?.usuario || usuarioInformado;
-                    console.log(`[LOGIN] Usuário: ${nome} | Tipo: ${tipo}`);
-                }
-            };
-            res.once("finish", finalizar);
+function expressComLog(...args) {
+    const app = originalExpress(...args);
+    const originalPost = app.post.bind(app);
+
+    app.post = function (path, ...handlers) {
+        if (path === "/api/login") {
+            console.log("[LOGIN] Rota /api/login registrada.");
+
+            handlers = handlers.map(handler => {
+                if (typeof handler !== "function") return handler;
+
+                return function loginInstrumentado(req, res, next) {
+                    const usuario = typeof req.body?.usuario === "string" ? req.body.usuario : "";
+                    console.log(`[LOGIN] Tentativa | Usuário: ${usuario || "(vazio)"}`);
+
+                    const jsonOriginal = res.json.bind(res);
+                    res.json = function (dados) {
+                        if (dados?.sucesso === true) {
+                            const tipo = dados.tipo === "admin" ? "ADM" : "USER";
+                            console.log(`[LOGIN] SUCESSO | Usuário: ${usuario || "(vazio)"} | Tipo: ${tipo}`);
+                        } else if (dados?.sucesso === false) {
+                            console.log(`[LOGIN] FALHA | Usuário: ${usuario || "(vazio)"} | Motivo: ${dados.mensagem || "não informado"}`);
+                        }
+                        return jsonOriginal(dados);
+                    };
+
+                    return handler(req, res, next);
+                };
+            });
         }
-        next();
-    };
-    return useOriginal.call(this, middleware, ...args);
-};
 
+        return originalPost(path, ...handlers);
+    };
+
+    return app;
+}
+
+Object.assign(expressComLog, originalExpress);
+require.cache[require.resolve("express")].exports = expressComLog;
+
+console.log("[START] Inicializando aplicação...");
 require("./server-sugestoes.js");
+console.log("[START] Aplicação carregada.");
