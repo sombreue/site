@@ -4,7 +4,7 @@
   "description": "Sistema de tarefas da turma",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node start.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
