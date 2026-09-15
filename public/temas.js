@@ -3,9 +3,6 @@
         { id: "ruby", nome: "Ruby", icone: "◆", cor: "#ef3340", grupo: "Escuros" },
         { id: "ocean", nome: "Ocean", icone: "●", cor: "#2196f3", grupo: "Escuros" },
         { id: "violet", nome: "Violet", icone: "◆", cor: "#9c5cff", grupo: "Escuros" },
-        { id: "emerald", nome: "Emerald", icone: "●", cor: "#20c77a", grupo: "Escuros" },
-        { id: "amber", nome: "Amber", icone: "◆", cor: "#f0a51a", grupo: "Escuros" },
-        { id: "ice", nome: "Ice", icone: "●", cor: "#55d8ff", grupo: "Escuros" },
         { id: "midnight", nome: "Midnight", icone: "✦", cor: "#6875ff", grupo: "Especiais" },
         { id: "bordeaux", nome: "Bordeaux", icone: "◆", cor: "#9e1638", grupo: "Especiais" },
         { id: "ancient", nome: "Ancient", icone: "◈", cor: "#c9a227", grupo: "Especiais" },
@@ -16,9 +13,6 @@
         { id: "ruby-light", nome: "Ruby Light", icone: "◆", cor: "#d92838", grupo: "Claros" },
         { id: "ocean-light", nome: "Ocean Light", icone: "●", cor: "#0878c9", grupo: "Claros" },
         { id: "violet-light", nome: "Violet Light", icone: "◆", cor: "#7c3dcc", grupo: "Claros" },
-        { id: "emerald-light", nome: "Emerald Light", icone: "●", cor: "#07935a", grupo: "Claros" },
-        { id: "amber-light", nome: "Amber Light", icone: "◆", cor: "#bd7900", grupo: "Claros" },
-        { id: "ice-light", nome: "Ice Light", icone: "●", cor: "#089fc7", grupo: "Claros" },
         { id: "system", nome: "Sistema", icone: "◐", cor: "#888", grupo: "Automático" }
     ];
 
@@ -31,15 +25,6 @@
         },
         "violet-light": {
             bg: "#f7f4fa", surface: "#ffffff", surface2: "#f0eaf6", surface3: "#e8dff0", border: "#dacde3", borderHover: "#bea9cb", text: "#21192a", muted: "#75667e", accent: "#7c3dcc", accentHover: "#9553e8", accentDark: "#5d249f", input: "#ffffff", header: "#ffffff", header2: "#f5f0f8", button: "#ede5f3", buttonHover: "#e1d5e9"
-        },
-        "emerald-light": {
-            bg: "#f2f8f5", surface: "#ffffff", surface2: "#e8f3ed", surface3: "#dcece4", border: "#c8ded2", borderHover: "#a9c8b7", text: "#17251e", muted: "#60766a", accent: "#07935a", accentHover: "#12b76e", accentDark: "#056b41", input: "#ffffff", header: "#ffffff", header2: "#edf6f1", button: "#e1eee7", buttonHover: "#d2e4da"
-        },
-        "amber-light": {
-            bg: "#fbf8f0", surface: "#ffffff", surface2: "#f7f0df", surface3: "#eee4ca", border: "#dfd2b5", borderHover: "#c8b78f", text: "#2b2418", muted: "#786b54", accent: "#bd7900", accentHover: "#d89400", accentDark: "#8c5b00", input: "#ffffff", header: "#fffdf8", header2: "#f8f1e2", button: "#f0e7d2", buttonHover: "#e6dac0"
-        },
-        "ice-light": {
-            bg: "#f2f9fc", surface: "#ffffff", surface2: "#e8f5fa", surface3: "#dceef4", border: "#c7dfe8", borderHover: "#a7c9d5", text: "#17272d", muted: "#607b85", accent: "#089fc7", accentHover: "#18b9e2", accentDark: "#087b99", input: "#ffffff", header: "#ffffff", header2: "#edf7fa", button: "#e1f0f5", buttonHover: "#d1e6ed"
         }
     };
 
