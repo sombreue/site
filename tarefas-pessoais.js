@@ -33,14 +33,14 @@ module.exports = function registrarTarefasPessoais(app, pool, exigirLogin) {
             await tabelaPronta;
             const [agenda,trabalhos]=await Promise.all([
                 pool.query(`SELECT id,data,materia,descricao FROM tarefas ORDER BY data DESC,id DESC`),
-                pool.query(`SELECT id,titulo,materia,prazo,descricao,vale_ponto,criado_em FROM trabalhos ORDER BY prazo ASC NULLS LAST,id DESC`)
+                pool.query(`SELECT id,titulo,materia,prazo,descricao,vale_ponto,criado_em,to_char(criado_em AT TIME ZONE 'America/Fortaleza','YYYY-MM-DD') AS data_passada FROM trabalhos ORDER BY prazo ASC NULLS LAST,id DESC`)
             ]);
             const usadas=await pool.query(`SELECT origem_tipo,origem_id FROM tarefas_pessoais WHERE usuario_id=$1 AND origem_tipo IS NOT NULL AND origem_id IS NOT NULL`,[req.session.usuario.id]);
             const chaveUsada=new Set(usadas.rows.map(x=>`${x.origem_tipo}:${x.origem_id}`));
             res.json({
                 sucesso:true,
                 agenda:agenda.rows.map(x=>({...x,origem_tipo:'agenda',data_passada:x.data,já_adicionada:chaveUsada.has(`agenda:${x.id}`)})),
-                trabalhos:trabalhos.rows.map(x=>({...x,origem_tipo:'trabalho',data_passada:x.criado_em ? new Date(x.criado_em).toISOString().slice(0,10) : null,já_adicionada:chaveUsada.has(`trabalho:${x.id}`)}))
+                trabalhos:trabalhos.rows.map(x=>({...x,origem_tipo:'trabalho',já_adicionada:chaveUsada.has(`trabalho:${x.id}`)}))
             });
         }catch(e){console.error(e);res.status(500).json({sucesso:false,mensagem:'Erro ao carregar tarefas disponíveis.'});}
     });
@@ -65,10 +65,10 @@ module.exports = function registrarTarefasPessoais(app, pool, exigirLogin) {
                 item=r.rows[0];
                 dataPassada=item.data;
             }else{
-                const r=await pool.query(`SELECT id,titulo,materia,prazo,descricao,criado_em FROM trabalhos WHERE id=$1`,[origemId]);
+                const r=await pool.query(`SELECT id,titulo,materia,prazo,descricao,criado_em,to_char(criado_em AT TIME ZONE 'America/Fortaleza','YYYY-MM-DD') AS data_passada FROM trabalhos WHERE id=$1`,[origemId]);
                 if(!r.rows.length)return res.status(404).json({sucesso:false,mensagem:'O trabalho não existe mais.'});
                 item=r.rows[0];
-                dataPassada=item.criado_em ? new Date(item.criado_em).toISOString().slice(0,10) : null;
+                dataPassada=item.data_passada;
             }
 
             const jaExiste=await pool.query(`SELECT id FROM tarefas_pessoais WHERE usuario_id=$1 AND origem_tipo=$2 AND origem_id=$3 AND status<>'concluida' LIMIT 1`,[req.session.usuario.id,origemTipo,origemId]);
