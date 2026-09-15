@@ -10,6 +10,8 @@ module.exports = function instalarRotasTrabalhos(app, pool) {
         next();
     }
 
+    // Mantém a tabela compatível mesmo se ela tiver sido criada por uma versão
+    // anterior da página de Trabalhos & Pesquisas.
     const tabelaPronta = (async () => {
         await pool.query(`CREATE TABLE IF NOT EXISTS trabalhos (
             id SERIAL PRIMARY KEY,
@@ -20,8 +22,17 @@ module.exports = function instalarRotasTrabalhos(app, pool) {
             vale_ponto BOOLEAN NOT NULL DEFAULT TRUE,
             criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
         )`);
-        await pool.query(`ALTER TABLE trabalhos ADD COLUMN IF NOT EXISTS vale_ponto BOOLEAN NOT NULL DEFAULT TRUE`);
+
+        await pool.query(`ALTER TABLE trabalhos ADD COLUMN IF NOT EXISTS titulo TEXT`);
+        await pool.query(`ALTER TABLE trabalhos ADD COLUMN IF NOT EXISTS materia TEXT`);
+        await pool.query(`ALTER TABLE trabalhos ADD COLUMN IF NOT EXISTS prazo TEXT`);
+        await pool.query(`ALTER TABLE trabalhos ADD COLUMN IF NOT EXISTS descricao TEXT DEFAULT ''`);
+        await pool.query(`ALTER TABLE trabalhos ADD COLUMN IF NOT EXISTS vale_ponto BOOLEAN DEFAULT TRUE`);
+        await pool.query(`ALTER TABLE trabalhos ADD COLUMN IF NOT EXISTS criado_em TIMESTAMPTZ DEFAULT NOW()`);
         await pool.query(`ALTER TABLE trabalhos ALTER COLUMN prazo DROP NOT NULL`);
+        await pool.query(`ALTER TABLE trabalhos ALTER COLUMN descricao SET DEFAULT ''`);
+        await pool.query(`ALTER TABLE trabalhos ALTER COLUMN vale_ponto SET DEFAULT TRUE`);
+        await pool.query(`ALTER TABLE trabalhos ALTER COLUMN criado_em SET DEFAULT NOW()`);
     })();
     tabelaPronta.catch(e => console.error("Erro ao preparar tabela de trabalhos:", e));
 
@@ -44,9 +55,16 @@ module.exports = function instalarRotasTrabalhos(app, pool) {
             const prazo = req.body.prazo ? String(req.body.prazo).slice(0, 10) : null;
             const descricao = String(req.body.descricao || "").trim();
             const valePonto = req.body.vale_ponto !== false;
+
             if (!titulo || !materia) return res.status(400).json({ sucesso: false, mensagem: "Preencha título e matéria." });
             if (titulo.length > 160 || materia.length > 80 || descricao.length > 1000) return res.status(400).json({ sucesso: false, mensagem: "Um dos campos ultrapassou o limite permitido." });
-            const resultado = await pool.query(`INSERT INTO trabalhos (titulo, materia, prazo, descricao, vale_ponto) VALUES ($1, $2, $3, $4, $5) RETURNING id, titulo, materia, prazo, descricao, vale_ponto, criado_em`, [titulo, materia, prazo, descricao, valePonto]);
+
+            const resultado = await pool.query(
+                `INSERT INTO trabalhos (titulo, materia, prazo, descricao, vale_ponto)
+                 VALUES ($1, $2, $3, $4, $5)
+                 RETURNING id, titulo, materia, prazo, descricao, vale_ponto, criado_em`,
+                [titulo, materia, prazo, descricao, valePonto]
+            );
             res.status(201).json({ sucesso: true, trabalho: resultado.rows[0] });
         } catch (e) {
             console.error("Erro ao criar trabalho:", e);
