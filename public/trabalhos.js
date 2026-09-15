@@ -44,10 +44,10 @@ function escaparHtml(valor){
 async function lerRespostaJson(resposta, mensagemPadrao){
     const tipo = resposta.headers.get('content-type') || '';
     const texto = await resposta.text();
-    if(!tipo.toLowerCase().includes('application/json')) throw new Error('A API de trabalhos não está disponível no servidor publicado. Faça um novo deploy do backend.');
+    if(!tipo.toLowerCase().includes('application/json')) throw new Error('A API não retornou JSON.');
     let dados;
     try{ dados = JSON.parse(texto); }catch{ throw new Error('O servidor retornou uma resposta inválida.'); }
-    if(!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || mensagemPadrao);
+    if(!resposta.ok || dados.sucesso === false) throw new Error(dados.mensagem || mensagemPadrao);
     return dados;
 }
 
@@ -59,6 +59,17 @@ function atualizarMaterias(){
         const option = document.createElement('option'); option.value = materia; option.textContent = materia; filtroMateria.appendChild(option);
     });
     if(materias.includes(atual)) filtroMateria.value = atual;
+}
+
+function ehAdmin(){
+    return usuarioSessao && String(usuarioSessao.tipo || '').toLowerCase() === 'admin';
+}
+
+function ativarPainelAdmin(){
+    if(!ehAdmin()) return;
+    painelAdmin.hidden = false;
+    painelAdmin.removeAttribute('hidden');
+    preencherFormulario(null);
 }
 
 function renderizar(){
@@ -81,7 +92,7 @@ function renderizar(){
     lista.innerHTML = filtrados.map(t => {
         const prioridade = calcularPrioridade(t.prazo);
         const valePonto = t.vale_ponto !== false;
-        const controles = usuarioSessao?.tipo === 'admin' ? `<div class="controles-trabalho"><button type="button" data-editar="${t.id}">Editar</button><button type="button" class="excluir" data-excluir="${t.id}">Excluir</button></div>` : '';
+        const controles = ehAdmin() ? `<div class="controles-trabalho"><button type="button" data-editar="${t.id}">Editar</button><button type="button" class="excluir" data-excluir="${t.id}">Excluir</button></div>` : '';
         return `<article class="trabalho">
             <div class="trabalho-topo"><div><div class="materia">${escaparHtml(t.materia)}</div><h2>${escaparHtml(t.titulo)}</h2></div><span class="prioridade ${prioridade.classe}">${prioridade.nome}</span></div>
             <p class="descricao">${escaparHtml(t.descricao || '')}</p>
@@ -92,7 +103,7 @@ function renderizar(){
 }
 
 async function carregarTrabalhos(){
-    try{ const resposta = await fetch('/api/trabalhos'); const dados = await lerRespostaJson(resposta, 'Falha ao carregar trabalhos.'); trabalhos = dados.trabalhos || []; atualizarMaterias(); renderizar(); }
+    try{ const resposta = await fetch('/api/trabalhos', {cache:'no-store'}); const dados = await lerRespostaJson(resposta, 'Falha ao carregar trabalhos.'); trabalhos = dados.trabalhos || []; atualizarMaterias(); renderizar(); }
     catch(erro){ console.error(erro); lista.innerHTML = `<div class="vazio">${escaparHtml(erro.message || 'Não foi possível carregar os trabalhos.')}</div>`; }
 }
 
@@ -116,9 +127,6 @@ formAdmin.addEventListener('submit', async evento => {
         prazo: document.getElementById('admin-prazo').value,
         descricao: document.getElementById('admin-descricao').value.trim(),
         vale_ponto: document.getElementById('admin-vale-ponto').checked,
-        // O backend atualmente publicado também exige o campo status.
-        // A interface usa "pendente" como estado padrão, então ele é enviado
-        // tanto na criação quanto na edição para manter as duas APIs compatíveis.
         status: 'pendente'
     };
     statusAdmin.textContent = id ? 'Salvando...' : 'Criando...';
@@ -147,8 +155,36 @@ botaoMinAdmin.addEventListener('click',()=>{const minimizado=conteudoAdmin.hidde
 [busca,filtroMateria,filtroPrioridade].forEach(el=>el.addEventListener('input',renderizar));
 
 async function inicializar(){
-    try{const resposta=await fetch('/api/sessao');const sessao=await lerRespostaJson(resposta,'Não foi possível verificar a sessão.');usuarioSessao=sessao.logado?sessao:null;if(usuarioSessao?.tipo==='admin'){painelAdmin.hidden=false;preencherFormulario(null);}}
-    catch(erro){usuarioSessao=null;}
+    // /api/sessao é uma rota de sessão antiga e não possui "sucesso".
+    // Por isso ela não pode passar pelo validador genérico da API.
+    try{
+        const resposta = await fetch('/api/sessao', {cache:'no-store', credentials:'same-origin'});
+        const texto = await resposta.text();
+        const sessao = JSON.parse(texto);
+        if(sessao.logado && sessao.usuario){
+            usuarioSessao = sessao.usuario;
+        } else if(sessao.logado && sessao.tipo){
+            usuarioSessao = {tipo:sessao.tipo};
+        }
+    }catch(erro){
+        console.error('Falha ao consultar /api/sessao:', erro);
+        usuarioSessao = null;
+    }
+
+    // Fallback direto na API autenticada do usuário. Isso deixa a identificação
+    // do ADM independente do formato da rota /api/sessao.
+    if(!ehAdmin()){
+        try{
+            const resposta = await fetch('/api/usuario', {cache:'no-store', credentials:'same-origin'});
+            if(resposta.ok){
+                const dados = await resposta.json();
+                if(dados.usuario) usuarioSessao = dados.usuario;
+            }
+        }catch(erro){ console.error('Falha ao consultar /api/usuario:', erro); }
+    }
+
+    if(ehAdmin()) ativarPainelAdmin();
+    renderizar();
     await carregarTrabalhos();
 }
 
