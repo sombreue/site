@@ -110,12 +110,29 @@ function preencherFormulario(trabalho){
 formAdmin.addEventListener('submit', async evento => {
     evento.preventDefault();
     const id = document.getElementById('trabalho-id').value;
-    const payload = {titulo:document.getElementById('admin-titulo').value.trim(),materia:document.getElementById('admin-materia').value.trim(),prazo:document.getElementById('admin-prazo').value,descricao:document.getElementById('admin-descricao').value.trim(),vale_ponto:document.getElementById('admin-vale-ponto').checked};
+    const payload = {
+        titulo: document.getElementById('admin-titulo').value.trim(),
+        materia: document.getElementById('admin-materia').value.trim(),
+        prazo: document.getElementById('admin-prazo').value,
+        descricao: document.getElementById('admin-descricao').value.trim(),
+        vale_ponto: document.getElementById('admin-vale-ponto').checked,
+        // O backend atualmente publicado também exige o campo status.
+        // A interface usa "pendente" como estado padrão, então ele é enviado
+        // tanto na criação quanto na edição para manter as duas APIs compatíveis.
+        status: 'pendente'
+    };
     statusAdmin.textContent = id ? 'Salvando...' : 'Criando...';
     try{
-        const resposta = await fetch(id ? `/api/trabalhos/${id}` : '/api/trabalhos',{method:id?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-        await lerRespostaJson(resposta,'Não foi possível salvar.'); statusAdmin.textContent=id?'Trabalho atualizado.':'Trabalho criado.'; preencherFormulario(null); await carregarTrabalhos();
-    }catch(erro){ statusAdmin.textContent=erro.message; }
+        const resposta = await fetch(id ? `/api/trabalhos/${id}` : '/api/trabalhos', {
+            method: id ? 'PUT' : 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify(payload)
+        });
+        await lerRespostaJson(resposta,'Não foi possível salvar.');
+        statusAdmin.textContent = id ? 'Trabalho atualizado.' : 'Trabalho criado.';
+        preencherFormulario(null);
+        await carregarTrabalhos();
+    }catch(erro){ statusAdmin.textContent = erro.message; }
 });
 
 document.getElementById('botao-cancelar-trabalho').addEventListener('click',()=>{preencherFormulario(null);statusAdmin.textContent='';});
