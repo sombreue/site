@@ -1,23 +1,26 @@
-// Inicializador do Render: adiciona o registro de login antes de carregar o servidor real.
+// Inicializador do Render: registra logins de forma independente da rota /api/login.
 const express = require("express");
 
-const postOriginal = express.application.post;
-express.application.post = function (path, ...handlers) {
-    if (path === "/api/login" && handlers.length) {
-        const ultimo = handlers[handlers.length - 1];
-        handlers[handlers.length - 1] = function (req, res, next) {
-            const jsonOriginal = res.json.bind(res);
-            res.json = function (dados) {
-                if (dados?.sucesso === true && req.body?.usuario) {
-                    const tipo = dados.tipo === "admin" ? "ADM" : "USER";
-                    console.log(`[LOGIN] Usuário: ${req.body.usuario} | Tipo: ${tipo}`);
+// O middleware roda para toda requisição e registra somente logins bem-sucedidos.
+// Ele não registra senha nem outros dados sensíveis.
+const useOriginal = express.application.use;
+express.application.use = function (...args) {
+    const middleware = function (req, res, next) {
+        if (req.method === "POST" && req.path === "/api/login") {
+            const usuarioInformado = req.body?.usuario;
+            const finalizar = () => {
+                if (res.statusCode >= 200 && res.statusCode < 300 && usuarioInformado) {
+                    const usuarioSessao = req.session?.usuario;
+                    const tipo = usuarioSessao?.tipo === "admin" ? "ADM" : "USER";
+                    const nome = usuarioSessao?.usuario || usuarioInformado;
+                    console.log(`[LOGIN] Usuário: ${nome} | Tipo: ${tipo}`);
                 }
-                return jsonOriginal(dados);
             };
-            return ultimo(req, res, next);
-        };
-    }
-    return postOriginal.call(this, path, ...handlers);
+            res.once("finish", finalizar);
+        }
+        next();
+    };
+    return useOriginal.call(this, middleware, ...args);
 };
 
 require("./server-sugestoes.js");
