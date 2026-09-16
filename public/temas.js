@@ -30,8 +30,11 @@
     };
 
     const chave = "agenda-auruda-tema";
+    const ehQuartaFeira = () => new Date().getDay() === 3;
     const temaSalvo = localStorage.getItem(chave) || "ruby";
-    const temaInicial = temas.some(t => t.id === temaSalvo) ? temaSalvo : "ruby";
+    const temaInicial = ehQuartaFeira()
+        ? "quarta-feira"
+        : (temas.some(t => t.id === temaSalvo) ? temaSalvo : "ruby");
     document.documentElement.dataset.theme = temaInicial;
 
     const link = document.createElement("link");
@@ -161,6 +164,12 @@
             object-fit:contain;
             filter:drop-shadow(0 5px 14px rgba(0,0,0,.32));
         }
+
+        .tema-opcao:disabled {
+            opacity:.38;
+            cursor:not-allowed;
+            filter:grayscale(.35);
+        }
     `;
     document.head.appendChild(estilo);
 
@@ -230,6 +239,9 @@
     }
 
     function aplicarTema(id) {
+        if (ehQuartaFeira() && id !== "quarta-feira") {
+            id = "quarta-feira";
+        }
         if (!temas.some(t => t.id === id)) return;
 
         document.documentElement.classList.add("trocando-tema");
@@ -247,6 +259,24 @@
         if (nome && tema) nome.textContent = tema.nome;
 
         window.setTimeout(() => document.documentElement.classList.remove("trocando-tema"), 260);
+    }
+
+    function atualizarObrigatoriedadeQuartaFeira() {
+        const obrigatorio = ehQuartaFeira();
+
+        document.querySelectorAll(".tema-opcao").forEach(opcao => {
+            const desabilitar = obrigatorio && opcao.dataset.tema !== "quarta-feira";
+            opcao.disabled = desabilitar;
+            if (desabilitar) {
+                opcao.title = "Na quarta-feira, o tema Quarta-feira é obrigatório.";
+            } else {
+                opcao.removeAttribute("title");
+            }
+        });
+
+        if (obrigatorio && document.documentElement.dataset.theme !== "quarta-feira") {
+            aplicarTema("quarta-feira");
+        }
     }
 
     function criarSeletor() {
@@ -328,6 +358,8 @@
         wrapper.append(botao, lista);
         document.body.appendChild(wrapper);
         aplicarTema(document.documentElement.dataset.theme);
+        atualizarObrigatoriedadeQuartaFeira();
+        window.setInterval(atualizarObrigatoriedadeQuartaFeira, 60000);
     }
 
     if (document.readyState === "loading") {
