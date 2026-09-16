@@ -3,6 +3,7 @@ let editandoId = null;
 
 const $ = id => document.getElementById(id);
 const periodoOrdem = {'1º bimestre':1,'2º bimestre':2,'3º bimestre':3,'4º bimestre':4};
+const catalogoMaterias = Array.isArray(window.MATERIAS_AGENDA) ? window.MATERIAS_AGENDA : [];
 
 function formatarNota(valor){
     return Number(valor).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -14,10 +15,20 @@ function media(itens){
     return itens.reduce((s,n)=>s+Number(n.nota)*Number(n.peso),0)/somaPeso;
 }
 
+function preencherCatalogoMaterias(valorAtual=''){
+    const select = $('materia');
+    if(!select) return;
+    const materiasDasNotas = notas.map(n=>n.materia).filter(Boolean);
+    const materias = [...new Set([...catalogoMaterias, ...materiasDasNotas])].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    if(valorAtual && !materias.includes(valorAtual)) materias.push(valorAtual);
+    select.innerHTML = '<option value="">Selecione a matéria</option>' + materias.map(m=>`<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
+    if(valorAtual) select.value = valorAtual;
+}
+
 function abrirForm(nota=null){
     editandoId = nota?.id || null;
     $('titulo-form').textContent = nota ? 'Editar nota' : 'Adicionar nota';
-    $('materia').value = nota?.materia || '';
+    preencherCatalogoMaterias(nota?.materia || '');
     $('periodo').value = nota?.periodo || '1º bimestre';
     $('nota').value = nota?.nota ?? '';
     $('peso').value = nota?.peso ?? 1;
@@ -31,8 +42,9 @@ function fecharForm(){ editandoId=null; $('painel').hidden=true; $('form-nota').
 
 function atualizarFiltros(){
     const atual = $('filtro-materia').value;
-    const materias = [...new Set(notas.map(n=>n.materia).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-    $('filtro-materia').innerHTML = '<option value="">Todas as matérias</option>' + materias.map(m=>`<option>${escapeHtml(m)}</option>`).join('');
+    const materiasDasNotas = notas.map(n=>n.materia).filter(Boolean);
+    const materias = [...new Set([...catalogoMaterias, ...materiasDasNotas])].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    $('filtro-materia').innerHTML = '<option value="">Todas as matérias</option>' + materias.map(m=>`<option value="${escapeHtml(m)}">${escapeHtml(m)}</option>`).join('');
     if(materias.includes(atual)) $('filtro-materia').value=atual;
 }
 
@@ -64,7 +76,7 @@ function render(){
     document.querySelectorAll('.excluir').forEach(b=>b.onclick=()=>excluirNota(Number(b.dataset.id)));
 }
 
-function escapeHtml(text){ return String(text??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+function escapeHtml(text){ return String(text??'').replace(/[&<>'\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c])); }
 
 async function carregar(){
     const r=await fetch('/api/notas');
@@ -72,6 +84,7 @@ async function carregar(){
     const dados=await r.json();
     if(!dados.sucesso) throw new Error(dados.mensagem||'Não foi possível carregar as notas.');
     notas=dados.notas||[];
+    preencherCatalogoMaterias();
     render();
 }
 
