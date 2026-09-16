@@ -11,8 +11,7 @@ function formatarNota(valor){
 
 function media(itens){
     if(!itens.length) return null;
-    const somaPeso = itens.reduce((s,n)=>s+Number(n.peso),0);
-    return itens.reduce((s,n)=>s+Number(n.nota)*Number(n.peso),0)/somaPeso;
+    return itens.reduce((s,n)=>s+Number(n.nota),0)/itens.length;
 }
 
 function preencherCatalogoMaterias(valorAtual=''){
@@ -31,14 +30,13 @@ function abrirForm(nota=null){
     preencherCatalogoMaterias(nota?.materia || '');
     $('periodo').value = nota?.periodo || '1º bimestre';
     $('nota').value = nota?.nota ?? '';
-    $('peso').value = nota?.peso ?? 1;
     $('descricao').value = nota?.descricao || '';
     $('mensagem').textContent = '';
     $('painel').hidden = false;
     $('materia').focus();
 }
 
-function fecharForm(){ editandoId=null; $('painel').hidden=true; $('form-nota').reset(); $('peso').value=1; }
+function fecharForm(){ editandoId=null; $('painel').hidden=true; $('form-nota').reset(); }
 
 function atualizarFiltros(){
     const atual = $('filtro-materia').value;
@@ -70,7 +68,7 @@ function render(){
     filtradas.forEach(n=>(grupos[n.materia]??=[]).push(n));
     $('lista').innerHTML=Object.entries(grupos).sort(([a],[b])=>a.localeCompare(b,'pt-BR')).map(([materia,itens])=>{
         itens.sort((a,b)=>(periodoOrdem[a.periodo]||5)-(periodoOrdem[b.periodo]||5)||Number(b.id)-Number(a.id));
-        return `<article class="materia-bloco"><div class="materia-cabecalho"><h2>${escapeHtml(materia)}</h2><span class="media-materia">Média: ${formatarNota(media(itens))}</span></div>${itens.map(n=>`<div class="nota"><div class="valor-nota">${formatarNota(n.nota)}</div><div class="periodo">${escapeHtml(n.periodo)}</div><div class="peso">Peso ${formatarNota(n.peso)}</div><div class="obs">${escapeHtml(n.descricao||'Sem observação')}</div><div class="acoes"><button class="secundario editar" data-id="${n.id}">Editar</button><button class="perigo excluir" data-id="${n.id}">Excluir</button></div></div>`).join('')}</article>`;
+        return `<article class="materia-bloco"><div class="materia-cabecalho"><h2>${escapeHtml(materia)}</h2><span class="media-materia">Média: ${formatarNota(media(itens))}</span></div>${itens.map(n=>`<div class="nota"><div class="valor-nota">${formatarNota(n.nota)}</div><div class="periodo">${escapeHtml(n.periodo)}</div><div class="obs">${escapeHtml(n.descricao||'Sem observação')}</div><div class="acoes"><button class="secundario editar" data-id="${n.id}">Editar</button><button class="perigo excluir" data-id="${n.id}">Excluir</button></div></div>`).join('')}</article>`;
     }).join('');
     document.querySelectorAll('.editar').forEach(b=>b.onclick=()=>abrirForm(notas.find(n=>n.id==b.dataset.id)));
     document.querySelectorAll('.excluir').forEach(b=>b.onclick=()=>excluirNota(Number(b.dataset.id)));
@@ -105,7 +103,7 @@ $('sair').onclick=async()=>{await fetch('/api/logout',{method:'POST'});location.
 $('form-nota').onsubmit=async e=>{
     e.preventDefault();
     $('mensagem').textContent='Salvando...';
-    const corpo={materia:$('materia').value,periodo:$('periodo').value,nota:Number($('nota').value),peso:Number($('peso').value),descricao:$('descricao').value};
+    const corpo={materia:$('materia').value,periodo:$('periodo').value,nota:Number($('nota').value),descricao:$('descricao').value};
     const url=editandoId?`/api/notas/${editandoId}`:'/api/notas';
     const r=await fetch(url,{method:editandoId?'PUT':'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(corpo)});
     const dados=await r.json();
