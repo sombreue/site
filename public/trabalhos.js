@@ -10,6 +10,7 @@ const conteudoAdmin = document.getElementById('conteudo-trabalhos-admin');
 const botaoMinAdmin = document.getElementById('botao-minimizar-trabalhos-admin');
 const formAdmin = document.getElementById('form-trabalho-admin');
 const statusAdmin = document.getElementById('status-admin-trabalhos');
+const catalogoMaterias = Array.isArray(window.MATERIAS_AGENDA) ? window.MATERIAS_AGENDA : [];
 
 function formatarData(data){
     if(!data) return 'Sem prazo';
@@ -38,7 +39,7 @@ function textoPrazo(prazo){
 }
 
 function escaparHtml(valor){
-    return String(valor ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    return String(valor ?? '').replace(/[&<>'\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]));
 }
 
 async function lerRespostaJson(resposta, mensagemPadrao){
@@ -51,12 +52,26 @@ async function lerRespostaJson(resposta, mensagemPadrao){
     return dados;
 }
 
+function preencherCatalogoMaterias(valorAtual=''){
+    const select = document.getElementById('admin-materia');
+    if(!select) return;
+    const existentes = [...select.options].map(o => o.value).filter(Boolean);
+    const materias = [...catalogoMaterias];
+    if(valorAtual && !materias.includes(valorAtual)) materias.push(valorAtual);
+    select.innerHTML = '<option value="">Selecione a matéria</option>' + materias.map(m => `<option value="${escaparHtml(m)}">${escaparHtml(m)}</option>`).join('');
+    if(valorAtual) select.value = valorAtual;
+}
+
 function atualizarMaterias(){
     const atual = filtroMateria.value;
-    const materias = [...new Set(trabalhos.map(t => t.materia).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
+    const materiasDosTrabalhos = trabalhos.map(t => t.materia).filter(Boolean);
+    const materias = [...new Set([...catalogoMaterias, ...materiasDosTrabalhos])].sort((a,b)=>a.localeCompare(b,'pt-BR'));
     filtroMateria.innerHTML = '<option value="">Todas as matérias</option>';
     materias.forEach(materia => {
-        const option = document.createElement('option'); option.value = materia; option.textContent = materia; filtroMateria.appendChild(option);
+        const option = document.createElement('option');
+        option.value = materia;
+        option.textContent = materia;
+        filtroMateria.appendChild(option);
     });
     if(materias.includes(atual)) filtroMateria.value = atual;
 }
@@ -69,6 +84,7 @@ function ativarPainelAdmin(){
     if(!ehAdmin()) return;
     painelAdmin.hidden = false;
     painelAdmin.removeAttribute('hidden');
+    preencherCatalogoMaterias();
     preencherFormulario(null);
 }
 
@@ -110,7 +126,7 @@ async function carregarTrabalhos(){
 function preencherFormulario(trabalho){
     document.getElementById('trabalho-id').value = trabalho?.id || '';
     document.getElementById('admin-titulo').value = trabalho?.titulo || '';
-    document.getElementById('admin-materia').value = trabalho?.materia || '';
+    preencherCatalogoMaterias(trabalho?.materia || '');
     document.getElementById('admin-prazo').value = trabalho?.prazo || '';
     document.getElementById('admin-descricao').value = trabalho?.descricao || '';
     document.getElementById('admin-vale-ponto').checked = trabalho?.vale_ponto !== false;
@@ -123,7 +139,7 @@ formAdmin.addEventListener('submit', async evento => {
     const id = document.getElementById('trabalho-id').value;
     const payload = {
         titulo: document.getElementById('admin-titulo').value.trim(),
-        materia: document.getElementById('admin-materia').value.trim(),
+        materia: document.getElementById('admin-materia').value,
         prazo: document.getElementById('admin-prazo').value,
         descricao: document.getElementById('admin-descricao').value.trim(),
         vale_ponto: document.getElementById('admin-vale-ponto').checked,
@@ -155,8 +171,6 @@ botaoMinAdmin.addEventListener('click',()=>{const minimizado=conteudoAdmin.hidde
 [busca,filtroMateria,filtroPrioridade].forEach(el=>el.addEventListener('input',renderizar));
 
 async function inicializar(){
-    // /api/sessao é uma rota de sessão antiga e não possui "sucesso".
-    // Por isso ela não pode passar pelo validador genérico da API.
     try{
         const resposta = await fetch('/api/sessao', {cache:'no-store', credentials:'same-origin'});
         const texto = await resposta.text();
@@ -171,8 +185,6 @@ async function inicializar(){
         usuarioSessao = null;
     }
 
-    // Fallback direto na API autenticada do usuário. Isso deixa a identificação
-    // do ADM independente do formato da rota /api/sessao.
     if(!ehAdmin()){
         try{
             const resposta = await fetch('/api/usuario', {cache:'no-store', credentials:'same-origin'});
@@ -184,6 +196,7 @@ async function inicializar(){
     }
 
     if(ehAdmin()) ativarPainelAdmin();
+    else preencherCatalogoMaterias();
     renderizar();
     await carregarTrabalhos();
 }
