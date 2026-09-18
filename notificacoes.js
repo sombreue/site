@@ -1,32 +1,71 @@
 module.exports = function instalarNotificacoes(app, pool) {
+    let tabelasProntas = null;
+
     async function prepararTabelas() {
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS notificacoes (
-                id SERIAL PRIMARY KEY,
-                usuario_id INTEGER NOT NULL,
-                tipo TEXT NOT NULL,
-                origem_tipo TEXT NOT NULL,
-                origem_id INTEGER NOT NULL,
-                titulo TEXT NOT NULL,
-                mensagem TEXT NOT NULL,
-                link TEXT,
-                data_atividade DATE NOT NULL,
-                criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                lida_em TIMESTAMPTZ
-            )
-        `);
-        await pool.query(`
-            CREATE UNIQUE INDEX IF NOT EXISTS notificacoes_unicas_idx
-            ON notificacoes (usuario_id, origem_tipo, origem_id, data_atividade)
-        `);
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS configuracoes_notificacoes (
-                usuario_id INTEGER PRIMARY KEY,
-                ativa BOOLEAN NOT NULL DEFAULT TRUE,
-                dias_antecedencia INTEGER NOT NULL DEFAULT 1 CHECK (dias_antecedencia BETWEEN 0 AND 30),
-                atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
-            )
-        `);
+        if (tabelasProntas) return tabelasProntas;
+
+        tabelasProntas = (async () => {
+            await pool.query(`
+                CREATE TABLE IF NOT EXISTS notificacoes (
+                    id SERIAL PRIMARY KEY,
+                    usuario_id INTEGER NOT NULL,
+                    tipo TEXT NOT NULL,
+                    origem_tipo TEXT NOT NULL,
+                    origem_id INTEGER NOT NULL,
+                    titulo TEXT NOT NULL,
+                    mensagem TEXT NOT NULL,
+                    link TEXT,
+                    data_atividade DATE NOT NULL,
+                    criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    lida_em TIMESTAMPTZ
+                )
+            `);
+
+            // Migração segura para instalações que receberam uma versão anterior.
+            await pool.query(`ALTER TABLE notificacoes ADD COLUMN IF NOT EXISTS tipo TEXT NOT NULL DEFAULT 'atividade'`);
+            await pool.query(`ALTER TABLE notificacoes ADD COLUMN IF NOT EXISTS origem_tipo TEXT NOT NULL DEFAULT 'atividade'`);
+            await pool.query(`ALTER TABLE notificacoes ADD COLUMN IF NOT EXISTS origem_id INTEGER NOT NULL DEFAULT 0`);
+            await pool.query(`ALTER TABLE notificacoes ADD COLUMN IF NOT EXISTS titulo TEXT NOT NULL DEFAULT 'Notificação'`);
+            await pool.query(`ALTER TABLE notificacoes ADD COLUMN IF NOT EXISTS mensagem TEXT NOT NULL DEFAULT ''`);
+            await pool.query(`ALTER TABLE notificacoes ADD COLUMN IF NOT EXISTS link TEXT`);
+            await pool.query(`ALTER TABLE notificacoes ADD COLUMN IF NOT EXISTS data_atividade DATE NOT NULL DEFAULT CURRENT_DATE`);
+            await pool.query(`ALTER TABLE notificacoes ADD COLUMN IF NOT EXISTS criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()`);
+            await pool.query(`ALTER TABLE notificacoes ADD COLUMN IF NOT EXISTS lida_em TIMESTAMPTZ`);
+
+            // Versões anteriores podem ter criado duplicatas antes do índice UNIQUE.
+            // Mantemos apenas a notificação mais antiga de cada chave lógica.
+            await pool.query(`
+                DELETE FROM notificacoes a
+                USING notificacoes b
+                WHERE a.id > b.id
+                  AND a.usuario_id = b.usuario_id
+                  AND a.origem_tipo = b.origem_tipo
+                  AND a.origem_id = b.origem_id
+                  AND a.data_atividade = b.data_atividade
+            `);
+
+            await pool.query(`
+                CREATE UNIQUE INDEX IF NOT EXISTS notificacoes_unicas_idx
+                ON notificacoes (usuario_id, origem_tipo, origem_id, data_atividade)
+            `);
+
+            await pool.query(`
+                CREATE TABLE IF NOT EXISTS configuracoes_notificacoes (
+                    usuario_id INTEGER PRIMARY KEY,
+                    ativa BOOLEAN NOT NULL DEFAULT TRUE,
+                    dias_antecedencia INTEGER NOT NULL DEFAULT 1 CHECK (dias_antecedencia BETWEEN 0 AND 30),
+                    atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                )
+            `);
+            await pool.query(`ALTER TABLE configuracoes_notificacoes ADD COLUMN IF NOT EXISTS ativa BOOLEAN NOT NULL DEFAULT TRUE`);
+            await pool.query(`ALTER TABLE configuracoes_notificacoes ADD COLUMN IF NOT EXISTS dias_antecedencia INTEGER NOT NULL DEFAULT 1`);
+            await pool.query(`ALTER TABLE configuracoes_notificacoes ADD COLUMN IF NOT EXISTS atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()`);
+        })().catch(erro => {
+            tabelasProntas = null;
+            throw erro;
+        });
+
+        return tabelasProntas;
     }
 
     function exigirLogin(req, res, next) {
