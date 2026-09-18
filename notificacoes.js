@@ -263,7 +263,7 @@ module.exports = function instalarNotificacoes(app, pool) {
         .then(() => gerarNotificacoes())
         .catch(erro => console.error("[NOTIFICAÇÕES] Erro ao preparar sistema:", erro));
 
-    setInterval(gerarNotificacoes, 10 * 60 * 1000);
+    // Verifica com frequência para que uma falha temporária de inicialização do banco\n    // não deixe o usuário sem notificações por vários minutos.\n    setInterval(gerarNotificacoes, 60 * 1000);
 
     console.log("API de notificações instalada.");
     return prepararEIniciar;
