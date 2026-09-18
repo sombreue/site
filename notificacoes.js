@@ -3,7 +3,7 @@ module.exports = function instalarNotificacoes(app, pool) {
         await pool.query(`
             CREATE TABLE IF NOT EXISTS notificacoes (
                 id SERIAL PRIMARY KEY,
-                usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+                usuario_id INTEGER NOT NULL,
                 tipo TEXT NOT NULL,
                 origem_tipo TEXT NOT NULL,
                 origem_id INTEGER NOT NULL,
@@ -21,7 +21,7 @@ module.exports = function instalarNotificacoes(app, pool) {
         `);
         await pool.query(`
             CREATE TABLE IF NOT EXISTS configuracoes_notificacoes (
-                usuario_id INTEGER PRIMARY KEY REFERENCES usuarios(id) ON DELETE CASCADE,
+                usuario_id INTEGER PRIMARY KEY,
                 ativa BOOLEAN NOT NULL DEFAULT TRUE,
                 dias_antecedencia INTEGER NOT NULL DEFAULT 1 CHECK (dias_antecedencia BETWEEN 0 AND 30),
                 atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
