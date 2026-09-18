@@ -85,6 +85,13 @@ app.delete("/api/pedidos-conta/:id",exigirAdminSugestoes,async(req,res)=>{try{aw
 async function prepararTrabalhos(){await pool.query(`CREATE TABLE IF NOT EXISTS trabalhos (id SERIAL PRIMARY KEY,titulo TEXT NOT NULL,materia TEXT NOT NULL,prazo TEXT NOT NULL,status TEXT NOT NULL DEFAULT 'pendente',descricao TEXT NOT NULL DEFAULT '');`);}
 const tabelaTrabalhosPronta=prepararTrabalhos();
 tabelaTrabalhosPronta.catch(e=>console.error("Erro ao preparar tabela de trabalhos:",e));
+
+// Sistema de notificações internas para cada conta.
+try {
+    require("./notificacoes.js")(app, pool);
+} catch (erro) {
+    console.error("Erro ao instalar sistema de notificações:", erro);
+}
 function exigirLoginTrabalhos(req,res,next){if(!req.session?.usuario)return res.status(401).json({sucesso:false,mensagem:"Você precisa estar logado."});next();}
 function exigirAdminTrabalhos(req,res,next){if(!req.session?.usuario)return res.status(401).json({sucesso:false,mensagem:"Você precisa estar logado."});if(req.session.usuario.tipo!=="admin")return res.status(403).json({sucesso:false,mensagem:"Acesso permitido somente para administradores."});next();}
 app.get("/api/trabalhos",exigirLoginTrabalhos,async(req,res)=>{try{await tabelaTrabalhosPronta;const r=await pool.query(`SELECT id,titulo,materia,prazo,status,descricao FROM trabalhos ORDER BY prazo ASC,id ASC`);res.json({sucesso:true,trabalhos:r.rows});}catch(e){console.error(e);res.status(500).json({sucesso:false,mensagem:"Erro interno do servidor."});}});
