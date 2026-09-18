@@ -220,6 +220,7 @@ module.exports = function instalarNotificacoes(app, pool) {
     });
 
     const prepararEIniciar = prepararTabelas()
+        .then(() => new Promise(resolve => setTimeout(resolve, 5000)))
         .then(() => gerarNotificacoes())
         .catch(erro => console.error("[NOTIFICAÇÕES] Erro ao preparar sistema:", erro));
 
