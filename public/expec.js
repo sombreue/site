@@ -13,16 +13,19 @@ async function verificarSessao() {
         const usuario = dados.usuario || {};
         tipoUsuarioAtual = usuario.tipo;
 
-        if (tipoUsuarioAtual === "admin") {
-            const botaoCriar = document.getElementById("btnCriarEquipe");
-            if (botaoCriar) botaoCriar.style.display = "block";
-            const formDecoracao = document.getElementById("formDecoracao");
-            if (formDecoracao) formDecoracao.style.display = "flex";
-            const colunaAcoes = document.getElementById("colunaAcoes");
-            const totalAcoes = document.getElementById("totalAcoes");
-            if (colunaAcoes) colunaAcoes.style.display = "table-cell";
-            if (totalAcoes) totalAcoes.style.display = "table-cell";
-        }
+        const ehAdmin = tipoUsuarioAtual === "admin";
+        const configContador = document.getElementById("configContador");
+        const botaoCriar = document.getElementById("btnCriarEquipe");
+        const formDecoracao = document.getElementById("formDecoracao");
+        const colunaAcoes = document.getElementById("colunaAcoes");
+        const totalAcoes = document.getElementById("totalAcoes");
+
+        // Libera todo o painel administrativo somente depois de confirmar a sessão.
+        if (configContador) configContador.style.display = ehAdmin ? "block" : "none";
+        if (botaoCriar) botaoCriar.style.display = ehAdmin ? "block" : "none";
+        if (formDecoracao) formDecoracao.style.display = ehAdmin ? "flex" : "none";
+        if (colunaAcoes) colunaAcoes.style.display = ehAdmin ? "table-cell" : "none";
+        if (totalAcoes) totalAcoes.style.display = ehAdmin ? "table-cell" : "none";
 
         await Promise.allSettled([carregarEquipes(tipoUsuarioAtual), carregarDecoracoes(tipoUsuarioAtual)]);
         return true;
@@ -78,7 +81,7 @@ async function carregarDecoracoes(tipoUsuario) {
             lista.innerHTML = `<tr><td colspan="3">Nenhuma decoração cadastrada.</td></tr>`;
         } else {
             decoracoes.forEach(item => {
-                const preco = Number(item.preco) || 0;
+                const preco = Number.parseFloat(String(item.preco ?? "0").replace(",", ".")) || 0;
                 total += preco;
                 const tr = document.createElement("tr");
                 const nome = document.createElement("td");
@@ -87,7 +90,15 @@ async function carregarDecoracoes(tipoUsuario) {
                 valor.textContent = preco.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
                 const acoes = document.createElement("td");
                 if (tipoUsuario === "admin") {
-                    acoes.innerHTML = `<button type="button" onclick="editarDecoracao(${item.id}, ${JSON.stringify(item.nome || "")}, ${preco})">Editar</button> <button type="button" onclick="excluirDecoracao(${item.id})">Excluir</button>`;
+                    const editar = document.createElement("button");
+                    editar.type = "button";
+                    editar.textContent = "Editar";
+                    editar.addEventListener("click", () => editarDecoracao(item.id, item.nome || "", preco));
+                    const excluir = document.createElement("button");
+                    excluir.type = "button";
+                    excluir.textContent = "Excluir";
+                    excluir.addEventListener("click", () => excluirDecoracao(item.id));
+                    acoes.append(editar, document.createTextNode(" "), excluir);
                 }
                 tr.append(nome, valor, acoes);
                 lista.appendChild(tr);
