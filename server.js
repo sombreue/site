@@ -52,6 +52,27 @@ app.get("/favicon.ico", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "imagens", "favicon.ico"));
 });
 
+// A EXPEC pode ser desativada pelo administrador. Quando estiver inativa,
+// usuários comuns não conseguem acessá-la nem diretamente pelo endereço.
+// Administradores continuam podendo entrar para reativá-la.
+app.get("/expec.html", async (req, res, next) => {
+    try {
+        if (!req.session?.usuario) return res.redirect("/login.html");
+
+        const resultado = await pool.query("SELECT ativa FROM feira_config WHERE id = 1");
+        const ativa = resultado.rows[0]?.ativa ?? false;
+
+        if (!ativa && req.session.usuario.tipo !== "admin") {
+            return res.redirect("/");
+        }
+
+        res.sendFile(path.join(__dirname, "public", "expec.html"));
+    } catch (erro) {
+        console.error("Erro ao verificar acesso à EXPEC:", erro);
+        return res.redirect("/");
+    }
+});
+
 app.use(express.static("public", { index: false }));
 
 app.get("/", (req, res) => {
