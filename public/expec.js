@@ -272,21 +272,57 @@ if (btnSalvarData) btnSalvarData.addEventListener("click", async () => {
 
 async function carregarStatusExpec() {
     try {
-        const resposta = await fetch("/api/feira/status", { credentials: "same-origin", cache: "no-store" });
+        const resposta = await fetch("/api/feira/status", {
+            credentials: "same-origin",
+            cache: "no-store",
+            headers: { "Accept": "application/json" }
+        });
         const dados = await resposta.json();
         if (!resposta.ok) throw new Error(dados.mensagem || "Erro ao verificar EXPEC.");
-        const status = document.getElementById("statusExpec"), botao = document.getElementById("btnAlternarExpec");
+
+        const status = document.getElementById("statusExpec");
+        const botao = document.getElementById("btnAlternarExpec");
         if (!status || !botao) return;
-        status.textContent = dados.ativa ? "EXPEC está ativa." : "EXPEC está inativa.";
-        botao.textContent = dados.ativa ? "Desativar EXPEC" : "Ativar EXPEC";
+
+        const ativa = Boolean(dados.ativa);
+        status.textContent = ativa ? "EXPEC está ativa." : "EXPEC está inativa.";
+        botao.textContent = ativa ? "Desativar EXPEC" : "Ativar EXPEC";
         botao.style.display = tipoUsuarioAtual === "admin" ? "block" : "none";
+
         botao.onclick = async () => {
+            if (tipoUsuarioAtual !== "admin") return;
+
+            botao.disabled = true;
+            const novoStatus = !ativa;
+
             try {
-                const r = await fetch("/api/feira/status", { method: "PUT", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ ativa: !dados.ativa }) });
-                const d = await r.json(); if (!r.ok) return alert(d.mensagem || "Erro ao alterar status."); carregarStatusExpec();
-            } catch (e) { console.error(e); alert("Erro de conexão com o servidor."); }
+                const r = await fetch("/api/feira/status", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Accept": "application/json"
+                    },
+                    credentials: "same-origin",
+                    body: JSON.stringify({ ativa: novoStatus })
+                });
+
+                const d = await r.json();
+                if (!r.ok || d.sucesso === false) {
+                    throw new Error(d.mensagem || "Erro ao alterar status.");
+                }
+
+                // Reconsulta o banco para garantir que a interface reflita o valor salvo.
+                await carregarStatusExpec();
+            } catch (e) {
+                console.error("Erro ao alterar status da EXPEC:", e);
+                alert(e.message || "Erro de conexão com o servidor.");
+            } finally {
+                botao.disabled = false;
+            }
         };
-    } catch (erro) { console.error("Erro no status da EXPEC:", erro); }
+    } catch (erro) {
+        console.error("Erro no status da EXPEC:", erro);
+    }
 }
 
 carregarContagem();
