@@ -265,27 +265,6 @@ function mostrarMateriasDoDia() {
 
 
     /* =========================
-       FIM DE SEMANA
-    ========================= */
-
-    if (materias.length === 0) {
-
-        const mensagem =
-            document.createElement("p");
-
-        mensagem.textContent =
-            `${nomeDia} não possui aulas cadastradas no horário.`;
-
-        lista.appendChild(
-            mensagem
-        );
-
-        return;
-
-    }
-
-
-    /* =========================
        TÍTULO
     ========================= */
 
@@ -293,7 +272,9 @@ function mostrarMateriasDoDia() {
         document.createElement("h3");
 
     titulo.textContent =
-        `Matérias de ${nomeDia}`;
+        materias.length > 0
+            ? `Matérias de ${nomeDia}`
+            : `${nomeDia}`;
 
     lista.appendChild(
         titulo
@@ -302,9 +283,17 @@ function mostrarMateriasDoDia() {
 
     /* =========================
        CRIAR CAMPOS
+       Lembrete fica disponível
+       em qualquer dia, inclusive
+       sábado e domingo.
     ========================= */
 
-    materias.forEach(materia => {
+    const materiasDoFormulario = [
+        ...materias,
+        "Lembrete"
+    ];
+
+    materiasDoFormulario.forEach(materia => {
 
         const container =
             document.createElement("div");
