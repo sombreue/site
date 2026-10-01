@@ -244,6 +244,45 @@ app.post("/api/tarefas", exigirAdmin, async (req, res) => {
     }
 });
 
+app.put("/api/tarefas/:id", exigirAdmin, async (req, res) => {
+    try {
+        const { data, materia, descricao } = req.body;
+
+        if (!data || !materia || !descricao) {
+            return res.status(400).json({
+                sucesso: false,
+                mensagem: "Preencha todos os campos."
+            });
+        }
+
+        const resultado = await pool.query(
+            `UPDATE tarefas
+             SET data = $1, materia = $2, descricao = $3
+             WHERE id = $4
+             RETURNING id, data, materia, descricao`,
+            [data, materia, descricao, req.params.id]
+        );
+
+        if (!resultado.rows.length) {
+            return res.status(404).json({
+                sucesso: false,
+                mensagem: "Tarefa não encontrada."
+            });
+        }
+
+        res.json({
+            sucesso: true,
+            tarefa: resultado.rows[0]
+        });
+    } catch (erro) {
+        console.error("Erro ao editar tarefa:", erro);
+        res.status(500).json({
+            sucesso: false,
+            mensagem: "Erro ao editar tarefa."
+        });
+    }
+});
+
 app.delete("/api/tarefas/:id", exigirAdmin, async (req, res) => {
     try {
         await pool.query("DELETE FROM tarefas WHERE id = $1", [req.params.id]);
