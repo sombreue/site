@@ -197,7 +197,7 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="hulk"] { --theme-button:#721CB8; --theme-button-hover:#9366aa; }
 :root[data-theme="superman"] { --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
 :root[data-theme="captain-america"] { --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
-:root[data-theme="wolverine"] { --theme-button:#315d9b; --theme-button-hover:#4d7fc3; }
+:root[data-theme="wolverine"] { --theme-button:#111317; --theme-button-hover:#252830; }
 :root[data-theme="deadpool"] { --theme-button:#08090b; --theme-button-hover:#24262b; }
 :root[data-theme="sonic"] { --theme-button:#a78a32; --theme-button-hover:#c5a94b; }
 
