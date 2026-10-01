@@ -389,15 +389,15 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 /* =========================================================
    LOGOS DOS SUPER TEMAS — cada personagem usa sua imagem da pasta /imagens
    ========================================================= */
-:root[data-theme="batman"] .logo,
-:root[data-theme="spider-man"] .logo,
-:root[data-theme="doctor-doom"] .logo,
-:root[data-theme="iron-man"] .logo,
-:root[data-theme="hulk"] .logo,
-:root[data-theme="captain-america"] .logo,
-:root[data-theme="wolverine"] .logo,
-:root[data-theme="deadpool"] .logo,
-:root[data-theme="sonic"] .logo {
+:root[data-theme="batman"] .home-logo,
+:root[data-theme="spider-man"] .home-logo,
+:root[data-theme="doctor-doom"] .home-logo,
+:root[data-theme="iron-man"] .home-logo,
+:root[data-theme="hulk"] .home-logo,
+:root[data-theme="captain-america"] .home-logo,
+:root[data-theme="wolverine"] .home-logo,
+:root[data-theme="deadpool"] .home-logo,
+:root[data-theme="sonic"] .home-logo {
     display: block;
     width: 180px;
     height: 180px;
@@ -407,12 +407,12 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
     margin: 0 auto;
 }
 
-:root[data-theme="batman"] .logo { content: url("/imagens/batman.png"); }
-:root[data-theme="spider-man"] .logo { content: url("/imagens/spiderman.jpg"); }
-:root[data-theme="doctor-doom"] .logo { content: url("/imagens/doom).png"); }
-:root[data-theme="iron-man"] .logo { content: url("/imagens/ironman.png"); }
-:root[data-theme="hulk"] .logo { content: url("/imagens/hulk.png"); }
-:root[data-theme="captain-america"] .logo { content: url("/imagens/captainamerica.png"); }
-:root[data-theme="wolverine"] .logo { content: url("/imagens/wolverine.png"); }
-:root[data-theme="deadpool"] .logo { content: url("/imagens/deadpool.png"); }
-:root[data-theme="sonic"] .logo { content: url("/imagens/sonic.png"); }
+:root[data-theme="batman"] .home-logo          { content: url("/imagens/batman.png"); }
+:root[data-theme="spider-man"] .home-logo      { content: url("/imagens/spiderman.jpg"); }
+:root[data-theme="doctor-doom"] .home-logo     { content: url("/imagens/doom.png"); }
+:root[data-theme="iron-man"] .home-logo        { content: url("/imagens/ironman.png"); }
+:root[data-theme="hulk"] .home-logo            { content: url("/imagens/hulk.png"); }
+:root[data-theme="captain-america"] .home-logo { content: url("/imagens/captainamerica.png"); }
+:root[data-theme="wolverine"] .home-logo       { content: url("/imagens/wolverine.png"); }
+:root[data-theme="deadpool"] .home-logo        { content: url("/imagens/deadpool.png"); }
+:root[data-theme="sonic"] .home-logo           { content: url("/imagens/sonic.png"); }
