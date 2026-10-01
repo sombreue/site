@@ -206,7 +206,7 @@ app.get("/api/usuario", exigirLogin, (req, res) => {
 app.get("/api/sessao", (req, res) => {
     res.set("Cache-Control", "no-store");
     if (!req.session?.usuario) return res.json({ logado: false, tipo: null, usuario: null });
-    res.json({ logado: true, tipo: req.session.usuario.tipo, usuario: req.session.usuario });
+    res.json({ logado: true, id: req.session.usuario.id, tipo: req.session.usuario.tipo, usuario: req.session.usuario, nomeUsuario: req.session.usuario.usuario });
 });
 
 require("./rotas-sugestoes-contas")(app, pool);
@@ -219,7 +219,7 @@ require("./notas")(app, pool, exigirLogin);
 require("./estudos")(app, pool, exigirLogin);
 require("./sticky-notes")(app, pool, exigirLogin);
 
-app.get("/api/tarefas", async (req, res) => {
+app.get("/api/tarefas", exigirLogin, async (req, res) => {
     try {
         const resultado = await pool.query("SELECT id, data, materia, descricao FROM tarefas ORDER BY data DESC, id DESC");
         res.json({ sucesso: true, tarefas: resultado.rows });
@@ -285,7 +285,14 @@ app.put("/api/tarefas/:id", exigirAdmin, async (req, res) => {
 
 app.delete("/api/tarefas/:id", exigirAdmin, async (req, res) => {
     try {
-        await pool.query("DELETE FROM tarefas WHERE id = $1", [req.params.id]);
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({ sucesso: false, mensagem: "ID inválido." });
+        }
+        const resultado = await pool.query("DELETE FROM tarefas WHERE id = $1", [id]);
+        if (!resultado.rowCount) {
+            return res.status(404).json({ sucesso: false, mensagem: "Tarefa não encontrada." });
+        }
         res.json({ sucesso: true });
     } catch (erro) {
         console.error("Erro ao excluir tarefa:", erro);
