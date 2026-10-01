@@ -8,7 +8,7 @@
         { id: "hulk", nome: "Hulk", icone: "✊", cor: "#7bbf35", grupo: "Super temas" },
         { id: "superman", nome: "Superman", icone: "S", cor: "#e52521", grupo: "Super temas" },
         { id: "captain-america", nome: "Capitão América", icone: "★", cor: "#2f6fbd", grupo: "Super temas" },
-        { id: "wolverine", nome: "Wolverine", icone: "✕", cor: "#fdb300", grupo: "Claros" },
+        { id: "wolverine", nome: "Wolverine", icone: "✕", cor: "#fdb300", grupo: "Super temas" },
         { id: "deadpool", nome: "Deadpool", icone: "☠", cor: "#d71920", grupo: "Super temas" },
         { id: "sonic", nome: "Sonic", icone: "⚡", cor: "#1261c9", grupo: "Super temas" },
         { id: "ocean", nome: "Ocean", icone: "●", cor: "#2196f3", grupo: "Escuros" },
