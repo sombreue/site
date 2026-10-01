@@ -387,10 +387,17 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 }
 
 /* =========================================================
-   LOGO DO BATMAN — imagem selecionada apenas no tema Batman
+   LOGOS DOS SUPER TEMAS — cada personagem usa sua imagem da pasta /imagens
    ========================================================= */
-:root[data-theme="batman"] .logo {
-    content: url("imagens/batman.png");
+:root[data-theme="batman"] .logo,
+:root[data-theme="spider-man"] .logo,
+:root[data-theme="doctor-doom"] .logo,
+:root[data-theme="iron-man"] .logo,
+:root[data-theme="hulk"] .logo,
+:root[data-theme="captain-america"] .logo,
+:root[data-theme="wolverine"] .logo,
+:root[data-theme="deadpool"] .logo,
+:root[data-theme="sonic"] .logo {
     display: block;
     width: 180px;
     height: 180px;
@@ -399,3 +406,13 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
     object-position: center;
     margin: 0 auto;
 }
+
+:root[data-theme="batman"] .logo { content: url("/imagens/batman.png"); }
+:root[data-theme="spider-man"] .logo { content: url("/imagens/spiderman.jpg"); }
+:root[data-theme="doctor-doom"] .logo { content: url("/imagens/doom).png"); }
+:root[data-theme="iron-man"] .logo { content: url("/imagens/ironman.png"); }
+:root[data-theme="hulk"] .logo { content: url("/imagens/hulk.png"); }
+:root[data-theme="captain-america"] .logo { content: url("/imagens/captainamerica.png"); }
+:root[data-theme="wolverine"] .logo { content: url("/imagens/wolverine.png"); }
+:root[data-theme="deadpool"] .logo { content: url("/imagens/deadpool.png"); }
+:root[data-theme="sonic"] .logo { content: url("/imagens/sonic.png"); }
