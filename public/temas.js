@@ -1,6 +1,16 @@
 (() => {
     const temas = [
         { id: "ruby", nome: "Ruby", icone: "◆", cor: "#ef3340", grupo: "Escuros" },
+        { id: "batman", nome: "Batman", icone: "🦇", cor: "#f2c300", grupo: "Super temas" },
+        { id: "spider-man", nome: "Homem-Aranha", icone: "🕷", cor: "#e52521", grupo: "Super temas" },
+        { id: "doctor-doom", nome: "Doutor Destino", icone: "☠", cor: "#3fae49", grupo: "Super temas" },
+        { id: "iron-man", nome: "Homem de Ferro", icone: "◈", cor: "#e21b23", grupo: "Super temas" },
+        { id: "hulk", nome: "Hulk", icone: "✊", cor: "#7bbf35", grupo: "Super temas" },
+        { id: "superman", nome: "Superman", icone: "S", cor: "#e52521", grupo: "Super temas" },
+        { id: "captain-america", nome: "Capitão América", icone: "★", cor: "#2f6fbd", grupo: "Super temas" },
+        { id: "wolverine", nome: "Wolverine", icone: "✕", cor: "#f3c51b", grupo: "Super temas" },
+        { id: "deadpool", nome: "Deadpool", icone: "☠", cor: "#d71920", grupo: "Super temas" },
+        { id: "sonic", nome: "Sonic", icone: "⚡", cor: "#1261c9", grupo: "Super temas" },
         { id: "ocean", nome: "Ocean", icone: "●", cor: "#2196f3", grupo: "Escuros" },
         { id: "violet", nome: "Violet", icone: "◆", cor: "#9c5cff", grupo: "Escuros" },
         { id: "midnight", nome: "Midnight", icone: "✦", cor: "#6875ff", grupo: "Especiais" },
@@ -105,7 +115,7 @@
         const botao=document.createElement("button"); botao.type="button";botao.className="seletor-tema-botao";botao.setAttribute("aria-expanded","false");botao.setAttribute("aria-label","Escolher tema");
         botao.innerHTML=`<span class="seletor-tema-atual"><span class="seletor-tema-icone">🎨</span><span class="seletor-tema-nome"></span></span><span class="seletor-tema-seta" aria-hidden="true">⌄</span>`;
         const lista=document.createElement("div");lista.className="seletor-tema-lista";lista.hidden=true;lista.setAttribute("role","menu");
-        ["Automático","Especiais","Escuros","Claros"].forEach(grupo=>{
+        ["Super temas","Automático","Especiais","Escuros","Claros"].forEach(grupo=>{
             const itens=temas.filter(tema=>tema.grupo===grupo); if(!itens.length)return;
             const titulo=document.createElement("div");titulo.className="tema-grupo-titulo";titulo.textContent=grupo;lista.appendChild(titulo);
             const grade=document.createElement("div");grade.className="tema-grupo-grade";
