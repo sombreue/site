@@ -11,6 +11,7 @@
         { id: "arctic", nome: "Arctic", icone: "❄", cor: "#62d9ff", grupo: "Especiais" },
         { id: "turkey", nome: "Turkey", icone: "☾", cor: "#e30a17", grupo: "Especiais" },
         { id: "quarta-feira", nome: "Quarta-feira", icone: "🐸", cor: "#8fe52f", grupo: "Especiais" },
+        { id: "segunda-feira", nome: "Segunda-feira", icone: "🐸", cor: "#ff0000", grupo: "Especiais" },
         { id: "ruby-light", nome: "Ruby Light", icone: "◆", cor: "#d92838", grupo: "Claros" },
         { id: "ocean-light", nome: "Ocean Light", icone: "●", cor: "#0878c9", grupo: "Claros" },
         { id: "violet-light", nome: "Violet Light", icone: "◆", cor: "#7c3dcc", grupo: "Claros" },
@@ -31,7 +32,7 @@
 
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "themes.css?v=20260916";
+    link.href = "themes.css?v=20261001";
     document.head.appendChild(link);
 
     const estilo = document.createElement("style");
@@ -70,11 +71,12 @@
     }
 
     function atualizarLogos(id) {
-        const logoEspecial="/imagens/quarta-feira.jpg";
+        const logosEspeciais={"quarta-feira":"/imagens/quarta-feira.jpg","segunda-feira":"/imagens/segunda-feira.jpg"};
         document.querySelectorAll(".logo, .home-logo").forEach(logo=>{
             if(!logo.dataset.logoOriginal) logo.dataset.logoOriginal=logo.getAttribute("src")||"";
-            logo.src=id==="quarta-feira"?logoEspecial:logo.dataset.logoOriginal;
-            logo.alt=id==="quarta-feira"?"Quarta-feira":"Logo";
+            const logoEspecial=logosEspeciais[id];
+            logo.src=logoEspecial||logo.dataset.logoOriginal;
+            logo.alt=logoEspecial?(id==="segunda-feira"?"Segunda-feira":"Quarta-feira"):"Logo";
         });
     }
 
