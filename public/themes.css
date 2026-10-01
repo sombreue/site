@@ -2,6 +2,31 @@
    AGENDA AURUDA — SISTEMA DE TEMAS
    ========================================================= */
 
+/* =========================================================
+   SUPER TEMAS — heróis e vilões
+   ========================================================= */
+:root[data-theme="batman"] { --theme-bg:#08090b; --theme-surface:#111317; --theme-surface-2:#181b20; --theme-surface-3:#22262d; --theme-border:#343942; --theme-border-hover:#555c68; --theme-text:#f5f6f8; --theme-muted:#b0b4bb; --theme-accent:#f2c300; --theme-accent-hover:#ffe052; --theme-accent-dark:#806700; --theme-input:#0b0c0f; --theme-header:#121419; --theme-header-2:#090a0d; --theme-button:#252830; --theme-button-hover:#30343d; }
+
+:root[data-theme="spider-man"] { --theme-bg:#080d16; --theme-surface:#101a2a; --theme-surface-2:#17263a; --theme-surface-3:#20344e; --theme-border:#304968; --theme-border-hover:#55749c; --theme-text:#f7f9ff; --theme-muted:#b4c0d3; --theme-accent:#e52521; --theme-accent-hover:#ff4a45; --theme-accent-dark:#9d1512; --theme-input:#0b1220; --theme-header:#101b2c; --theme-header-2:#080d16; --theme-button:#26354b; --theme-button-hover:#334761; }
+
+:root[data-theme="doctor-doom"] { --theme-bg:#07100b; --theme-surface:#101b13; --theme-surface-2:#17281a; --theme-surface-3:#203521; --theme-border:#38533a; --theme-border-hover:#58765a; --theme-text:#f0f4e9; --theme-muted:#a9b5a2; --theme-accent:#3fae49; --theme-accent-hover:#61d46c; --theme-accent-dark:#236d2b; --theme-input:#09140b; --theme-header:#142118; --theme-header-2:#0a110c; --theme-button:#293b2c; --theme-button-hover:#36513a; }
+
+:root[data-theme="iron-man"] { --theme-bg:#120809; --theme-surface:#1d1012; --theme-surface-2:#2a1518; --theme-surface-3:#381b1f; --theme-border:#593036; --theme-border-hover:#81434b; --theme-text:#fff7f5; --theme-muted:#d0aaa5; --theme-accent:#e21b23; --theme-accent-hover:#ff4149; --theme-accent-dark:#a10f15; --theme-input:#160a0b; --theme-header:#241215; --theme-header-2:#100708; --theme-button:#422125; --theme-button-hover:#542a2f; }
+
+:root[data-theme="hulk"] { --theme-bg:#080e09; --theme-surface:#111b12; --theme-surface-2:#18271a; --theme-surface-3:#22351f; --theme-border:#385535; --theme-border-hover:#587b50; --theme-text:#f4fff1; --theme-muted:#adbea7; --theme-accent:#7bbf35; --theme-accent-hover:#9be84c; --theme-accent-dark:#4e7f1d; --theme-input:#0a130b; --theme-header:#152117; --theme-header-2:#0a110c; --theme-button:#2b3e25; --theme-button-hover:#38512f; }
+
+:root[data-theme="superman"] { --theme-bg:#07132a; --theme-surface:#0e2040; --theme-surface-2:#15305c; --theme-surface-3:#1d3e76; --theme-border:#2e568f; --theme-border-hover:#4a7abb; --theme-text:#f5f8ff; --theme-muted:#adbad2; --theme-accent:#e52521; --theme-accent-hover:#ff4945; --theme-accent-dark:#9f1512; --theme-input:#091832; --theme-header:#10264b; --theme-header-2:#08152c; --theme-button:#243e68; --theme-button-hover:#315384; }
+
+:root[data-theme="captain-america"] { --theme-bg:#080f1b; --theme-surface:#101c30; --theme-surface-2:#172941; --theme-surface-3:#203956; --theme-border:#355574; --theme-border-hover:#54789e; --theme-text:#f5f8fc; --theme-muted:#b1bdcb; --theme-accent:#2f6fbd; --theme-accent-hover:#4d91e6; --theme-accent-dark:#1d477c; --theme-input:#0a1524; --theme-header:#12243b; --theme-header-2:#091321; --theme-button:#253d5a; --theme-button-hover:#315171; }
+
+:root[data-theme="wolverine"] { --theme-bg:#11100a; --theme-surface:#1d1b10; --theme-surface-2:#292612; --theme-surface-3:#383317; --theme-border:#554c22; --theme-border-hover:#75692d; --theme-text:#fffbea; --theme-muted:#c8bc8f; --theme-accent:#f3c51b; --theme-accent-hover:#ffdf52; --theme-accent-dark:#9b7c00; --theme-input:#151309; --theme-header:#252110; --theme-header-2:#121109; --theme-button:#3d361d; --theme-button-hover:#4e4524; }
+
+:root[data-theme="deadpool"] { --theme-bg:#120708; --theme-surface:#1d0d10; --theme-surface-2:#291317; --theme-surface-3:#38191f; --theme-border:#592830; --theme-border-hover:#813c46; --theme-text:#fff6f5; --theme-muted:#d0a9aa; --theme-accent:#d71920; --theme-accent-hover:#ff3d45; --theme-accent-dark:#980e14; --theme-input:#15090a; --theme-header:#241012; --theme-header-2:#100607; --theme-button:#402026; --theme-button-hover:#522931; }
+
+:root[data-theme="sonic"] { --theme-bg:#06102a; --theme-surface:#0c1c40; --theme-surface-2:#12305d; --theme-surface-3:#19427c; --theme-border:#2d5d9a; --theme-border-hover:#4b83ca; --theme-text:#f4f9ff; --theme-muted:#aec1dc; --theme-accent:#1261c9; --theme-accent-hover:#3685ef; --theme-accent-dark:#0b3f87; --theme-input:#081631; --theme-header:#10264e; --theme-header-2:#07122c; --theme-button:#203f6e; --theme-button-hover:#2c548d; }
+
+
+
 :root,
 :root[data-theme="ruby"] { --theme-bg:#0d0d0f; --theme-surface:#151518; --theme-surface-2:#1b1b20; --theme-surface-3:#222229; --theme-border:#2c2c34; --theme-border-hover:#41414c; --theme-text:#f5f5f5; --theme-muted:#a4a4ad; --theme-accent:#ef3340; --theme-accent-hover:#ff4653; --theme-accent-dark:#a71925; --theme-input:#0f0f12; --theme-header:#18181c; --theme-header-2:#121216; --theme-button:#29292f; --theme-button-hover:#35353d; }
 :root[data-theme="ocean"] { --theme-bg:#0a0f14; --theme-surface:#111a22; --theme-surface-2:#17232e; --theme-surface-3:#1e2e3b; --theme-border:#293b49; --theme-border-hover:#3b5668; --theme-text:#f2f8fc; --theme-muted:#9eb2c0; --theme-accent:#2196f3; --theme-accent-hover:#42a9ff; --theme-accent-dark:#1264a3; --theme-input:#0c141b; --theme-header:#14202a; --theme-header-2:#0e171f; --theme-button:#253440; --theme-button-hover:#304351; }
