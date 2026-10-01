@@ -1115,13 +1115,13 @@ async function verificarSessao() {
         usuarioAtual = {
 
             id:
-                dados.id,
+                dados.usuario?.id,
 
             usuario:
-                dados.usuario,
+                dados.usuario?.usuario,
 
             tipo:
-                dados.tipo
+                dados.usuario?.tipo ?? dados.tipo
 
         };
 
@@ -1232,7 +1232,7 @@ async function carregarUsuarios() {
 
         const resposta =
             await fetch(
-                "/api/usuarios"
+                "/api/admin/usuarios"
             );
 
 
@@ -1323,7 +1323,7 @@ async function carregarUsuarios() {
 
                 if (
                     usuario.id !==
-                    dados.usuarioLogadoId
+                    usuarioAtual?.id
                 ) {
 
                     const botaoExcluir =
@@ -1515,7 +1515,7 @@ async function confirmarAlteracaoSenha() {
 
         const resposta =
             await fetch(
-                `/api/usuarios/${usuarioAlterarSenhaId}/senha`,
+                `/api/admin/usuarios/${usuarioAlterarSenhaId}/senha`,
                 {
 
                     method: "PUT",
@@ -1628,7 +1628,7 @@ async function criarUsuario() {
 
         const resposta =
             await fetch(
-                "/api/usuarios",
+                "/api/admin/usuarios",
                 {
 
                     method: "POST",
@@ -1721,7 +1721,7 @@ async function excluirUsuario(id) {
 
         const resposta =
             await fetch(
-                `/api/usuarios/${id}`,
+                `/api/admin/usuarios/${id}`,
                 {
 
                     method: "DELETE"
