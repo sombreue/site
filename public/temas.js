@@ -43,7 +43,7 @@
 
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "themes.css?v=20261001-batman-logo";
+    link.href = "themes.css?v=20261001-super-logos";
     document.head.appendChild(link);
 
     const estilo = document.createElement("style");
