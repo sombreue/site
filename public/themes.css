@@ -15,7 +15,7 @@
 
 :root[data-theme="hulk"] { --theme-bg:#080e09; --theme-surface:#111b12; --theme-surface-2:#18271a; --theme-surface-3:#22351f; --theme-border:#385535; --theme-border-hover:#714e87; --theme-text:#f4fff1; --theme-muted:#c1b2c8; --theme-accent:#7bbf35; --theme-accent-hover:#9be84c; --theme-accent-dark:#4e7f1d; --theme-input:#0a130b; --theme-header:#152117; --theme-header-2:#0a110c; --theme-button:#2b3e25; --theme-button-hover:#493050; }
 
-:root[data-theme="superman"] { --theme-bg:#07132a; --theme-surface:#0e2040; --theme-surface-2:#15305c; --theme-surface-3:#1d3e76; --theme-border:#2e568f; --theme-border-hover:#4a7abb; --theme-text:#FCEA0E; --theme-muted:#adbad2; --theme-accent:#e52521; --theme-accent-hover:#ff4945; --theme-accent-dark:#9f1512; --theme-input:#091832; --theme-header:#10264b; --theme-header-2:#08152c; --theme-button:#243e68; --theme-button-hover:#315384; }
+:root[data-theme="superman"] { --theme-bg:#07132a; --theme-surface:#0e2040; --theme-surface-2:#15305c; --theme-surface-3:#1d3e76; --theme-border:#2e568f; --theme-border-hover:#4a7abb; --theme-text:#FFD76B; --theme-muted:#adbad2; --theme-accent:#e52521; --theme-accent-hover:#ff4945; --theme-accent-dark:#9f1512; --theme-input:#091832; --theme-header:#10264b; --theme-header-2:#08152c; --theme-button:#243e68; --theme-button-hover:#315384; }
 
 :root[data-theme="captain-america"] { --theme-bg:#080f1b; --theme-surface:#101c30; --theme-surface-2:#172941; --theme-surface-3:#203956; --theme-border:#355574; --theme-border-hover:#24557f; --theme-text:#f5f8fc; --theme-muted:#b1bdcb; --theme-accent:#012E5D; --theme-accent-hover:#1a4f7d; --theme-accent-dark:#01244a; --theme-input:#0a1524; --theme-header:#12243b; --theme-header-2:#091321; --theme-button:#253d5a; --theme-button-hover:#315171; }
 
