@@ -385,3 +385,17 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="sonic"] .botoes-modal .cancelar {
     color:#111!important;
 }
+
+/* =========================================================
+   LOGO DO BATMAN — imagem selecionada apenas no tema Batman
+   ========================================================= */
+:root[data-theme="batman"] .logo {
+    content: url("https://img.favpng.com/17/11/13/batman-the-dark-knight-returns-the-black-mirror-batman-the-killing-joke-batman-the-long-halloween-png-favpng-8fYWr9AE8DJvDiWFCEbpyELHd.jpg");
+    display: block;
+    width: 180px;
+    height: 180px;
+    max-width: 180px;
+    object-fit: contain;
+    object-position: center;
+    margin: 0 auto;
+}
