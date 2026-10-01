@@ -13,7 +13,7 @@
 
 :root[data-theme="iron-man"] { --theme-bg:#120809; --theme-surface:#1d1012; --theme-surface-2:#2a1518; --theme-surface-3:#381b1f; --theme-border:#633438; --theme-border-hover:#c39b25; --theme-text:#fff7f5; --theme-muted:#d8bd83; --theme-accent:#e21b23; --theme-accent-hover:#ff4149; --theme-accent-dark:#a10f15; --theme-input:#160a0b; --theme-header:#241215; --theme-header-2:#100708; --theme-button:#422125; --theme-button-hover:#5a3c19; }
 
-:root[data-theme="hulk"] { --theme-bg:#080e09; --theme-surface:#111b12; --theme-surface-2:#18271a; --theme-surface-3:#22351f; --theme-border:#385535; --theme-border-hover:#721CB8; --theme-text:#f4fff1; --theme-muted:#721CB8; --theme-accent:#7bbf35; --theme-accent-hover:#9be84c; --theme-accent-dark:#4e7f1d; --theme-input:#0a130b; --theme-header:#152117; --theme-header-2:#0a110c; --theme-button:#2b3e25; --theme-button-hover:#493050; }
+:root[data-theme="hulk"] { --theme-bg:#080e09; --theme-surface:#111b12; --theme-surface-2:#18271a; --theme-surface-3:#22351f; --theme-border:#385535; --theme-border-hover:#721CB8; --theme-text:#f4fff1; --theme-muted:#c1b2c8; --theme-accent:#7bbf35; --theme-accent-hover:#9be84c; --theme-accent-dark:#4e7f1d; --theme-input:#0a130b; --theme-header:#152117; --theme-header-2:#0a110c; --theme-button:#2b3e25; --theme-button-hover:#493050; }
 
 :root[data-theme="superman"] { --theme-bg:#07132a; --theme-surface:#0e2040; --theme-surface-2:#15305c; --theme-surface-3:#1d3e76; --theme-border:#2e568f; --theme-border-hover:#4a7abb; --theme-text:#FFD76B; --theme-muted:#adbad2; --theme-accent:#e52521; --theme-accent-hover:#ff4945; --theme-accent-dark:#9f1512; --theme-input:#091832; --theme-header:#10264b; --theme-header-2:#08152c; --theme-button:#243e68; --theme-button-hover:#315384; }
 
@@ -194,7 +194,7 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="spider-man"] { --theme-button:#1f6fc1; --theme-button-hover:#3f8ddd; }
 :root[data-theme="doctor-doom"] { --theme-button:#6f7975; --theme-button-hover:#9fa9a5; }
 :root[data-theme="iron-man"] { --theme-button:#a98218; --theme-button-hover:#c9a42e; }
-:root[data-theme="hulk"] { --theme-button:#714e87; --theme-button-hover:#9366aa; }
+:root[data-theme="hulk"] { --theme-button:#721CB8; --theme-button-hover:#9366aa; }
 :root[data-theme="superman"] { --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
 :root[data-theme="captain-america"] { --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
 :root[data-theme="wolverine"] { --theme-button:#315d9b; --theme-button-hover:#4d7fc3; }
