@@ -185,3 +185,28 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="sonic"] .seletor-tema-lista { border-color:#a78a32!important; box-shadow:0 0 18px rgba(197,169,75,.11),0 10px 30px rgba(0,0,0,.3); }
 :root[data-theme="sonic"] .tarefa { border-left:3px solid #1261c9!important; }
 :root[data-theme="sonic"] .tarefa:hover { border-color:#c5a94b!important; }
+
+
+/* Botoes dos Super temas — usam a cor secundaria de cada identidade */
+:root[data-theme="batman"] { --theme-button:#b89200; --theme-button-hover:#e0b900; }
+:root[data-theme="spider-man"] { --theme-button:#1f6fc1; --theme-button-hover:#3f8ddd; }
+:root[data-theme="doctor-doom"] { --theme-button:#6f7975; --theme-button-hover:#9fa9a5; }
+:root[data-theme="iron-man"] { --theme-button:#a98218; --theme-button-hover:#c9a42e; }
+:root[data-theme="hulk"] { --theme-button:#714e87; --theme-button-hover:#9366aa; }
+:root[data-theme="superman"] { --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
+:root[data-theme="captain-america"] { --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
+:root[data-theme="wolverine"] { --theme-button:#315d9b; --theme-button-hover:#4d7fc3; }
+:root[data-theme="deadpool"] { --theme-button:#08090b; --theme-button-hover:#24262b; }
+:root[data-theme="sonic"] { --theme-button:#a78a32; --theme-button-hover:#c5a94b; }
+
+:root[data-theme="batman"] #botao-logout,
+:root[data-theme="batman"] .cancelar,
+:root[data-theme="batman"] .botoes-modal .cancelar,
+:root[data-theme="iron-man"] #botao-logout,
+:root[data-theme="iron-man"] .cancelar,
+:root[data-theme="iron-man"] .botoes-modal .cancelar,
+:root[data-theme="sonic"] #botao-logout,
+:root[data-theme="sonic"] .cancelar,
+:root[data-theme="sonic"] .botoes-modal .cancelar {
+    color:#111!important;
+}
