@@ -38,6 +38,17 @@ function textoPrazo(prazo){
     return `Faltam ${p.dias} dias`;
 }
 
+function renderizarMarkdown(valor){
+    const texto = String(valor ?? '');
+    if (!texto.trim()) return '';
+    if (typeof marked === 'undefined' || typeof DOMPurify === 'undefined') return escaparHtml(texto).replace(/\n/g, '<br>');
+    const html = marked.parse(texto, { breaks: true, gfm: true });
+    return DOMPurify.sanitize(html, {
+        ALLOWED_TAGS: ['p','br','strong','em','del','s','h1','h2','h3','h4','blockquote','ul','ol','li','a','code','pre','hr'],
+        ALLOWED_ATTR: ['href','target','rel']
+    });
+}
+
 function escaparHtml(valor){
     return String(valor ?? '').replace(/[&<>'\"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','\"':'&quot;'}[c]));
 }
@@ -111,7 +122,7 @@ function renderizar(){
         const controles = ehAdmin() ? `<div class="controles-trabalho"><button type="button" data-editar="${t.id}">Editar</button><button type="button" class="excluir" data-excluir="${t.id}">Excluir</button></div>` : '';
         return `<article class="trabalho">
             <div class="trabalho-topo"><div><div class="materia">${escaparHtml(t.materia)}</div><h2>${escaparHtml(t.titulo)}</h2></div><span class="prioridade ${prioridade.classe}">${prioridade.nome}</span></div>
-            <p class="descricao">${escaparHtml(t.descricao || '')}</p>
+            <div class="descricao markdown-conteudo">${renderizarMarkdown(t.descricao || '')}</div>
             <div class="meta"><span class="tag">Prazo: ${formatarData(t.prazo)}</span><span class="tag">${textoPrazo(t.prazo)}</span>${valePonto ? '<span class="tag">Vale ponto</span>' : ''}</div>
             ${controles}
         </article>`;
