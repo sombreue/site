@@ -269,6 +269,43 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
     border-color:var(--theme-border)!important;
 }
 
+/* Quarteto Fantástico e Justiceiro: botões simples brancos. */
+:root[data-theme="fantastic-four"] button,
+:root[data-theme="fantastic-four"] .botao-expec,
+:root[data-theme="fantastic-four"] .botao-adicionar,
+:root[data-theme="fantastic-four"] #btnCriarEquipe,
+:root[data-theme="fantastic-four"] #btnSalvarData,
+:root[data-theme="fantastic-four"] #btnAlternarExpec,
+:root[data-theme="fantastic-four"] #btnAdicionarDecoracao,
+:root[data-theme="punisher"] button,
+:root[data-theme="punisher"] .botao-expec,
+:root[data-theme="punisher"] .botao-adicionar,
+:root[data-theme="punisher"] #btnCriarEquipe,
+:root[data-theme="punisher"] #btnSalvarData,
+:root[data-theme="punisher"] #btnAlternarExpec,
+:root[data-theme="punisher"] #btnAdicionarDecoracao {
+    background:#fff!important;
+    color:#111!important;
+    border-color:#d9d9d9!important;
+}
+:root[data-theme="fantastic-four"] button:hover,
+:root[data-theme="fantastic-four"] .botao-expec:hover,
+:root[data-theme="fantastic-four"] .botao-adicionar:hover,
+:root[data-theme="fantastic-four"] #btnCriarEquipe:hover,
+:root[data-theme="fantastic-four"] #btnSalvarData:hover,
+:root[data-theme="fantastic-four"] #btnAlternarExpec:hover,
+:root[data-theme="fantastic-four"] #btnAdicionarDecoracao:hover,
+:root[data-theme="punisher"] button:hover,
+:root[data-theme="punisher"] .botao-expec:hover,
+:root[data-theme="punisher"] .botao-adicionar:hover,
+:root[data-theme="punisher"] #btnCriarEquipe:hover,
+:root[data-theme="punisher"] #btnSalvarData:hover,
+:root[data-theme="punisher"] #btnAlternarExpec:hover,
+:root[data-theme="punisher"] #btnAdicionarDecoracao:hover {
+    background:#f0f0f0!important;
+    color:#111!important;
+}
+
 /* Hover dos botoes principais também usa a variação secundária. */
 :root[data-theme="batman"] button:hover,
 :root[data-theme="batman"] .botao-expec:hover,
