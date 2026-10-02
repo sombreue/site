@@ -26,17 +26,17 @@
     width: 42px;
     height: 38px;
     padding: 0;
-    border: 1px solid var(--border-hover);
+    border: 1px solid var(--theme-border);
     border-radius: 9px;
-    background: var(--surface-2);
-    color: var(--text);
+    background: var(--theme-button);
+    color: var(--theme-button-text);
     font-size: 22px;
     line-height: 1;
 }
 
 .botao-minimizar-admin:hover {
-    background: var(--surface-3);
-    border-color: var(--accent);
+    background: var(--theme-button-hover);
+    border-color: var(--theme-border-hover);
 }
 
 .conteudo-painel-admin {
