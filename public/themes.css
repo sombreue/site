@@ -198,7 +198,7 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="superman"] { --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
 :root[data-theme="captain-america"] { --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
 :root[data-theme="wolverine"] { --theme-button:#164A7A; --theme-button-hover:#28659A; }
-:root[data-theme="deadpool"] { --theme-button:#08090b; --theme-button-hover:#24262b; }
+:root[data-theme="deadpool"] { --theme-button:#1b1b1b; --theme-button-hover:#24262b; }
 :root[data-theme="sonic"] { --theme-button:#a78a32; --theme-button-hover:#c5a94b; }
 
 /* Nos Super temas, todos os botoes principais seguem a mesma cor secundaria. */
