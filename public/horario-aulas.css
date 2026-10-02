@@ -23,6 +23,7 @@
 
 .horario-titulo {
     min-width: 0;
+   color: var(--accent);
 }
 
 .horario-titulo h2 {
