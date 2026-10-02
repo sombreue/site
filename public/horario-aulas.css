@@ -6,9 +6,9 @@
     width: 100%;
     margin: 28px 0 34px;
     padding: 18px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-top: 2px solid var(--accent);
+    background: var(--theme-surface);
+    border: 1px solid var(--theme-border);
+    border-top: 2px solid var(--theme-accent);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
 }
@@ -23,19 +23,19 @@
 
 .horario-titulo {
     min-width: 0;
-   color: var(--accent);
+   color: var(--theme-accent);
 }
 
 .horario-titulo h2 {
     margin: 0;
-    color: var(--accent);
+    color: var(--theme-accent);
     font-size: clamp(19px, 3vw, 24px);
     line-height: 1.2;
 }
 
 .horario-titulo p {
     margin: 4px 0 0;
-    color: var(--muted);
+    color: var(--theme-muted);
     font-size: 13px;
 }
 
@@ -47,17 +47,17 @@
     width: 40px;
     height: 36px;
     padding: 0;
-    border: 1px solid var(--border-hover);
+    border: 1px solid var(--theme-border-hover);
     border-radius: 9px;
-    background: var(--surface-2);
-    color: var(--text);
+    background: var(--theme-surface-2);
+    color: var(--theme-text);
     font-size: 21px;
     line-height: 1;
 }
 
 .botao-minimizar-horario:hover {
-    background: var(--surface-3);
-    border-color: var(--accent);
+    background: var(--theme-surface-3);
+    border-color: var(--theme-accent);
 }
 
 .horario-conteudo {
@@ -70,7 +70,7 @@
 .horario-tabela-wrap {
     width: 100%;
     overflow: hidden;
-    border: 1px solid var(--border);
+    border: 1px solid var(--theme-border);
     border-radius: 10px;
 }
 
@@ -78,8 +78,8 @@
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
-    background: var(--surface);
-    color: var(--text);
+    background: var(--theme-surface);
+    color: var(--theme-text);
     font-size: clamp(9px, 1.25vw, 14px);
     line-height: 1.2;
 }
@@ -89,8 +89,8 @@
     padding: clamp(6px, .8vw, 10px) clamp(4px, .65vw, 8px);
     text-align: center;
     vertical-align: middle;
-    border-right: 1px solid var(--border);
-    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--theme-border);
+    border-bottom: 1px solid var(--theme-border);
     overflow-wrap: anywhere;
 }
 
@@ -104,32 +104,32 @@
 }
 
 .horario-tabela thead th {
-    background: var(--surface-2);
-    color: var(--accent);
+    background: var(--theme-surface-2);
+    color: var(--theme-accent);
     font-weight: 800;
 }
 
 .horario-tabela th:first-child,
 .horario-tabela td:first-child {
     width: 15%;
-    color: var(--muted);
+    color: var(--theme-muted);
     font-weight: 700;
     white-space: nowrap;
 }
 
 .horario-tabela tbody tr:nth-child(even) td {
-    background: color-mix(in srgb, var(--surface-2) 45%, var(--surface));
+    background: color-mix(in srgb, var(--theme-surface-2) 45%, var(--theme-surface));
 }
 
 .horario-tabela .intervalo td {
-    background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
-    color: var(--accent) !important;
+    background: color-mix(in srgb, var(--theme-accent) 10%, var(--theme-surface-2));
+    color: var(--theme-accent) !important;
     font-weight: 800;
     letter-spacing: .02em;
 }
 
 .horario-tabela .vazio {
-    color: var(--muted);
+    color: var(--theme-muted);
 }
 
 .horario-aulas.minimizado {
