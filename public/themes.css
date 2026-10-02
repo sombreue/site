@@ -438,4 +438,4 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="sonic"] .home-logo           { content: url("/imagens/sonic.png"); }
 :root[data-theme="fantastic-four"] .home-logo { content: url("/imagens/fantastic4.png"); }
 :root[data-theme="punisher"] .home-logo      { content: url("/imagens/punisher.png"); }
-:root[data-theme="superman"] .home-logo        { content: url("/imagens/image.png"); }
+:root[data-theme="superman"] .home-logo        { content: url("/imagens/superman.png"); }
