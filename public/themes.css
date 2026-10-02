@@ -417,4 +417,4 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="wolverine"] .home-logo       { content: url("/imagens/wolverine.png"); }
 :root[data-theme="deadpool"] .home-logo        { content: url("/imagens/deadpool.png"); }
 :root[data-theme="sonic"] .home-logo           { content: url("/imagens/sonic.png"); }
-:root[data-theme="superman"] .home-logo           { content: url("/imagens/image.png"); }
+:root[data-theme="superman"] .home-logo        { content: url("/imagens/image.png"); }
