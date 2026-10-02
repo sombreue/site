@@ -29,33 +29,8 @@
 
 :root[data-theme="sonic"] { --theme-bg:#06102a; --theme-surface:#0c1c40; --theme-surface-2:#12305d; --theme-surface-3:#19427c; --theme-border:#2d5d9a; --theme-border-hover:#4b83ca; --theme-text:#f4f9ff; --theme-muted:#aec1dc; --theme-accent:#1261c9; --theme-accent-hover:#3685ef; --theme-accent-dark:#0b3f87; --theme-input:#081631; --theme-header:#10264e; --theme-header-2:#07122c; --theme-button:#a78a32; --theme-button-hover:#c5a94b; }
 
-:root[data-theme="fantastic-four"] body::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.32; background:radial-gradient(circle at 50% -10%,rgba(75,150,255,.22),transparent 38%),linear-gradient(135deg,rgba(35,112,200,.07),transparent 45%); }
-:root[data-theme="fantastic-four"] header { box-shadow:inset 0 -2px 0 rgba(77,139,209,.3),0 12px 38px rgba(0,0,0,.3); border-bottom-color:#2863a8!important; }
-:root[data-theme="fantastic-four"] .seletor-tema-botao,:root[data-theme="fantastic-four"] .seletor-tema-lista { border-color:#2863a8!important; box-shadow:0 0 18px rgba(47,126,230,.12),0 10px 30px rgba(0,0,0,.3); }
-:root[data-theme="fantastic-four"] .tarefa { border-left:3px solid #2f7ee6!important; }
-:root[data-theme="fantastic-four"] .tarefa:hover { border-color:#4d8bd1!important; }
 :root[data-theme="fantastic-four"] .home-logo { content:url("/imagens/fantastic4.png"); display:block; width:230px; height:230px; max-width:230px; object-fit:contain; object-position:center; margin:0 auto; filter:drop-shadow(0 5px 14px rgba(0,0,0,.35)); }
 
-:root[data-theme="punisher"] body::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.24; background:radial-gradient(circle at 50% -10%,rgba(215,25,32,.18),transparent 38%),linear-gradient(135deg,rgba(215,25,32,.06),transparent 45%); }
-:root[data-theme="punisher"] header { box-shadow:inset 0 -2px 0 rgba(215,25,32,.28),0 12px 38px rgba(0,0,0,.34); border-bottom-color:#363a41!important; }
-:root[data-theme="punisher"] .seletor-tema-botao,:root[data-theme="punisher"] .seletor-tema-lista { border-color:#363a41!important; box-shadow:0 0 18px rgba(215,25,32,.10),0 10px 30px rgba(0,0,0,.32); }
-:root[data-theme="punisher"] .tarefa { border-left:3px solid #d71920!important; }
-:root[data-theme="punisher"] .tarefa:hover { border-color:#f02b32!important; }
-
-:root[data-theme="punisher"] button,
-:root[data-theme="punisher"] .botao-expec,
-:root[data-theme="punisher"] .botao-adicionar,
-:root[data-theme="punisher"] #btnCriarEquipe,
-:root[data-theme="punisher"] #btnSalvarData,
-:root[data-theme="punisher"] #btnAlternarExpec,
-:root[data-theme="punisher"] #btnAdicionarDecoracao { background:#fff!important; color:#000!important; border-color:#d71920!important; }
-:root[data-theme="punisher"] button:hover,
-:root[data-theme="punisher"] .botao-expec:hover,
-:root[data-theme="punisher"] .botao-adicionar:hover,
-:root[data-theme="punisher"] #btnCriarEquipe:hover,
-:root[data-theme="punisher"] #btnSalvarData:hover,
-:root[data-theme="punisher"] #btnAlternarExpec:hover,
-:root[data-theme="punisher"] #btnAdicionarDecoracao:hover { background:#e6e6e6!important; color:#000!important; }
 :root[data-theme="punisher"] .home-logo { content:url("/imagens/punisher.png"); display:block; width:230px; height:230px; max-width:230px; object-fit:contain; object-position:center; margin:0 auto; filter:drop-shadow(0 5px 14px rgba(0,0,0,.4)); }
 
 
