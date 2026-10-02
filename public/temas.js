@@ -12,6 +12,7 @@
         { id: "deadpool", nome: "Deadpool", icone: "☠", cor: "#d71920", grupo: "Super temas" },
         { id: "sonic", nome: "Sonic", icone: "⚡", cor: "#1261c9", grupo: "Super temas" },
         { id: "fantastic-four", nome: "Quarteto Fantástico", icone: "✦", cor: "#2f7ee6", grupo: "Super temas" },
+        { id: "punisher", nome: "Justiceiro", icone: "☠", cor: "#d71920", grupo: "Super temas" },
         { id: "ocean", nome: "Ocean", icone: "●", cor: "#2196f3", grupo: "Escuros" },
         { id: "violet", nome: "Violet", icone: "◆", cor: "#9c5cff", grupo: "Escuros" },
         { id: "midnight", nome: "Midnight", icone: "✦", cor: "#6875ff", grupo: "Especiais" },
@@ -44,7 +45,7 @@
 
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "themes.css?v=20261002-super-fantastic-four";
+    link.href = "themes.css?v=20261002-super-fantastic-four-punisher";
     document.head.appendChild(link);
 
     const estilo = document.createElement("style");
