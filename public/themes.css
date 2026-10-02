@@ -23,8 +23,25 @@
 
 :root[data-theme="deadpool"] { --theme-bg:#14191d; --theme-surface:#7b262f; --theme-surface-2:#7f363e; --theme-surface-3:#a1313d; --theme-border:#592830; --theme-border-hover:#813c46; --theme-text:#fff6f5; --theme-muted:#d0a9aa; --theme-accent:#ff8181; --theme-accent-hover:#ff3d45; --theme-accent-dark:#980e14; --theme-input:#21262e; --theme-header:#63252c; --theme-header-2:#14191d; --theme-button:#402026; --theme-button-hover:#522931; }
 
+:root[data-theme="fantastic-four"] { --theme-bg:#061a3a; --theme-surface:#0b2b5a; --theme-surface-2:#10396f; --theme-surface-3:#174a8c; --theme-border:#2863a8; --theme-border-hover:#4d8bd1; --theme-text:#f4f8ff; --theme-muted:#b7c9e2; --theme-accent:#2f7ee6; --theme-accent-hover:#55a0ff; --theme-accent-dark:#174f9d; --theme-input:#071f43; --theme-header:#0c3268; --theme-header-2:#061a38; --theme-button:#1557a8; --theme-button-hover:#2370c8; }
+:root[data-theme="punisher"] { --theme-bg:#090a0c; --theme-surface:#111317; --theme-surface-2:#191c21; --theme-surface-3:#24282e; --theme-border:#363a41; --theme-border-hover:#626873; --theme-text:#f4f4f5; --theme-muted:#aeb2b8; --theme-accent:#d71920; --theme-accent-hover:#f02b32; --theme-accent-dark:#8f0f15; --theme-input:#0c0d10; --theme-header:#15171b; --theme-header-2:#090a0c; --theme-button:#262a30; --theme-button-hover:#353a42; }
+
 :root[data-theme="sonic"] { --theme-bg:#06102a; --theme-surface:#0c1c40; --theme-surface-2:#12305d; --theme-surface-3:#19427c; --theme-border:#2d5d9a; --theme-border-hover:#4b83ca; --theme-text:#f4f9ff; --theme-muted:#aec1dc; --theme-accent:#1261c9; --theme-accent-hover:#3685ef; --theme-accent-dark:#0b3f87; --theme-input:#081631; --theme-header:#10264e; --theme-header-2:#07122c; --theme-button:#203f6e; --theme-button-hover:#2c548d; }
 
+
+:root[data-theme="fantastic-four"] body::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.32; background:radial-gradient(circle at 50% -10%,rgba(75,150,255,.22),transparent 38%),linear-gradient(135deg,rgba(35,112,200,.07),transparent 45%); }
+:root[data-theme="fantastic-four"] header { box-shadow:inset 0 -2px 0 rgba(77,139,209,.3),0 12px 38px rgba(0,0,0,.3); border-bottom-color:#2863a8!important; }
+:root[data-theme="fantastic-four"] .seletor-tema-botao,:root[data-theme="fantastic-four"] .seletor-tema-lista { border-color:#2863a8!important; box-shadow:0 0 18px rgba(47,126,230,.12),0 10px 30px rgba(0,0,0,.3); }
+:root[data-theme="fantastic-four"] .tarefa { border-left:3px solid #2f7ee6!important; }
+:root[data-theme="fantastic-four"] .tarefa:hover { border-color:#4d8bd1!important; }
+:root[data-theme="fantastic-four"] .home-logo { content:url("/imagens/fantastic4.png"); display:block; width:230px; height:230px; max-width:230px; object-fit:contain; object-position:center; margin:0 auto; filter:drop-shadow(0 5px 14px rgba(0,0,0,.35)); }
+
+:root[data-theme="punisher"] body::before { content:""; position:fixed; inset:0; pointer-events:none; z-index:-1; opacity:.24; background:radial-gradient(circle at 50% -10%,rgba(215,25,32,.18),transparent 38%),linear-gradient(135deg,rgba(215,25,32,.06),transparent 45%); }
+:root[data-theme="punisher"] header { box-shadow:inset 0 -2px 0 rgba(215,25,32,.28),0 12px 38px rgba(0,0,0,.34); border-bottom-color:#363a41!important; }
+:root[data-theme="punisher"] .seletor-tema-botao,:root[data-theme="punisher"] .seletor-tema-lista { border-color:#363a41!important; box-shadow:0 0 18px rgba(215,25,32,.10),0 10px 30px rgba(0,0,0,.32); }
+:root[data-theme="punisher"] .tarefa { border-left:3px solid #d71920!important; }
+:root[data-theme="punisher"] .tarefa:hover { border-color:#f02b32!important; }
+:root[data-theme="punisher"] .home-logo { content:url("/imagens/punisher.png"); display:block; width:230px; height:230px; max-width:230px; object-fit:contain; object-position:center; margin:0 auto; filter:drop-shadow(0 5px 14px rgba(0,0,0,.4)); }
 
 
 :root,
@@ -397,7 +414,9 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="captain-america"] .home-logo,
 :root[data-theme="wolverine"] .home-logo,
 :root[data-theme="deadpool"] .home-logo,
-:root[data-theme="sonic"] .home-logo
+:root[data-theme="sonic"] .home-logo,
+:root[data-theme="fantastic-four"] .home-logo,
+:root[data-theme="punisher"] .home-logo,
 :root[data-theme="superman"] .home-logo {
     display: block;
     width: 230px;
@@ -417,92 +436,6 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="wolverine"] .home-logo       { content: url("/imagens/wolverine.png"); }
 :root[data-theme="deadpool"] .home-logo        { content: url("/imagens/deadpool.png"); }
 :root[data-theme="sonic"] .home-logo           { content: url("/imagens/sonic.png"); }
+:root[data-theme="fantastic-four"] .home-logo { content: url("/imagens/fantastic4.png"); }
+:root[data-theme="punisher"] .home-logo      { content: url("/imagens/punisher.png"); }
 :root[data-theme="superman"] .home-logo        { content: url("/imagens/image.png"); }
-
-
-/* =========================================================
-   SUPER TEMA — QUARTETO FANTÁSTICO
-   ========================================================= */
-:root[data-theme="fantastic-four"] {
-    --theme-bg:#061a3a;
-    --theme-surface:#0b2b5a;
-    --theme-surface-2:#10396f;
-    --theme-surface-3:#174a8c;
-    --theme-border:#2863a8;
-    --theme-border-hover:#4d8bd1;
-    --theme-text:#f4f8ff;
-    --theme-muted:#b7c9e2;
-    --theme-accent:#2f7ee6;
-    --theme-accent-hover:#55a0ff;
-    --theme-accent-dark:#174f9d;
-    --theme-input:#071f43;
-    --theme-header:#0c3268;
-    --theme-header-2:#061a38;
-    --theme-button:#1557a8;
-    --theme-button-hover:#2370c8;
-}
-
-:root[data-theme="fantastic-four"] body::before {
-    content:"";
-    position:fixed;
-    inset:0;
-    pointer-events:none;
-    z-index:-1;
-    opacity:.32;
-    background:
-        radial-gradient(circle at 50% -10%,rgba(75,150,255,.22),transparent 38%),
-        linear-gradient(135deg,rgba(35,112,200,.07),transparent 45%);
-}
-
-:root[data-theme="fantastic-four"] header {
-    box-shadow:inset 0 -2px 0 rgba(77,139,209,.3),0 12px 38px rgba(0,0,0,.3);
-    border-bottom-color:#2863a8!important;
-}
-
-:root[data-theme="fantastic-four"] .seletor-tema-botao,
-:root[data-theme="fantastic-four"] .seletor-tema-lista {
-    border-color:#2863a8!important;
-    box-shadow:0 0 18px rgba(47,126,230,.12),0 10px 30px rgba(0,0,0,.3);
-}
-
-:root[data-theme="fantastic-four"] .tarefa {
-    border-left:3px solid #2f7ee6!important;
-}
-
-:root[data-theme="fantastic-four"] .tarefa:hover {
-    border-color:#4d8bd1!important;
-}
-
-:root[data-theme="fantastic-four"] .home-logo {
-    content:url("/imagens/fantastic4.png");
-    display:block;
-    width:230px;
-    height:230px;
-    max-width:230px;
-    object-fit:contain;
-    object-position:center;
-    margin:0 auto;
-    filter:drop-shadow(0 5px 14px rgba(0,0,0,.35));
-}
-
-:root[data-theme="fantastic-four"] button,
-:root[data-theme="fantastic-four"] .botao-expec,
-:root[data-theme="fantastic-four"] .botao-adicionar,
-:root[data-theme="fantastic-four"] #btnCriarEquipe,
-:root[data-theme="fantastic-four"] #btnSalvarData,
-:root[data-theme="fantastic-four"] #btnAlternarExpec,
-:root[data-theme="fantastic-four"] #btnAdicionarDecoracao {
-    background:var(--theme-button)!important;
-    border-color:var(--theme-border)!important;
-    color:var(--theme-text)!important;
-}
-
-:root[data-theme="fantastic-four"] button:hover,
-:root[data-theme="fantastic-four"] .botao-expec:hover,
-:root[data-theme="fantastic-four"] .botao-adicionar:hover,
-:root[data-theme="fantastic-four"] #btnCriarEquipe:hover,
-:root[data-theme="fantastic-four"] #btnSalvarData:hover,
-:root[data-theme="fantastic-four"] #btnAlternarExpec:hover,
-:root[data-theme="fantastic-four"] #btnAdicionarDecoracao:hover {
-    background:var(--theme-button-hover)!important;
-}
