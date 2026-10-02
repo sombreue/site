@@ -194,7 +194,8 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="sonic"] .tarefa:hover { border-color:#c5a94b!important; }
 
 
-/* Botoes: o data-theme escolhe apenas as variaveis do tema. */
+/* Botoes: o data-theme escolhe as variaveis do tema. */
+:root { --theme-button-text:#000; }
 :root[data-theme] button,
 :root[data-theme] .botao-expec,
 :root[data-theme] .botao-adicionar,
@@ -204,7 +205,7 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme] #btnAdicionarDecoracao {
     background:var(--theme-button)!important;
     border-color:var(--theme-border)!important;
-    color:var(--theme-text)!important;
+    color:var(--theme-button-text)!important;
 }
 :root[data-theme] button:hover,
 :root[data-theme] .botao-expec:hover,
