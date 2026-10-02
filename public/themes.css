@@ -409,7 +409,7 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 }
 
 :root[data-theme="batman"] .home-logo          { content: url("/imagens/batman.png"); }
-:root[data-theme="spider-man"] .home-logo      { content: url("/imagens/image.png"); }
+:root[data-theme="spider-man"] .home-logo      { content: url("/imagens/spiderman.png"); }
 :root[data-theme="doctor-doom"] .home-logo     { content: url("/imagens/doom).png"); }
 :root[data-theme="iron-man"] .home-logo        { content: url("/imagens/ironman.png"); }
 :root[data-theme="hulk"] .home-logo            { content: url("/imagens/hulk.png"); }
@@ -417,4 +417,4 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="wolverine"] .home-logo       { content: url("/imagens/wolverine.png"); }
 :root[data-theme="deadpool"] .home-logo        { content: url("/imagens/deadpool.png"); }
 :root[data-theme="sonic"] .home-logo           { content: url("/imagens/sonic.png"); }
-:root[data-theme="sonic"] .home-logo           { content: url("/imagens/image.jpg"); }
+:root[data-theme="superman"] .home-logo           { content: url("/imagens/image.png"); }
