@@ -204,20 +204,6 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="sonic"] .tarefa:hover { border-color:#c5a94b!important; }
 
 
-/* =========================================================
-   SUPER TEMAS — botoes usam a cor secundaria da identidade
-   ========================================================= */
-:root[data-theme="batman"] { --theme-button:#b89200; --theme-button-hover:#e0b900; }
-:root[data-theme="spider-man"] { --theme-button:#1f6fc1; --theme-button-hover:#3f8ddd; }
-:root[data-theme="doctor-doom"] { --theme-button:#6f7975; --theme-button-hover:#9fa9a5; }
-:root[data-theme="iron-man"] { --theme-button:#a98218; --theme-button-hover:#c9a42e; }
-:root[data-theme="hulk"] { --theme-button:#721CB8; --theme-button-hover:#9366aa; }
-:root[data-theme="superman"] { --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
-:root[data-theme="captain-america"] { --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
-:root[data-theme="wolverine"] { --theme-button:#164A7A; --theme-button-hover:#28659A; }
-:root[data-theme="deadpool"] { --theme-button:#1b1b1b; --theme-button-hover:#24262b; }
-:root[data-theme="sonic"] { --theme-button:#a78a32; --theme-button-hover:#c5a94b; }
-
 /* Nos Super temas, todos os botoes principais seguem a mesma cor secundaria. */
 :root[data-theme="batman"] button,
 :root[data-theme="batman"] .botao-expec,
