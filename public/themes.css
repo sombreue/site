@@ -778,6 +778,69 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
   --theme-button-hover:var(--theme-accent-hover);
 }
 
+/* Normaliza os botoes dos temas que usam aparencia personalizada, inclusive no mobile. */
+:root[data-theme="wolverine"] button,
+:root[data-theme="wolverine"] .botao-expec,
+:root[data-theme="wolverine"] .botao-adicionar,
+:root[data-theme="wolverine"] #btnCriarEquipe,
+:root[data-theme="wolverine"] #btnSalvarData,
+:root[data-theme="wolverine"] #btnAlternarExpec,
+:root[data-theme="wolverine"] #btnAdicionarDecoracao,
+:root[data-theme="fantastic-four"] button,
+:root[data-theme="fantastic-four"] .botao-expec,
+:root[data-theme="fantastic-four"] .botao-adicionar,
+:root[data-theme="fantastic-four"] #btnCriarEquipe,
+:root[data-theme="fantastic-four"] #btnSalvarData,
+:root[data-theme="fantastic-four"] #btnAlternarExpec,
+:root[data-theme="fantastic-four"] #btnAdicionarDecoracao,
+:root[data-theme="punisher"] button,
+:root[data-theme="punisher"] .botao-expec,
+:root[data-theme="punisher"] .botao-adicionar,
+:root[data-theme="punisher"] #btnCriarEquipe,
+:root[data-theme="punisher"] #btnSalvarData,
+:root[data-theme="punisher"] #btnAlternarExpec,
+:root[data-theme="punisher"] #btnAdicionarDecoracao {
+  -webkit-appearance:none!important;
+  appearance:none!important;
+  background-image:none!important;
+}
+
+:root[data-theme="wolverine"] button,
+:root[data-theme="wolverine"] .botao-expec,
+:root[data-theme="wolverine"] .botao-adicionar,
+:root[data-theme="wolverine"] #btnCriarEquipe,
+:root[data-theme="wolverine"] #btnSalvarData,
+:root[data-theme="wolverine"] #btnAlternarExpec,
+:root[data-theme="wolverine"] #btnAdicionarDecoracao {
+  background-color:#19b5ff!important;
+  color:#000!important;
+  -webkit-text-fill-color:#000!important;
+}
+
+:root[data-theme="fantastic-four"] button,
+:root[data-theme="fantastic-four"] .botao-expec,
+:root[data-theme="fantastic-four"] .botao-adicionar,
+:root[data-theme="fantastic-four"] #btnCriarEquipe,
+:root[data-theme="fantastic-four"] #btnSalvarData,
+:root[data-theme="fantastic-four"] #btnAlternarExpec,
+:root[data-theme="fantastic-four"] #btnAdicionarDecoracao {
+  background-color:#fff!important;
+  color:#1557a8!important;
+  -webkit-text-fill-color:#1557a8!important;
+}
+
+:root[data-theme="punisher"] button,
+:root[data-theme="punisher"] .botao-expec,
+:root[data-theme="punisher"] .botao-adicionar,
+:root[data-theme="punisher"] #btnCriarEquipe,
+:root[data-theme="punisher"] #btnSalvarData,
+:root[data-theme="punisher"] #btnAlternarExpec,
+:root[data-theme="punisher"] #btnAdicionarDecoracao {
+  background-color:#fff!important;
+  color:#111!important;
+  -webkit-text-fill-color:#111!important;
+}
+
 /* Botoes dos temas */
 :root[data-theme] button,
 :root[data-theme] .botao-expec,
