@@ -240,7 +240,7 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="punisher"] #btnAlternarExpec,
 :root[data-theme="punisher"] #btnAdicionarDecoracao {
     background:#fff!important;
-    color:#111!important;
+    color:var(--theme-text)!important;
 }
 :root[data-theme="punisher"] button:hover,
 :root[data-theme="punisher"] .botao-expec:hover,
@@ -274,7 +274,7 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="sonic"] #btnSalvarData,
 :root[data-theme="sonic"] #btnAlternarExpec,
 :root[data-theme="sonic"] #btnAdicionarDecoracao {
-    color:#111!important;
+    color:var(--theme-text)!important;
 }
 
 /* =========================================================
