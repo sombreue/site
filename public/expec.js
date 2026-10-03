@@ -51,7 +51,25 @@ async function carregarEquipes(tipoUsuario) {
         equipes.forEach(equipe => {
             const card = document.createElement("div");
             card.className = "equipe";
-            card.innerHTML = `<h3>${equipe.nome || ""}</h3><p><strong>Tema:</strong> ${equipe.tema || ""}</p><p><strong>Professor:</strong> ${equipe.professor || "Não informado"}</p><p><strong>Líder:</strong> ${equipe.lider || "Não informado"}</p><p><strong>Integrantes:</strong> ${equipe.integrantes || "Não informados"}</p>`;
+
+            const titulo = document.createElement("h3");
+            titulo.textContent = equipe.nome || "";
+
+            const criarCampo = (rotulo, valor, fallback) => {
+                const p = document.createElement("p");
+                const strong = document.createElement("strong");
+                strong.textContent = rotulo + ":";
+                p.append(strong, " ", valor || fallback);
+                return p;
+            };
+
+            card.append(
+                titulo,
+                criarCampo("Tema", equipe.tema, ""),
+                criarCampo("Professor", equipe.professor, "Não informado"),
+                criarCampo("Líder", equipe.lider, "Não informado"),
+                criarCampo("Integrantes", equipe.integrantes, "Não informados")
+            );
             if (tipoUsuario === "admin") {
                 const acoes = document.createElement("div");
                 acoes.className = "equipe-acoes";
