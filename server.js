@@ -390,6 +390,9 @@ app.post("/api/admin/usuarios", exigirAdmin, async (req, res) => {
 
 app.delete("/api/admin/usuarios/:id", exigirAdmin, async (req, res) => {
     try {
+        const usuarioAlvo = await pool.query("SELECT id, tipo FROM usuarios WHERE id = $1", [req.params.id]);
+        if (!usuarioAlvo.rows.length) return res.status(404).json({ sucesso: false, mensagem: "Usuário não encontrado." });
+        if (usuarioAlvo.rows[0].tipo === "admin") return res.status(400).json({ sucesso: false, mensagem: "Contas administradoras não podem ser excluídas." });
         if (Number(req.params.id) === req.session.usuario.id) return res.status(400).json({ sucesso: false, mensagem: "Você não pode excluir sua própria conta." });
         await pool.query("DELETE FROM usuarios WHERE id = $1", [req.params.id]);
         res.json({ sucesso: true });
