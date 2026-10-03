@@ -20,22 +20,22 @@
 :root[data-theme="captain-america"] { --theme-bg:#080f1b; --theme-surface:#101c30; --theme-surface-2:#172941; --theme-surface-3:#203956; --theme-border:#355574; --theme-border-hover:#24557f; --theme-text:#f5f8fc; --theme-muted:#b1bdcb; --theme-accent:#012E5D; --theme-accent-hover:#1a4f7d; --theme-accent-dark:#01244a; --theme-input:#0a1524; --theme-header:#12243b; --theme-header-2:#091321; --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
 
 :root[data-theme="wolverine"] {
-  --theme-bg:#CA9603;
-  --theme-surface:#FEC602;
-  --theme-surface-2:#FBE59A;
-  --theme-surface-3:#FDECB0;
-  --theme-border:#536a8b;
-  --theme-border-hover:#7d9dcc;
-  --theme-text:#000000;
-  --theme-muted:#b9c9df;
-  --theme-accent:#FDB300;
-  --theme-accent-hover:#FFD76B;
-  --theme-accent-dark:#C68A00;
-  --theme-input:#F4D263;
-  --theme-header:#EBC34F;
-  --theme-header-2:#D5A82A;
-  --theme-button:#164A7A;
-  --theme-button-hover:#243e68;
+    --theme-bg: #CA9603;
+    --theme-surface: #FEC602;
+    --theme-surface-2: #FBE59A;
+    --theme-surface-3: #FDECB0;
+    --theme-border: #536a8b;
+    --theme-border-hover: #7d9dcc;
+    --theme-text: #000000;
+    --theme-muted: #003987;
+    --theme-accent: #FDB300;
+    --theme-accent-hover: #FFD76B;
+    --theme-accent-dark: #C68A00;
+    --theme-input: #F4D263;
+    --theme-header: #EBC34F;
+    --theme-header-2: #D5A82A;
+    --theme-button: #19b5ff;
+    --theme-button-hover: #243e68;
 }
 
 :root[data-theme="deadpool"] { --theme-bg:#14191d; --theme-surface:#7b262f; --theme-surface-2:#7f363e; --theme-surface-3:#a1313d; --theme-border:#592830; --theme-border-hover:#813c46; --theme-text:#fff6f5; --theme-muted:#d0a9aa; --theme-accent:#ff8181; --theme-accent-hover:#ff3d45; --theme-accent-dark:#980e14; --theme-input:#21262e; --theme-header:#63252c; --theme-header-2:#14191d; --theme-button:#1b1b1b; --theme-button-hover:#24262b; }
