@@ -204,7 +204,7 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme] #btnAdicionarDecoracao {
     background:var(--theme-button)!important;
     border-color:var(--theme-border)!important;
-    color:#111!important;
+    color:var(--theme-text)!important;
 }
 :root[data-theme] button:hover,
 :root[data-theme] .botao-expec:hover,
