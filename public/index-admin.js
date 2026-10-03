@@ -37,7 +37,7 @@
                     <div><strong>${textoSeguro(usuario.usuario)}</strong><span>${usuario.tipo === 'admin' ? 'Administrador' : 'Usuário'}</span></div>
                     <div class="acoes-usuario-admin">
                         <button type="button" data-alterar-senha="${usuario.id}">Mudar senha</button>
-                        ${usuario.id === usuarioLogadoId ? '<em>Conta atual</em>' : `<button type="button" data-excluir-usuario="${usuario.id}">Excluir</button>`}
+                        ${usuario.tipo === 'admin' ? '<em>Administrador</em>' : usuario.id === usuarioLogadoId ? '<em>Conta atual</em>' : `<button type="button" data-excluir-usuario="${usuario.id}">Excluir</button>`}
                     </div>
                 </div>
             `).join('') || '<p>Nenhum usuário cadastrado.</p>';
