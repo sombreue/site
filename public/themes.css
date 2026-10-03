@@ -25,7 +25,7 @@
 
 :root[data-theme="fantastic-four"] { --theme-bg:#061a3a; --theme-surface:#0b2b5a; --theme-surface-2:#10396f; --theme-surface-3:#174a8c; --theme-border:#2863a8; --theme-border-hover:#4d8bd1; --theme-text:#f4f8ff; --theme-muted:#b7c9e2; --theme-accent:#2f7ee6; --theme-accent-hover:#55a0ff; --theme-accent-dark:#174f9d; --theme-input:#071f43; --theme-header:#0c3268; --theme-header-2:#061a38; --theme-button:#1557a8; --theme-button-hover:#2370c8; }
 
-:root[data-theme="punisher"] { --theme-bg:#090a0c; --theme-surface:#111317; --theme-surface-2:#191c21; --theme-surface-3:#24282e; --theme-border:#363a41; --theme-border-hover:#626873; --theme-text:#f4f4f5; --theme-muted:#aeb2b8; --theme-accent:#d71920; --theme-accent-hover:#f02b32; --theme-accent-dark:#8f0f15; --theme-input:#0c0d10; --theme-header:#15171b; --theme-header-2:#090a0c; --theme-button:#ffffff; --theme-button-hover:#e6e6e6; }
+:root[data-theme="punisher"] { --theme-bg:#090a0c; --theme-surface:#111317; --theme-surface-2:#191c21; --theme-surface-3:#24282e; --theme-border:#363a41; --theme-border-hover:#626873; --theme-text:#cd0000; --theme-muted:#aeb2b8; --theme-accent:#d71920; --theme-accent-hover:#f02b32; --theme-accent-dark:#8f0f15; --theme-input:#0c0d10; --theme-header:#15171b; --theme-header-2:#090a0c; --theme-button:#ffffff; --theme-button-hover:#e6e6e6; }
 
 :root[data-theme="sonic"] { --theme-bg:#06102a; --theme-surface:#0c1c40; --theme-surface-2:#12305d; --theme-surface-3:#19427c; --theme-border:#2d5d9a; --theme-border-hover:#4b83ca; --theme-text:#f4f9ff; --theme-muted:#aec1dc; --theme-accent:#1261c9; --theme-accent-hover:#3685ef; --theme-accent-dark:#0b3f87; --theme-input:#081631; --theme-header:#10264e; --theme-header-2:#07122c; --theme-button:#a78a32; --theme-button-hover:#c5a94b; }
 
