@@ -583,10 +583,14 @@ function criarTarefa(
         id;
 
 
-    novaTarefa.innerHTML = `
-        <h3>${materia}</h3>
-        <p>${descricao}</p>
-    `;
+    const tituloTarefa = document.createElement("h3");
+    tituloTarefa.textContent = materia;
+
+    const descricaoTarefa = document.createElement("p");
+    descricaoTarefa.textContent = descricao;
+
+    novaTarefa.appendChild(tituloTarefa);
+    novaTarefa.appendChild(descricaoTarefa);
 
 
     /* =========================
