@@ -10,6 +10,7 @@
     const campoNovaSenha = document.getElementById('nova-senha-index');
     const botaoMostrarNovaSenha = document.getElementById('botao-mostrar-nova-senha-index');
     const tipoNovaConta = document.getElementById('tipo-nova-conta-index');
+    const chavePainelAdmin = 'painel-admin-index-aberto';
 
     function textoSeguro(valor) {
         return String(valor ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
@@ -79,11 +80,15 @@
 
     botaoLogout.addEventListener('click', sair);
 
-    botaoMin.addEventListener('click', () => {
-        const aberto = conteudo.hidden;
+    function definirEstadoPainel(aberto) {
         conteudo.hidden = !aberto;
         botaoMin.textContent = aberto ? '−' : '+';
         botaoMin.setAttribute('aria-expanded', String(aberto));
+        localStorage.setItem(chavePainelAdmin, String(aberto));
+    }
+
+    botaoMin.addEventListener('click', () => {
+        definirEstadoPainel(conteudo.hidden);
     });
 
     form.addEventListener('submit', async evento => {
@@ -157,6 +162,7 @@
 
             if (usuario.tipo === 'admin') {
                 painel.hidden = false;
+                definirEstadoPainel(localStorage.getItem(chavePainelAdmin) !== 'false');
                 carregarUsuarios();
             }
         } catch (erro) {
