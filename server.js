@@ -74,10 +74,8 @@ if (process.env.NODE_ENV === "production" && !process.env.SESSION_SECRET) {
     process.exit(1);
 }
 
-const sessionMaxAge = 1000 * 60 * 60 * 24;
-
 app.use(session({
-    store: sessionStore(pool, sessionMaxAge),
+    store: new PostgresSessionStore(pool, sessionMaxAge),
     secret: process.env.SESSION_SECRET || "desenvolvimento-apenas",
     resave: false,
     saveUninitialized: false,
