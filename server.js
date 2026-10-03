@@ -36,6 +36,13 @@ class PostgresSessionStore extends session.Store {
         super();
         this.pool = pool;
         this.maxAge = maxAge;
+
+        this.limpeza = setInterval(() => {
+            this.pool.query("DELETE FROM sessoes WHERE expires_at <= NOW()")
+                .catch(erro => console.error("Erro ao limpar sessões expiradas:", erro));
+        }, 60 * 60 * 1000);
+
+        this.limpeza.unref?.();
     }
 
     get(sid, callback) {
