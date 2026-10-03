@@ -29,6 +29,42 @@ const pool = new Pool({
     ssl: { rejectUnauthorized: false }
 });
 
+const sessionMaxAge = 1000 * 60 * 60 * 24;
+
+class PostgresSessionStore extends session.Store {
+    constructor(pool, maxAge) {
+        super();
+        this.pool = pool;
+        this.maxAge = maxAge;
+    }
+
+    get(sid, callback) {
+        this.pool.query("SELECT sess FROM sessoes WHERE sid = $1 AND expires_at > NOW()", [sid])
+            .then(r => callback(null, r.rows[0]?.sess ?? null))
+            .catch(callback);
+    }
+
+    set(sid, sess, callback) {
+        const expiresAt = new Date(Date.now() + this.maxAge);
+        this.pool.query(
+            "INSERT INTO sessoes (sid, sess, expires_at) VALUES ($1, $2::jsonb, $3) ON CONFLICT (sid) DO UPDATE SET sess = EXCLUDED.sess, expires_at = EXCLUDED.expires_at",
+            [sid, JSON.stringify(sess), expiresAt]
+        ).then(() => callback?.(null)).catch(erro => callback?.(erro));
+    }
+
+    destroy(sid, callback) {
+        this.pool.query("DELETE FROM sessoes WHERE sid = $1", [sid])
+            .then(() => callback?.(null)).catch(erro => callback?.(erro));
+    }
+
+    touch(sid, sess, callback) {
+        const expiresAt = new Date(Date.now() + this.maxAge);
+        this.pool.query("UPDATE sessoes SET expires_at = $1, sess = $2::jsonb WHERE sid = $3", [expiresAt, JSON.stringify(sess), sid])
+            .then(() => callback?.(null)).catch(erro => callback?.(erro));
+    }
+}
+
+
 pool.query("SELECT NOW()")
     .then(() => console.log("POSTGRESQL CONECTADO!"))
     .catch(erro => console.error("Erro ao conectar ao PostgreSQL:", erro));
