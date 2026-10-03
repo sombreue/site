@@ -753,6 +753,31 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="sonic"] .tarefa:hover { border-color:#c5a94b!important; }
 
 
+/* Os temas comuns usam a cor de destaque nos botoes. */
+:root[data-theme="ruby"],
+:root[data-theme="ocean"],
+:root[data-theme="violet"],
+:root[data-theme="emerald"],
+:root[data-theme="amber"],
+:root[data-theme="ice"],
+:root[data-theme="midnight"],
+:root[data-theme="bordeaux"],
+:root[data-theme="ancient"],
+:root[data-theme="forest"],
+:root[data-theme="sakura"],
+:root[data-theme="arctic"],
+:root[data-theme="ruby-light"],
+:root[data-theme="ocean-light"],
+:root[data-theme="violet-light"],
+:root[data-theme="emerald-light"],
+:root[data-theme="amber-light"],
+:root[data-theme="ice-light"],
+:root[data-theme="system"],
+:root[data-theme="turkey"] {
+  --theme-button:var(--theme-accent);
+  --theme-button-hover:var(--theme-accent-hover);
+}
+
 /* Botoes dos temas */
 :root[data-theme] button,
 :root[data-theme] .botao-expec,
