@@ -30,13 +30,6 @@
         { id: "system", nome: "Sistema", icone: "◐", cor: "#888", grupo: "Automático" }
     ];
 
-    const temasClaros = {
-        "wolverine": { bg:"#CA9603",surface:"#FEC602",surface2:"#FBE59A",surface3:"#FDECB0",border:"#D5AE35",borderHover:"#315D9B",text:"#000000",muted:"#28659A",accent:"#FDB300",accentHover:"#FFD76B",accentDark:"#C68A00",input:"#F4D263",header:"#EBC34F",header2:"#D5A82A",button:"#0072da",buttonHover:"#560000" },
-        "ruby-light": { bg:"#f6f6f7",surface:"#ffffff",surface2:"#f1f1f3",surface3:"#e9e9ec",border:"#d7d7dc",borderHover:"#b8b8c0",text:"#18181b",muted:"#666670",accent:"#d92838",accentHover:"#ef3340",accentDark:"#a71925",input:"#ffffff",header:"#ffffff",header2:"#f5f5f6",button:"#e7e7ea",buttonHover:"#dcdce0" },
-        "ocean-light": { bg:"#f3f8fb",surface:"#ffffff",surface2:"#eaf3f8",surface3:"#dfeef5",border:"#cbdde7",borderHover:"#aac5d3",text:"#15232b",muted:"#60747f",accent:"#0878c9",accentHover:"#1595ec",accentDark:"#07588f",input:"#ffffff",header:"#ffffff",header2:"#eef6fa",button:"#e4f0f6",buttonHover:"#d5e7ef" },
-        "violet-light": { bg:"#f7f4fa",surface:"#ffffff",surface2:"#f0eaf6",surface3:"#e8dff0",border:"#dacde3",borderHover:"#bea9cb",text:"#21192a",muted:"#75667e",accent:"#7c3dcc",accentHover:"#9553e8",accentDark:"#5d249f",input:"#ffffff",header:"#ffffff",header2:"#f5f0f8",button:"#ede5f3",buttonHover:"#e1d5e9" }
-    };
-
     const chave = "agenda-auruda-tema";
     const ehQuartaFeira = () => new Date().getDay() === 3;
     const temaSalvo = localStorage.getItem(chave) || "ruby";
@@ -71,20 +64,6 @@
     `;
     document.head.appendChild(estilo);
 
-    function limparVariaveisForcadas() {
-        const root=document.documentElement;
-        ["--theme-bg","--theme-surface","--theme-surface-2","--theme-surface-3","--theme-border","--theme-border-hover","--theme-text","--theme-muted","--theme-accent","--theme-accent-hover","--theme-accent-dark","--theme-input","--theme-header","--theme-header-2","--theme-button","--theme-button-hover","--bg","--surface","--surface-2","--surface-3","--border","--border-hover","--text","--muted","--accent","--accent-hover","--accent-dark"].forEach(nome=>root.style.removeProperty(nome));
-        root.style.removeProperty("color-scheme");
-    }
-
-    function forcarVariaveisClaras(id) {
-        const cores=temasClaros[id], root=document.documentElement;
-        if(!cores){ limparVariaveisForcadas(); return; }
-        const vars={"--theme-bg":cores.bg,"--theme-surface":cores.surface,"--theme-surface-2":cores.surface2,"--theme-surface-3":cores.surface3,"--theme-border":cores.border,"--theme-border-hover":cores.borderHover,"--theme-text":cores.text,"--theme-muted":cores.muted,"--theme-accent":cores.accent,"--theme-accent-hover":cores.accentHover,"--theme-accent-dark":cores.accentDark,"--theme-input":cores.input,"--theme-header":cores.header,"--theme-header-2":cores.header2,"--theme-button":cores.button,"--theme-button-hover":cores.buttonHover,"--bg":cores.bg,"--surface":cores.surface,"--surface-2":cores.surface2,"--surface-3":cores.surface3,"--border":cores.border,"--border-hover":cores.borderHover,"--text":cores.text,"--muted":cores.muted,"--accent":cores.accent,"--accent-hover":cores.accentHover,"--accent-dark":cores.accentDark};
-        Object.entries(vars).forEach(([nome,valor])=>root.style.setProperty(nome,valor,"important"));
-        root.style.setProperty("color-scheme","light","important");
-    }
-
     function atualizarLogos(id) {
         const logosEspeciais={"quarta-feira":"/imagens/quarta-feira.jpg","segunda-feira":"/imagens/segunda-feira.jpg"};
         document.querySelectorAll(".logo, .home-logo").forEach(logo=>{
@@ -104,7 +83,6 @@
         if(!temas.some(t=>t.id===id)) return;
         document.documentElement.classList.add("trocando-tema");
         document.documentElement.dataset.theme=id;
-        forcarVariaveisClaras(id);
         atualizarLogos(id);
         localStorage.setItem(chave,id);
         atualizarBloqueioQuarta();
