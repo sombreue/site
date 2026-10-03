@@ -19,7 +19,24 @@
 
 :root[data-theme="captain-america"] { --theme-bg:#080f1b; --theme-surface:#101c30; --theme-surface-2:#172941; --theme-surface-3:#203956; --theme-border:#355574; --theme-border-hover:#24557f; --theme-text:#f5f8fc; --theme-muted:#b1bdcb; --theme-accent:#012E5D; --theme-accent-hover:#1a4f7d; --theme-accent-dark:#01244a; --theme-input:#0a1524; --theme-header:#12243b; --theme-header-2:#091321; --theme-button:#b91d1a; --theme-button-hover:#e02b27; }
 
-:root[data-theme="wolverine"] { --theme-bg:#CA9603; --theme-surface:#FEC602; --theme-surface-2:#FBE59A; --theme-surface-3:#FDECB0; --theme-border:#D5AE35; --theme-border-hover:#315D9B; --theme-text:#000000; --theme-muted:#28659A; --theme-accent:#FDB300; --theme-accent-hover:#FFD76B; --theme-accent-dark:#C68A00; --theme-input:#F4D263; --theme-header:#EBC34F; --theme-header-2:#D5A82A; --theme-button:#164A7A; --theme-button-hover:#28659A; }
+:root[data-theme="wolverine"] {
+  --theme-bg:#CA9603;
+  --theme-surface:#FEC602;
+  --theme-surface-2:#FBE59A;
+  --theme-surface-3:#FDECB0;
+  --theme-border:#536a8b;
+  --theme-border-hover:#7d9dcc;
+  --theme-text:#000000;
+  --theme-muted:#b9c9df;
+  --theme-accent:#FDB300;
+  --theme-accent-hover:#FFD76B;
+  --theme-accent-dark:#C68A00;
+  --theme-input:#F4D263;
+  --theme-header:#EBC34F;
+  --theme-header-2:#D5A82A;
+  --theme-button:#164A7A;
+  --theme-button-hover:#243e68;
+}
 
 :root[data-theme="deadpool"] { --theme-bg:#14191d; --theme-surface:#7b262f; --theme-surface-2:#7f363e; --theme-surface-3:#a1313d; --theme-border:#592830; --theme-border-hover:#813c46; --theme-text:#fff6f5; --theme-muted:#d0a9aa; --theme-accent:#ff8181; --theme-accent-hover:#ff3d45; --theme-accent-dark:#980e14; --theme-input:#21262e; --theme-header:#63252c; --theme-header-2:#14191d; --theme-button:#1b1b1b; --theme-button-hover:#24262b; }
 
@@ -27,7 +44,24 @@
 
 :root[data-theme="punisher"] { --theme-bg:#090a0c; --theme-surface:#111317; --theme-surface-2:#191c21; --theme-surface-3:#24282e; --theme-border:#363a41; --theme-border-hover:#626873; --theme-text:#cd0000; --theme-muted:#aeb2b8; --theme-accent:#d71920; --theme-accent-hover:#f02b32; --theme-accent-dark:#8f0f15; --theme-input:#0c0d10; --theme-header:#15171b; --theme-header-2:#090a0c; --theme-button:#ffffff; --theme-button-hover:#e6e6e6; }
 
-:root[data-theme="sonic"] { --theme-bg:#06102a; --theme-surface:#0c1c40; --theme-surface-2:#12305d; --theme-surface-3:#19427c; --theme-border:#2d5d9a; --theme-border-hover:#4b83ca; --theme-text:#f4f9ff; --theme-muted:#aec1dc; --theme-accent:#1261c9; --theme-accent-hover:#3685ef; --theme-accent-dark:#0b3f87; --theme-input:#081631; --theme-header:#10264e; --theme-header-2:#07122c; --theme-button:#a78a32; --theme-button-hover:#c5a94b; }
+:root[data-theme="sonic"] {
+  --theme-bg:#06102a;
+  --theme-surface:#0c1c40;
+  --theme-surface-2:#12305d;
+  --theme-surface-3:#19427c;
+  --theme-border:#806b28;
+  --theme-border-hover:#c5a94b;
+  --theme-text:#f4f9ff;
+  --theme-muted:#c5c0ac;
+  --theme-accent:#1261c9;
+  --theme-accent-hover:#3685ef;
+  --theme-accent-dark:#0b3f87;
+  --theme-input:#081631;
+  --theme-header:#10264e;
+  --theme-header-2:#07122c;
+  --theme-button:#a78a32;
+  --theme-button-hover:#3c3a28;
+}
 
 :root[data-theme="fantastic-four"] .home-logo { content:url("/imagens/fantastic4.png"); display:block; width:230px; height:230px; max-width:230px; object-fit:contain; object-position:center; margin:0 auto; filter:drop-shadow(0 5px 14px rgba(0,0,0,.35)); }
 
@@ -179,14 +213,12 @@ input[type="date"],input[type="text"],input[type="password"],input[type="number"
 :root[data-theme="hulk"] .tarefa { border-left:3px solid #7bbf35!important; }
 :root[data-theme="hulk"] .tarefa:hover { border-color:#9b6bb1!important; }
 
-:root[data-theme="wolverine"] { --theme-border:#536a8b; --theme-border-hover:#7d9dcc; --theme-muted:#b9c9df; --theme-button-hover:#243e68; }
 :root[data-theme="wolverine"] header { border-bottom-color:#315d9b!important; }
 :root[data-theme="wolverine"] .seletor-tema-botao,
 :root[data-theme="wolverine"] .seletor-tema-lista { border-color:#536a8b!important; box-shadow:0 0 18px rgba(49,93,155,.12),0 10px 30px rgba(0,0,0,.3); }
 :root[data-theme="wolverine"] .tarefa { border-left:3px solid #012E5D!important; }
 :root[data-theme="wolverine"] .tarefa:hover { border-color:#315d9b!important; }
 
-:root[data-theme="sonic"] { --theme-border:#806b28; --theme-border-hover:#c5a94b; --theme-muted:#c5c0ac; --theme-button-hover:#3c3a28; }
 :root[data-theme="sonic"] header { border-bottom-color:#c5a94b!important; background:linear-gradient(180deg,#122b57 0%,#08142e 100%)!important; }
 :root[data-theme="sonic"] .seletor-tema-botao,
 :root[data-theme="sonic"] .seletor-tema-lista { border-color:#a78a32!important; box-shadow:0 0 18px rgba(197,169,75,.11),0 10px 30px rgba(0,0,0,.3); }
