@@ -218,6 +218,8 @@ require("./tarefas-pessoais")(app, pool, exigirLogin);
 require("./notas")(app, pool, exigirLogin);
 require("./estudos")(app, pool, exigirLogin);
 require("./sticky-notes")(app, pool, exigirLogin);
+require("./rotas-trabalhos")(app, pool);
+require("./notificacoes.js")(app, pool);
 
 app.get("/api/tarefas", exigirLogin, async (req, res) => {
     try {
