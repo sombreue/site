@@ -140,12 +140,13 @@ a{
 
 .form-criar-usuario-index{
   display:grid;
-  grid-template-columns:1fr 1fr auto;
+  grid-template-columns:1fr 1fr auto auto;
   gap:10px;
   margin-top:18px;
 }
 
-.form-criar-usuario-index input{
+.form-criar-usuario-index input,
+.form-criar-usuario-index select{
   min-width:0;
   padding:11px 12px;
   border-radius:10px;
