@@ -156,6 +156,11 @@ a{
   font:inherit;
 }
 
+.form-criar-usuario-index select option{
+  background:var(--theme-input);
+  color:var(--theme-text);
+}
+
 .form-criar-usuario-index button{
   padding:11px 15px;
   border:1px solid var(--theme-border);
