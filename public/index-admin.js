@@ -9,6 +9,7 @@
     const conteudo = document.getElementById('conteudo-admin-index');
     const campoNovaSenha = document.getElementById('nova-senha-index');
     const botaoMostrarNovaSenha = document.getElementById('botao-mostrar-nova-senha-index');
+    const tipoNovaConta = document.getElementById('tipo-nova-conta-index');
 
     function textoSeguro(valor) {
         return String(valor ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
@@ -90,12 +91,13 @@
         status.textContent = 'Criando usuário...';
         const usuario = document.getElementById('novo-usuario-index').value.trim();
         const senha = campoNovaSenha.value;
+        const tipo = tipoNovaConta.value;
         try {
             const resposta = await fetch('/api/admin/usuarios', {
                 method: 'POST',
                 credentials: 'same-origin',
                 headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ usuario, senha, tipo: 'usuario' })
+                body: JSON.stringify({ usuario, senha, tipo })
             });
             const dados = await resposta.json();
             if (!resposta.ok || !dados.sucesso) throw new Error(dados.mensagem || 'Não foi possível criar o usuário.');
@@ -104,6 +106,7 @@
             campoNovaSenha.type = 'password';
             botaoMostrarNovaSenha.textContent = 'Mostrar';
             botaoMostrarNovaSenha.setAttribute('aria-label', 'Mostrar senha');
+            tipoNovaConta.value = 'usuario';
             carregarUsuarios();
         } catch (erro) {
             status.textContent = erro.message;
