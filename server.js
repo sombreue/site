@@ -5,7 +5,6 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const { Pool } = require("pg");
-const sessionStore = require("./session-store");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
