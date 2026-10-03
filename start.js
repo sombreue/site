@@ -1,7 +1,5 @@
 require("dotenv").config();
 
-// Entrada compatível com Render e com execução local.
-// O registro de login fica diretamente no server.js, onde a autenticação realmente acontece.
+// Entrada única da aplicação. O servidor principal registra todas as APIs e inicia o Express.
 console.log("[START] Carregando aplicação...");
-require("./server-sugestoes.js");
-console.log("[START] Módulo principal carregado.");
+require("./server.js");
