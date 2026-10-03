@@ -5,6 +5,7 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const { Pool } = require("pg");
+const sessionStore = require("./session-store");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,13 +34,21 @@ pool.query("SELECT NOW()")
     .then(() => console.log("POSTGRESQL CONECTADO!"))
     .catch(erro => console.error("Erro ao conectar ao PostgreSQL:", erro));
 
+if (process.env.NODE_ENV === "production" && !process.env.SESSION_SECRET) {
+    console.error("ERRO: SESSION_SECRET não foi configurada em produção.");
+    process.exit(1);
+}
+
+const sessionMaxAge = 1000 * 60 * 60 * 24;
+
 app.use(session({
-    secret: process.env.SESSION_SECRET || "tarefas-da-turma-segredo",
+    store: sessionStore(pool, sessionMaxAge),
+    secret: process.env.SESSION_SECRET || "desenvolvimento-apenas",
     resave: false,
     saveUninitialized: false,
     cookie: {
         httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24,
+        maxAge: sessionMaxAge,
         sameSite: "lax",
         secure: process.env.NODE_ENV === "production"
     }
@@ -81,6 +90,16 @@ app.get("/", (req, res) => {
 });
 
 async function criarTabelas() {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS sessoes (
+            sid TEXT PRIMARY KEY,
+            sess JSONB NOT NULL,
+            expires_at TIMESTAMPTZ NOT NULL
+        );
+    `);
+    await pool.query(`
+        CREATE INDEX IF NOT EXISTS sessoes_expires_at_idx ON sessoes (expires_at);
+    `);
     await pool.query(`
         CREATE TABLE IF NOT EXISTS usuarios (
             id SERIAL PRIMARY KEY,
