@@ -516,6 +516,99 @@ textarea {
 }
 
 /* =========================================================
+   MODAL EDITAR TAREFA
+   ========================================================= */
+
+.modal-editar-tarefa {
+    display: none;
+    position: fixed;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+}
+
+.conteudo-modal-editar {
+    width: min(100%, 500px);
+    padding: 25px;
+    background: var(--surface-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+
+.conteudo-modal-editar h2 {
+    margin: 0 0 20px;
+    color: var(--accent);
+}
+
+#form-editar-tarefa {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+#form-editar-tarefa label {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+#form-editar-tarefa input,
+#form-editar-tarefa textarea {
+    width: 100%;
+}
+
+#form-editar-tarefa textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.botoes-modal-editar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.botoes-modal-editar button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+    transform: none;
+}
+
+.cancelar-edicao {
+    background: var(--surface-3);
+    border-color: var(--border);
+}
+
+.cancelar-edicao:hover {
+    background: var(--surface);
+    border-color: var(--border-hover);
+}
+
+@media (max-width: 700px) {
+    .conteudo-modal-editar {
+        padding: 20px;
+    }
+
+    .botoes-modal-editar {
+        flex-direction: column;
+    }
+
+    .botoes-modal-editar button {
+        width: 100%;
+    }
+}
+
+/* =========================================================
    MODAL ALTERAR SENHA
    ========================================================= */
 
