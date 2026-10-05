@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" href="/favicon.ico?v=20260914-expec3"><title>EXPEC</title>
-<link rel="stylesheet" href="style.css?v=20260907-lightfix"><link rel="stylesheet" href="light-theme-fix.css?v=20260907-1"><link rel="stylesheet" href="expec-light-fix.css?v=20260907-1">
+<link rel="stylesheet" href="agenda-estilos.css?v=20260907-lightfix"><link rel="stylesheet" href="agenda-tema-claro-correcao.css?v=20260907-1"><link rel="stylesheet" href="expec-tema-claro-correcao.css?v=20260907-1">
 <style>#contador{color:var(--theme-accent,#ef3340)!important}.barra-container{background:var(--theme-surface-3,#222229)!important;border-color:var(--theme-border,#2c2c34)!important}#barraProgresso{background:linear-gradient(90deg,var(--theme-accent-dark,#a71925),var(--theme-accent,#ef3340))!important}</style>
 </head>
 <body>
@@ -14,5 +14,5 @@
 <section class="feira-equipes"><div class="secao-cabecalho"><div><h2>Equipes</h2><p>Equipes participantes da EXPEC</p></div><button id="btnCriarEquipe" style="display:none">+ Criar equipe</button></div><div id="listaEquipes"><p>Carregando equipes...</p></div></section>
 <div id="modalEquipe" class="modal" style="display:none"><div class="modal-conteudo"><h2 id="tituloModal">Criar equipe</h2><form id="formEquipe"><label>Nome da equipe<input type="text" id="nomeEquipe" required></label><label>Tema<input type="text" id="temaEquipe" required></label><label>Professor<input type="text" id="professorEquipe"></label><label>Líder da equipe<input type="text" id="liderEquipe"></label><label>Integrantes<textarea id="integrantesEquipe"></textarea></label><div class="modal-botoes"><button type="button" id="btnCancelar">Cancelar</button><button type="submit">Salvar</button></div></form></div></div>
 </main>
-<script src="expec.js?v=20260925-statusfix"></script><script src="temas.js?v=20260914"></script>
+<script src="expec-logica.js?v=20260925-statusfix"></script><script src="global-temas.js?v=20260914"></script>
 </body></html>

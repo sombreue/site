@@ -36,10 +36,10 @@
     const temaInicial = ehQuartaFeira() ? "quarta-feira" : (temas.some(t => t.id === temaSalvo) ? temaSalvo : "ruby");
     document.documentElement.dataset.theme = temaInicial;
 
-    if (!document.querySelector('link[href*="themes.css"]')) {
+    if (!document.querySelector('link[href*="global-temas-estilos.css"]')) {
         const link = document.createElement("link");
         link.rel = "stylesheet";
-        link.href = "themes.css?v=20261002-super-fantastic-four-punisher";
+        link.href = "global-temas-estilos.css?v=20261002-super-fantastic-four-punisher";
         document.head.appendChild(link);
     }
 

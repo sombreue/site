@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="/imagens/favicon.ico"><title>Minhas tarefas — Agenda auruda</title><link rel="stylesheet" href="themes.css?v=20260908"><link rel="stylesheet" href="tarefas-pessoais.css?v=20260911"><script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="/imagens/favicon.ico"><title>Minhas tarefas — Agenda auruda</title><link rel="stylesheet" href="global-temas-estilos.css?v=20260908"><link rel="stylesheet" href="tarefas-pessoais-estilos.css?v=20260911"><script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
 </head>
 <body>
-<header class="topo"><a href="/area-do-aluno.html" class="voltar">← Área do aluno</a><div><h1>Minhas tarefas</h1><p>Organize o que você quer fazer e quando pretende fazer.</p></div></header>
+<header class="topo"><a href="/area-aluno.html" class="voltar">← Área do aluno</a><div><h1>Minhas tarefas</h1><p>Organize o que você quer fazer e quando pretende fazer.</p></div></header>
 <main>
 <section class="resumo"><div><strong id="total">0</strong><span>Total</span></div><div><strong id="pendentes">0</strong><span>Pendentes</span></div><div><strong id="planejadas">0</strong><span>Planejadas</span></div></section>
 <section class="barra"><button id="nova">+ Nova tarefa</button><button id="puxar-origem" type="button">📥 Puxar da Agenda/Trabalhos</button><select id="filtro-prioridade"><option value="">Todas as prioridades</option><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option></select><label class="selecionar-todas"><input type="checkbox" id="selecionar-todas"> Selecionar todas</label><button id="fazer-selecionadas" class="acao-multipla" disabled>Feitas selecionadas</button><a class="ajuda-markdown" href="/markdown.html">Como usar Markdown?</a></section>
@@ -24,5 +24,5 @@
   <div class="origem-corpo"><div class="origem-lista-cabecalho"><div><strong>Atividades disponíveis</strong><span>Selecione uma para continuar</span></div><span id="contador-origens" class="contador-origens"></span></div><div id="lista-origens" class="lista-origens"></div></div>
   <div class="origem-config"><div class="origem-selecionada-info" id="origem-selecionada-info"><span class="selecao-ponto"></span><span>Nenhuma atividade selecionada</span></div><div class="origem-form"><label>Quero fazer em<input type="date" id="origem-data-planejada" required></label><label>Prioridade<select id="origem-prioridade"><option value="baixa">Baixa</option><option value="media" selected>Média</option><option value="alta">Alta</option></select></label><button type="button" id="confirmar-origem" disabled>Adicionar às minhas tarefas <span>→</span></button></div><p id="origem-mensagem" aria-live="polite"></p></div>
 </div></div>
-<script src="temas.js?v=20260911"></script><script src="tarefas-pessoais.js?v=20260919-materias1"></script>
+<script src="global-temas.js?v=20260911"></script><script src="tarefas-pessoais-logica.js?v=20260919-materias1"></script>
 </body></html>

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="/imagens/favicon.ico"><title>Estatísticas — Agenda auruda</title><link rel="stylesheet" href="themes.css?v=20260911"><link rel="stylesheet" href="area-do-aluno.css?v=20260911"><link rel="stylesheet" href="estatisticas.css?v=20260911"><script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="/imagens/favicon.ico"><title>Estatísticas — Agenda auruda</title><link rel="stylesheet" href="global-temas-estilos.css?v=20260911"><link rel="stylesheet" href="area-aluno-estilos.css?v=20260911"><link rel="stylesheet" href="estatisticas-estilos.css?v=20260911"><script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
 </head>
 <body>
-<header class="topo"><a href="/area-do-aluno.html" class="voltar">← Área do aluno</a><div><h1>Meu desempenho</h1><p>Veja como você está se organizando e acompanhe sua evolução.</p></div><button id="sair" class="sair" type="button">Sair</button></header>
+<header class="topo"><a href="/area-aluno.html" class="voltar">← Área do aluno</a><div><h1>Meu desempenho</h1><p>Veja como você está se organizando e acompanhe sua evolução.</p></div><button id="sair" class="sair" type="button">Sair</button></header>
 <main>
 <section class="hero-estat"><span class="eyebrow">SEU DESEMPENHO</span><h2>Uma visão rápida do seu progresso</h2><p>Os números abaixo são calculados a partir das suas tarefas e notas.</p></section>
 <section class="cards-resumo" aria-label="Resumo do desempenho">
@@ -19,5 +19,5 @@
 </section>
 <section class="painel-estat"><div class="cab"><div><span class="eyebrow">POR MATÉRIA</span><h2>Onde você está indo melhor?</h2></div></div><div id="materias" class="materias"></div></section>
 <section class="insights" id="insights"></section>
-</main><script src="temas.js?v=20260911"></script><script src="estatisticas.js?v=20260911"></script>
+</main><script src="global-temas.js?v=20260911"></script><script src="estatisticas-logica.js?v=20260911"></script>
 </body></html>

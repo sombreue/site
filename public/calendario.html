@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="/imagens/favicon.ico"><title>Meu calendário — Agenda auruda</title><link rel="stylesheet" href="themes.css?v=20260911"><link rel="stylesheet" href="calendario.css?v=20260911"><script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script></head>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="/imagens/favicon.ico"><title>Meu calendário — Agenda auruda</title><link rel="stylesheet" href="global-temas-estilos.css?v=20260911"><link rel="stylesheet" href="calendario-estilos.css?v=20260911"><script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script></head>
 <body>
-<header class="topo"><a href="/area-do-aluno.html" class="voltar">← Área do aluno</a><div><h1>Meu calendário</h1><p>Veja tarefas, compromissos e datas importantes em um só lugar.</p></div><button id="sair" class="sair" type="button">Sair</button></header>
+<header class="topo"><a href="/area-aluno.html" class="voltar">← Área do aluno</a><div><h1>Meu calendário</h1><p>Veja tarefas, compromissos e datas importantes em um só lugar.</p></div><button id="sair" class="sair" type="button">Sair</button></header>
 <main>
 <section class="acoes"><button id="hoje" class="secundario">Hoje</button><div class="navegacao"><button id="anterior" aria-label="Mês anterior">‹</button><h2 id="mes-atual"></h2><button id="proximo" aria-label="Próximo mês">›</button></div><button id="novo" class="principal">+ Novo evento</button></section>
 <section class="filtros"><span>Mostrar:</span><button class="filtro ativo" data-filtro="tudo">Tudo</button><button class="filtro" data-filtro="escola">Escola</button><button class="filtro" data-filtro="tarefas">Minhas tarefas</button><button class="filtro" data-filtro="pessoal">Pessoal</button></section>
@@ -10,5 +10,5 @@
 <p id="mensagem" class="mensagem"></p>
 </main>
 <div id="modal" class="modal" hidden><div class="modal-caixa"><button id="fechar" class="fechar" aria-label="Fechar">×</button><h2 id="modal-titulo">Novo evento</h2><form id="form"><label>Título<input id="titulo" maxlength="160" required></label><label>Data<input id="data" type="date" required></label><div class="duas"><label>Início<input id="inicio" type="time"></label><label>Fim<input id="fim" type="time"></label></div><label>Categoria<select id="categoria"><option value="pessoal">Pessoal</option><option value="estudo">Estudo</option><option value="lembrete">Lembrete</option></select></label><label>Descrição<textarea id="descricao" maxlength="10000" rows="4"></textarea></label><div class="botoes"><button type="button" id="excluir" class="perigo" hidden>Excluir</button><span></span><button type="button" id="cancelar" class="secundario">Cancelar</button><button class="principal" type="submit">Salvar</button></div></form></div></div>
-<script src="temas.js?v=20260911"></script><script src="calendario.js?v=20260911"></script>
+<script src="global-temas.js?v=20260911"></script><script src="calendario-logica.js?v=20260911"></script>
 </body></html>

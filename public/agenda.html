@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/imagens/favicon.ico">
     <title>Tarefas de casa</title>
-    <link rel="stylesheet" href="style.css?v=20260907-lightfix3">
-    <link rel="stylesheet" href="light-theme-fix.css?v=20260907-2">
-    <link rel="stylesheet" href="admin-panel.css?v=20260907-1">
-    <link rel="stylesheet" href="horario-aulas.css?v=20260907-1">
+    <link rel="stylesheet" href="agenda-estilos.css?v=20260907-lightfix3">
+    <link rel="stylesheet" href="agenda-tema-claro-correcao.css?v=20260907-2">
+    <link rel="stylesheet" href="agenda-painel-admin-estilos.css?v=20260907-1">
+    <link rel="stylesheet" href="agenda-horarios-estilos.css?v=20260907-1">
     
-    <link rel="stylesheet" href="light-theme-hard-fix.css?v=20260907-1">
+    <link rel="stylesheet" href="agenda-tema-claro-correcao-extra.css?v=20260907-1">
     <style>.tema-opcao[data-tema="forest"],.tema-opcao[data-tema="arctic"],.tema-opcao[data-tema="ancient"]{display:none!important;}</style>
     <style>
         .filtro-agenda { display:flex; flex-wrap:wrap; align-items:flex-end; gap:12px; }
@@ -82,7 +82,7 @@
     <section id="lista-tarefas"></section>
     <section id="modal-senha" class="modal-senha"><div class="conteudo-modal"><h2>Alterar senha</h2><p id="usuario-senha"></p><input type="password" id="senha-alterada" placeholder="Digite a nova senha"><div class="botoes-modal"><button onclick="confirmarAlteracaoSenha()">Alterar senha</button><button class="cancelar" onclick="fecharModalSenha()">Cancelar</button></div></div></section>
 </main>
-<script src="script.js?v=20260909-agenda-fix"></script><script src="temas.js?v=20260907-lightfix5"></script><script src="theme-bridge.js?v=20260907-3"></script><script src="admin-panel.js?v=20260907-1"></script><script src="horario-aulas.js?v=20260907-1"></script><script src="notificacoes.js?v=20260918"></script>
+<script src="agenda-logica.js?v=20260909-agenda-fix"></script><script src="global-temas.js?v=20260907-lightfix5"></script><script src="agenda-temas-integracao.js?v=20260907-3"></script><script src="agenda-painel-admin.js?v=20260907-1"></script><script src="agenda-horarios.js?v=20260907-1"></script><script src="global-notificacoes.js?v=20260918"></script>
 <script>
 (function () {
     const materias = () => Array.from(document.querySelectorAll('#painel-materias input[type="checkbox"]'));

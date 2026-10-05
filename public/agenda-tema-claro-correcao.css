@@ -1,6 +1,6 @@
 /* Correção definitiva dos temas claros.
    Este arquivo usa seletores mais específicos que o CSS base,
-   porque o style.css possui várias cores escuras fixas. */
+   porque o agenda-estilos.css possui várias cores escuras fixas. */
 
 html[data-theme$="-light"],
 html[data-theme$="-light"] body {

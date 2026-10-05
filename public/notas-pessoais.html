@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="/imagens/favicon.ico"><title>Minhas notas — Agenda auruda</title><link rel="stylesheet" href="themes.css?v=20260911"><link rel="stylesheet" href="notas-pessoais.css?v=20260911"><script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><link rel="icon" href="/imagens/favicon.ico"><title>Minhas notas — Agenda auruda</title><link rel="stylesheet" href="global-temas-estilos.css?v=20260911"><link rel="stylesheet" href="notas-pessoais-estilos.css?v=20260911"><script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
 </head>
 <body>
-<header class="topo"><a href="/area-do-aluno.html" class="voltar">← Área do aluno</a><div><h1>Minhas notas</h1><p>Suas anotações rápidas, do jeito Sticky Notes.</p></div><button id="novaNotaTopo" class="botao-principal" type="button">+ Nova nota</button></header>
+<header class="topo"><a href="/area-aluno.html" class="voltar">← Área do aluno</a><div><h1>Minhas notas</h1><p>Suas anotações rápidas, do jeito Sticky Notes.</p></div><button id="novaNotaTopo" class="botao-principal" type="button">+ Nova nota</button></header>
 <main>
 <section class="barra"><div><strong id="contador">0 notas</strong><span id="status">Salvas na sua conta</span></div><label class="busca">⌕ <input id="busca" type="search" placeholder="Buscar nas notas..."></label></section>
 <section id="notas" class="grade-notas"></section>
 <section id="vazio" class="vazio"><div>📝</div><h2>Nenhuma nota ainda</h2><p>Crie sua primeira Sticky Note para guardar uma ideia, lembrete ou anotação.</p><button class="botao-principal" id="novaNotaVazia" type="button">+ Criar nota</button></section>
 </main>
 <div id="modal" class="modal escondido" aria-hidden="true"><div class="modal-caixa"><div class="modal-topo"><h2 id="modalTitulo">Nova nota</h2><button id="fechar" type="button" aria-label="Fechar">×</button></div><label>Título<input id="titulo" maxlength="120" placeholder="Ex.: Ideias para o trabalho"></label><label>Conteúdo<textarea id="conteudo" rows="9" placeholder="Escreva sua anotação..."></textarea></label><div class="linha"><label>Cor<select id="cor"><option value="amarela">Amarela</option><option value="azul">Azul</option><option value="verde">Verde</option><option value="rosa">Rosa</option><option value="roxa">Roxa</option><option value="laranja">Laranja</option></select></label><label class="fixar"><input id="fixada" type="checkbox"> Fixar no topo</label></div><div class="acoes"><button id="cancelar" type="button">Cancelar</button><button id="salvar" class="botao-principal" type="button">Salvar nota</button></div></div></div>
-<script src="temas.js?v=20260911"></script><script src="notas-pessoais.js?v=20260911"></script>
+<script src="global-temas.js?v=20260911"></script><script src="notas-pessoais-logica.js?v=20260911"></script>
 </body></html>
