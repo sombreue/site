@@ -625,7 +625,7 @@ function criarTarefa(
 
 
         botaoEditar.onclick =
-            () => editarTarefa(
+            () => abrirModalEdicao(
                 id,
                 data,
                 materia,
@@ -765,131 +765,178 @@ async function carregarTarefas() {
    EDITAR TAREFA
 ========================= */
 
-async function editarTarefa(
+function criarModalEdicao() {
+
+    if (document.getElementById("modal-editar-tarefa")) {
+        return;
+    }
+
+    const modal = document.createElement("div");
+
+    modal.id = "modal-editar-tarefa";
+    modal.className = "modal-editar-tarefa";
+
+    modal.innerHTML = `
+        <div class="conteudo-modal-editar">
+            <h2>Editar tarefa</h2>
+
+            <form id="form-editar-tarefa">
+                <input type="hidden" id="editar-tarefa-id">
+
+                <label>
+                    Data
+                    <input type="date" id="editar-tarefa-data" required>
+                </label>
+
+                <label>
+                    Matéria
+                    <input type="text" id="editar-tarefa-materia" required>
+                </label>
+
+                <label>
+                    Descrição
+                    <textarea id="editar-tarefa-descricao" required></textarea>
+                </label>
+
+                <div class="botoes-modal-editar">
+                    <button type="button" class="cancelar-edicao" onclick="fecharModalEdicao()">
+                        Cancelar
+                    </button>
+
+                    <button type="submit">
+                        Salvar alterações
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const form = document.getElementById("form-editar-tarefa");
+
+    form.addEventListener("submit", async event => {
+
+        event.preventDefault();
+
+        const id = document.getElementById("editar-tarefa-id").value;
+        const data = document.getElementById("editar-tarefa-data").value;
+        const materia = document.getElementById("editar-tarefa-materia").value.trim();
+        const descricao = document.getElementById("editar-tarefa-descricao").value.trim();
+
+        if (!data || !materia || !descricao) {
+            alert("Todos os campos são obrigatórios.");
+            return;
+        }
+
+        const botaoSalvar = form.querySelector("button[type=\"submit\"]");
+
+        botaoSalvar.disabled = true;
+        botaoSalvar.textContent = "Salvando...";
+
+        try {
+
+            const resposta = await fetch(
+                `/api/tarefas/${id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        data,
+                        materia,
+                        descricao
+                    })
+                }
+            );
+
+            const dados = await resposta.json();
+
+            if (!dados.sucesso) {
+                alert(dados.mensagem);
+                return;
+            }
+
+            fecharModalEdicao();
+            await carregarTarefas();
+
+        } catch (erro) {
+
+            console.error("Erro ao editar tarefa:", erro);
+
+            alert("Erro ao conectar ao servidor.");
+
+        } finally {
+
+            botaoSalvar.disabled = false;
+            botaoSalvar.textContent = "Salvar alterações";
+
+        }
+
+    });
+
+    modal.addEventListener("click", event => {
+
+        if (event.target === modal) {
+            fecharModalEdicao();
+        }
+
+    });
+
+    document.addEventListener("keydown", event => {
+
+        if (event.key === "Escape" && modal.style.display === "flex") {
+            fecharModalEdicao();
+        }
+
+    });
+
+}
+
+function abrirModalEdicao(
     id,
     dataAtual,
     materiaAtual,
     descricaoAtual
 ) {
 
-    const data =
-        prompt(
-            "Nova data:",
-            dataAtual
-        );
+    const modal = document.getElementById("modal-editar-tarefa");
 
+    document.getElementById("editar-tarefa-id").value = id;
+    document.getElementById("editar-tarefa-data").value = dataAtual;
+    document.getElementById("editar-tarefa-materia").value = materiaAtual;
+    document.getElementById("editar-tarefa-descricao").value = descricaoAtual;
 
-    if (data === null) {
-        return;
+    modal.style.display = "flex";
+
+    document.getElementById("editar-tarefa-materia").focus();
+
+}
+
+function fecharModalEdicao() {
+
+    const modal = document.getElementById("modal-editar-tarefa");
+
+    if (modal) {
+        modal.style.display = "none";
     }
 
+}
 
-    const materia =
-        prompt(
-            "Nova matéria:",
-            materiaAtual
-        );
+function editarTarefa(
+    id,
+    dataAtual,
+    materiaAtual,
+    descricaoAtual
+) {
 
-
-    if (materia === null) {
-        return;
-    }
-
-
-    const descricao =
-        prompt(
-            "Nova descrição:",
-            descricaoAtual
-        );
-
-
-    if (descricao === null) {
-        return;
-    }
-
-
-    if (
-        !data ||
-        !materia ||
-        !descricao
-    ) {
-
-        alert(
-            "Todos os campos são obrigatórios."
-        );
-
-        return;
-
-    }
-
-
-    try {
-
-        const resposta =
-            await fetch(
-                `/api/tarefas/${id}`,
-                {
-
-                    method: "PUT",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify({
-
-                            data:
-                                data,
-
-                            materia:
-                                materia,
-
-                            descricao:
-                                descricao
-
-                        })
-
-                }
-            );
-
-
-        const dados =
-            await resposta.json();
-
-
-        if (!dados.sucesso) {
-
-            alert(
-                dados.mensagem
-            );
-
-            return;
-
-        }
-
-
-        await carregarTarefas();
-
-
-        alert(
-            "Tarefa alterada com sucesso!"
-        );
-
-
-    } catch (erro) {
-
-        console.error(
-            "Erro ao editar tarefa:",
-            erro
-        );
-
-        alert(
-            "Erro ao conectar ao servidor."
-        );
-
-    }
+    abrirModalEdicao(
+        id,
+        dataAtual,
+        materiaAtual,
+        descricaoAtual
+    );
 
 }
 
@@ -1824,6 +1871,7 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
+        criarModalEdicao();
         verificarSessao();
 
     }
