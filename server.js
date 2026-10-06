@@ -125,6 +125,11 @@ app.get("/expec.html", async (req, res, next) => {
 app.get("/admin-panel.html", (req, res) => {
     if (!req.session?.usuario) return res.redirect("/login.html");
     if (req.session.usuario.tipo !== "admin") return res.redirect("/");
+    res.set({
+        "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0"
+    });
     res.sendFile(path.join(__dirname, "public", "admin-panel.html"));
 });
 
