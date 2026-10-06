@@ -197,8 +197,7 @@ async function migrar() {
                     id,
                     data,
                     materia,
-                    descricao,
-                    data_entrega
+                    descricao
                 FROM tarefas
                 ORDER BY id ASC
             `).all();
@@ -259,7 +258,7 @@ async function migrar() {
 
                     tarefa.descricao,
 
-                    tarefa.data_entrega
+                    tarefa.data
 
                 ]);
 
