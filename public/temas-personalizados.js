@@ -47,6 +47,46 @@
         aplicarPreview();
     }
 
+    function clonarTemaOficial(id) {
+        if (temas.length >= 3) return flash("Você já atingiu o limite de 3 temas.", true);
+        const oficial = window.agendaTemasOficiais?.find(t => t.id === id);
+        if (!oficial) return flash("Tema oficial não encontrado.", true);
+
+        const anterior = document.documentElement.dataset.theme;
+        const customAnterior = localStorage.getItem("agenda-auruda-tema-custom");
+        const customObj = customAnterior ? JSON.parse(customAnterior) : null;
+
+        document.documentElement.dataset.theme = oficial.id;
+        const estilo = getComputedStyle(document.documentElement);
+        const nomes = ["--theme-bg","--theme-surface","--theme-surface-2","--theme-border","--theme-text","--theme-muted","--theme-accent","--theme-button"];
+        const cores = nomes.map(n => (estilo.getPropertyValue(n).trim() || "#000000").replace("#","").slice(0,6)).join(",");
+
+        if (anterior?.startsWith("custom-") && customObj) aplicarTemaCustom(customObj);
+        else if (anterior) document.documentElement.dataset.theme = anterior;
+
+        carregarEditor({nome: oficial.nome + " — cópia", cores, logoData: null});
+        $("tema-id").value = "";
+        flash("Tema clonado. Você pode editar a cópia antes de salvar.");
+        $("tema-nome").focus();
+    }
+
+    function renderTemasOficiais() {
+        const area = document.createElement("div");
+        area.className = "temas-oficiais";
+        area.innerHTML = '<div class="lista-cabecalho"><h2>Clonar tema do site</h2><span>Use um tema oficial como ponto de partida.</span></div><div class="grade-oficiais"></div>';
+        const grade = area.querySelector(".grade-oficiais");
+        (window.agendaTemasOficiais || []).forEach(tema => {
+            const botao=document.createElement("button");
+            botao.type="button";
+            botao.className="oficial-card";
+            botao.innerHTML=`<span class="tema-salvo-cor" style="background:${tema.cor}"></span><span><strong></strong><small>${tema.grupo}</small></span><b>Clonar</b>`;
+            botao.querySelector("strong").textContent=tema.nome;
+            botao.onclick=()=>clonarTemaOficial(tema.id);
+            grade.appendChild(botao);
+        });
+        document.querySelector(".lista-meus-temas").prepend(area);
+    }
+
     function flash(mensagem,erro=false) {
         $("status-editor").textContent=mensagem;
         $("status-editor").style.color=erro ? "#ff6b6b" : "var(--theme-accent)";
@@ -175,6 +215,7 @@
         const r=await fetch("/api/usuario",{credentials:"same-origin",cache:"no-store"});
         if(!r.ok){location.href="/login.html";return;}
         carregarEditor();
+        renderTemasOficiais();
         await carregarTemas();
     }
     iniciar();
