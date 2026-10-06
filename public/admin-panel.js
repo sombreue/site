@@ -36,7 +36,8 @@
             const resposta = await fetch("/api/usuario", {
                 credentials: "same-origin",
                 cache: "no-store",
-                headers: { "Accept": "application/json" }
+                headers: { "Accept": "application/json" },
+                signal: AbortSignal.timeout(5000)
             });
 
             if (resposta.status === 401 || resposta.status === 403) {
@@ -58,7 +59,9 @@
             usuarioLogado.textContent = `Logado como: ${dados.usuario.usuario} (administrador)`;
             return true;
         } catch (erro) {
-            usuarioLogado.textContent = "Não foi possível verificar a sessão.";
+            usuarioLogado.textContent = erro.name === "TimeoutError"
+                ? "O servidor demorou demais para responder."
+                : "Não foi possível verificar a sessão.";
             setTimeout(() => window.location.replace("/login.html"), 700);
             return false;
         }
