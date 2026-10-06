@@ -120,7 +120,7 @@
         localStorage.setItem("agenda-auruda-tema-custom",JSON.stringify(tema));
         document.querySelectorAll(".logo,.home-logo").forEach(logo=>{
             if(!logo.dataset.logoOriginal) logo.dataset.logoOriginal=logo.getAttribute("src")||"";
-            if(tema.logoData) logo.src=tema.logoData;
+            logo.src=tema.logoData || logo.dataset.logoOriginal;
             logo.alt=tema.logoData ? tema.nome : "Logo";
         });
         document.querySelectorAll(".tema-opcao").forEach(botao=>botao.classList.toggle("ativo",botao.dataset.tema==="custom-"+tema.id));
