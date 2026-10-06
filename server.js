@@ -137,7 +137,7 @@ app.use(express.static("public", { index: false }));
 
 app.get("/", (req, res) => {
     if (!req.session.usuario) return res.redirect("/login.html");
-    res.sendFile(path.join(__dirname, "public", "index.html"));
+    res.sendFile(path.join(__dirname, "public", "hoje.html"));
 });
 
 async function criarTabelas() {
