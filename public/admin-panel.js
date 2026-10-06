@@ -7,6 +7,8 @@
     const campoSenha = $("nova-senha");
     const botaoMostrarSenha = $("botao-mostrar-senha");
 
+    usuarioLogado.textContent = "Carregando painel...";
+
     const escapar = valor => String(valor ?? "").replace(/[&<>'"]/g, c => ({
         "&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"
     }[c]));
@@ -190,10 +192,7 @@
     });
 
     (async () => {
-        try {
-            if (await verificarAdmin()) {
-                await Promise.all([carregarUsuarios(), carregarSessoes()]);
-            }
-        } catch (_) {}
+        usuarioLogado.textContent = "Painel administrativo";
+        await Promise.all([carregarUsuarios(), carregarSessoes()]);
     })();
 })();
