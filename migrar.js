@@ -106,7 +106,9 @@ async function migrar() {
 
                 materia TEXT NOT NULL,
 
-                descricao TEXT NOT NULL
+                descricao TEXT NOT NULL,
+
+                data_entrega TEXT
 
             );
 
@@ -195,7 +197,8 @@ async function migrar() {
                     id,
                     data,
                     materia,
-                    descricao
+                    descricao,
+                    data_entrega
                 FROM tarefas
                 ORDER BY id ASC
             `).all();
@@ -240,10 +243,11 @@ async function migrar() {
                         id,
                         data,
                         materia,
-                        descricao
+                        descricao,
+                        data_entrega
                     )
 
-                    VALUES ($1, $2, $3, $4)
+                    VALUES ($1, $2, $3, $4, $5)
 
                 `, [
 
@@ -253,7 +257,9 @@ async function migrar() {
 
                     tarefa.materia,
 
-                    tarefa.descricao
+                    tarefa.descricao,
+
+                    tarefa.data_entrega
 
                 ]);
 
