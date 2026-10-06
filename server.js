@@ -122,6 +122,12 @@ app.get("/expec.html", async (req, res, next) => {
     }
 });
 
+app.get("/admin-panel.html", (req, res) => {
+    if (!req.session?.usuario) return res.redirect("/login.html");
+    if (req.session.usuario.tipo !== "admin") return res.redirect("/");
+    res.sendFile(path.join(__dirname, "public", "admin-panel.html"));
+});
+
 app.use(express.static("public", { index: false }));
 
 app.get("/", (req, res) => {
@@ -362,7 +368,7 @@ app.delete("/api/tarefas/:id", exigirAdmin, async (req, res) => {
 app.get("/api/admin/usuarios", exigirAdmin, async (req, res) => {
     try {
         const resultado = await pool.query("SELECT id, usuario, tipo FROM usuarios ORDER BY id ASC");
-        res.json({ sucesso: true, usuarios: resultado.rows });
+        res.json({ sucesso: true, usuarios: resultado.rows, usuarioLogadoId: req.session.usuario.id });
     } catch (erro) {
         console.error("Erro ao listar usuários:", erro);
         res.status(500).json({ sucesso: false, mensagem: "Erro ao listar usuários." });
@@ -410,6 +416,61 @@ app.put("/api/admin/usuarios/:id/senha", exigirAdmin, async (req, res) => {
     } catch (erro) {
         console.error("Erro ao alterar senha:", erro);
         res.status(500).json({ sucesso: false, mensagem: "Erro ao alterar senha." });
+    }
+});
+
+
+// =========================
+// ADMIN - SESSÕES REMOTAS
+// =========================
+
+app.get("/api/admin/sessoes", exigirAdmin, async (req, res) => {
+    try {
+        const resultado = await pool.query(`
+            SELECT
+                sid,
+                sess->'usuario'->>'usuario' AS usuario,
+                sess->'usuario'->>'tipo' AS tipo,
+                expires_at
+            FROM sessoes
+            WHERE expires_at > NOW()
+              AND sess->'usuario' IS NOT NULL
+            ORDER BY usuario ASC, expires_at DESC
+        `);
+
+        res.json({
+            sucesso: true,
+            sessoes: resultado.rows.map(sessao => ({
+                sid: sessao.sid,
+                usuario: sessao.usuario,
+                tipo: sessao.tipo,
+                expiraEm: sessao.expires_at,
+                atual: sessao.sid === req.sessionID
+            }))
+        });
+    } catch (erro) {
+        console.error("Erro ao listar sessões:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao listar sessões." });
+    }
+});
+
+app.delete("/api/admin/sessoes/:sid", exigirAdmin, async (req, res) => {
+    try {
+        const sid = String(req.params.sid || "");
+        if (!sid) return res.status(400).json({ sucesso: false, mensagem: "Sessão inválida." });
+        if (sid === req.sessionID) {
+            return res.status(400).json({ sucesso: false, mensagem: "Você não pode encerrar a própria sessão por esta tela." });
+        }
+
+        const resultado = await pool.query("DELETE FROM sessoes WHERE sid = $1", [sid]);
+        if (!resultado.rowCount) {
+            return res.status(404).json({ sucesso: false, mensagem: "Sessão não encontrada ou já encerrada." });
+        }
+
+        res.json({ sucesso: true, mensagem: "Sessão encerrada remotamente." });
+    } catch (erro) {
+        console.error("Erro ao encerrar sessão remotamente:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao encerrar sessão." });
     }
 });
 
