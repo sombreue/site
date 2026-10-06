@@ -165,7 +165,7 @@
                     const comparacaoData = b.data.localeCompare(a.data);
                     return comparacaoData !== 0 ? comparacaoData : b.id - a.id;
                 });
-            tarefas.forEach(tarefa => criarTarefa(tarefa.id, tarefa.data, tarefa.materia, tarefa.descricao));
+            tarefas.forEach(tarefa => criarTarefa(tarefa.id, tarefa.data, tarefa.materia, tarefa.descricao, tarefa.dataEntrega));
             if (tarefas.length === 0) {
                 const mensagem = document.createElement("p");
                 mensagem.textContent = data || materiasSelecionadas.length > 0
