@@ -1155,3 +1155,31 @@ textarea {
         animation-duration: 0.01ms !important;
     }
 }
+
+
+.label-data-entrega {
+    display: block;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.data-entrega-tarefa {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.data-entrega-tarefa-exibicao {
+    display: block;
+    margin-top: 8px;
+    opacity: .8;
+    font-size: .85rem;
+}
+
+.data-entrega-tarefa-exibicao.hoje {
+    font-weight: 700;
+}
+
+.data-entrega-tarefa-exibicao.atrasada {
+    font-weight: 700;
+}
