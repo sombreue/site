@@ -134,7 +134,6 @@
             if(!resposta.ok) return;
             const dados = await resposta.json();
             temasPersonalizados = dados.temas || [];
-            if(!temasPersonalizados.length) return;
 
             const lista = document.querySelector(".seletor-tema-lista");
             if(!lista) return;
