@@ -30,6 +30,8 @@
         { id: "system", nome: "Sistema", icone: "◐", cor: "#888", grupo: "Automático" }
     ];
 
+    window.agendaTemasOficiais = temas;
+
     const chave = "agenda-auruda-tema";
     let temasPersonalizados = [];
     let temaPersonalizadoAtivo = null;
