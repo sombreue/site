@@ -12,3 +12,6 @@
 .oficial-card small{font-size:11px;color:var(--theme-muted);margin-top:2px}
 .oficial-card b{font-size:11px;color:var(--theme-accent)}
 @media(max-width:560px){.grade-oficiais{grid-template-columns:1fr}}
+
+.preview-editor{margin-top:18px}.preview-editor h2{margin:0 0 5px;color:var(--theme-accent);font-size:18px}.preview-editor .preview-site{margin-top:10px}
+@media(max-width:560px){.preview-editor .preview-site{min-height:300px}.preview-conteudo{padding:14px}.preview-topo{padding:14px}}
