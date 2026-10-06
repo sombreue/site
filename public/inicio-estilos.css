@@ -75,6 +75,20 @@ a{
   cursor:pointer;
 }
 
+.link-admin-index{
+  padding:9px 14px;
+  border:1px solid var(--theme-border);
+  border-radius:10px;
+  background:var(--theme-button);
+  color:var(--theme-text);
+  font-weight:700;
+}
+
+.link-admin-index:hover{
+  background:var(--theme-button-hover);
+  border-color:var(--theme-accent);
+}
+
 .conta-index button:hover{
   border-color:var(--theme-accent);
 }
