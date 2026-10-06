@@ -485,7 +485,7 @@ app.delete("/api/temas-personalizados/:id", exigirLogin, async (req, res) => {
 
 app.get("/api/tarefas", exigirLogin, async (req, res) => {
     try {
-        const resultado = await pool.query("SELECT id, data, materia, descricao FROM tarefas ORDER BY data DESC, id DESC");
+        const resultado = await pool.query("SELECT id, data, materia, descricao, data_entrega AS \"dataEntrega\" FROM tarefas ORDER BY data DESC, id DESC");
         res.json({ sucesso: true, tarefas: resultado.rows });
     } catch (erro) {
         console.error("Erro ao buscar tarefas:", erro);
@@ -495,11 +495,11 @@ app.get("/api/tarefas", exigirLogin, async (req, res) => {
 
 app.post("/api/tarefas", exigirAdmin, async (req, res) => {
     try {
-        const { data, materia, descricao } = req.body;
+        const { data, materia, descricao, dataEntrega = null } = req.body;
         if (!data || !materia || !descricao) return res.status(400).json({ sucesso: false, mensagem: "Preencha todos os campos." });
         const resultado = await pool.query(
-            "INSERT INTO tarefas (data, materia, descricao) VALUES ($1, $2, $3) RETURNING id, data, materia, descricao",
-            [data, materia, descricao]
+            "INSERT INTO tarefas (data, materia, descricao, data_entrega) VALUES ($1, $2, $3, $4) RETURNING id, data, materia, descricao, data_entrega AS \"dataEntrega\"",
+            [data, materia, descricao, dataEntrega || null]
         );
         res.json({ sucesso: true, tarefa: resultado.rows[0] });
     } catch (erro) {
@@ -510,7 +510,7 @@ app.post("/api/tarefas", exigirAdmin, async (req, res) => {
 
 app.put("/api/tarefas/:id", exigirAdmin, async (req, res) => {
     try {
-        const { data, materia, descricao } = req.body;
+        const { data, materia, descricao, dataEntrega = null } = req.body;
 
         if (!data || !materia || !descricao) {
             return res.status(400).json({
@@ -521,10 +521,10 @@ app.put("/api/tarefas/:id", exigirAdmin, async (req, res) => {
 
         const resultado = await pool.query(
             `UPDATE tarefas
-             SET data = $1, materia = $2, descricao = $3
-             WHERE id = $4
-             RETURNING id, data, materia, descricao`,
-            [data, materia, descricao, req.params.id]
+             SET data = $1, materia = $2, descricao = $3, data_entrega = $4
+             WHERE id = $5
+             RETURNING id, data, materia, descricao, data_entrega AS \"dataEntrega\"`,
+            [data, materia, descricao, dataEntrega || null, req.params.id]
         );
 
         if (!resultado.rows.length) {
