@@ -891,6 +891,11 @@ function criarModalEdicao() {
                 </label>
 
                 <label>
+                    Subtítulo
+                    <input type="text" id="editar-tarefa-subtitulo" placeholder="O que estamos aprendendo? (não vira tarefa)">
+                </label>
+
+                <label>
                     Data de entrega
                     <input type="date" id="editar-tarefa-data-entrega">
                 </label>
