@@ -117,6 +117,8 @@ async function migrar() {
         `);
 
 
+        await client.query(`ALTER TABLE tarefas ADD COLUMN IF NOT EXISTS subtitulo TEXT;`);
+
         console.log(
             "Tabelas criadas.\n"
         );
