@@ -32,14 +32,36 @@
     }
 
     async function verificarAdmin() {
-        const resposta = await fetch("/api/usuario", {credentials:"same-origin", cache:"no-store"});
-        const dados = await json(resposta);
-        if (dados.usuario.tipo !== "admin") {
-            window.location.href = "/";
+        try {
+            const resposta = await fetch("/api/usuario", {
+                credentials: "same-origin",
+                cache: "no-store",
+                headers: { "Accept": "application/json" }
+            });
+
+            if (resposta.status === 401 || resposta.status === 403) {
+                window.location.replace("/login.html");
+                return false;
+            }
+
+            const dados = await resposta.json().catch(() => null);
+
+            if (!resposta.ok || !dados?.sucesso || !dados?.usuario) {
+                throw new Error(dados?.mensagem || "Não foi possível verificar a sessão.");
+            }
+
+            if (dados.usuario.tipo !== "admin") {
+                window.location.replace("/");
+                return false;
+            }
+
+            usuarioLogado.textContent = `Logado como: ${dados.usuario.usuario} (administrador)`;
+            return true;
+        } catch (erro) {
+            usuarioLogado.textContent = "Não foi possível verificar a sessão.";
+            setTimeout(() => window.location.replace("/login.html"), 700);
             return false;
         }
-        usuarioLogado.textContent = `Logado como: ${dados.usuario.usuario} (administrador)`;
-        return true;
     }
 
     async function carregarUsuarios() {
