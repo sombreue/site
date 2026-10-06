@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.ico?v=20260914" type="image/x-icon">
+    <title>Painel de administração</title>
+    <link rel="stylesheet" href="global-temas-estilos.css?v=20261006">
+    <link rel="stylesheet" href="admin-panel-estilos.css?v=20261006">
+    <script>document.documentElement.dataset.theme = localStorage.getItem('agenda-auruda-tema') || 'ruby';</script>
+</head>
+<body>
+<header class="admin-header">
+    <div>
+        <p class="admin-kicker">ADMINISTRAÇÃO</p>
+        <h1>Painel de administração</h1>
+        <p id="admin-usuario">Verificando sessão...</p>
+    </div>
+    <div class="admin-header-acoes">
+        <a class="botao-secundario" href="/">Voltar ao site</a>
+        <button type="button" id="botao-logout">Sair</button>
+    </div>
+</header>
+
+<main class="admin-container">
+    <section class="admin-grid-links" aria-label="Ferramentas administrativas">
+        <a class="admin-link-card" href="/admin-sugestoes.html">
+            <span class="admin-link-icone">💬</span>
+            <strong>Sugestões e pedidos</strong>
+            <span>Veja sugestões, bugs enviados e pedidos de novas contas.</span>
+        </a>
+        <a class="admin-link-card" href="#sessoes">
+            <span class="admin-link-icone">🔐</span>
+            <strong>Sessões ativas</strong>
+            <span>Veja quem está conectado e encerre sessões remotamente.</span>
+        </a>
+    </section>
+
+    <section class="admin-section">
+        <div class="section-header">
+            <div>
+                <h2>Criar usuário</h2>
+                <p>Crie uma conta comum ou outra conta de administrador.</p>
+            </div>
+        </div>
+        <form id="form-criar-usuario" class="form-criar-usuario">
+            <input id="novo-usuario" type="text" placeholder="Nome de usuário" minlength="3" required>
+            <div class="campo-senha">
+                <input id="nova-senha" type="password" placeholder="Senha" minlength="4" required>
+                <button type="button" id="botao-mostrar-senha">Mostrar</button>
+            </div>
+            <select id="tipo-nova-conta" aria-label="Tipo da conta">
+                <option value="usuario">Usuário</option>
+                <option value="admin">Administrador</option>
+            </select>
+            <button type="submit">Criar conta</button>
+        </form>
+        <p id="status-admin" class="status-admin" aria-live="polite"></p>
+    </section>
+
+    <section class="admin-section">
+        <div class="section-header">
+            <div>
+                <h2>Usuários cadastrados</h2>
+                <p>Altere senhas ou remova contas comuns.</p>
+            </div>
+            <button type="button" class="botao-secundario" id="botao-atualizar-usuarios">Atualizar</button>
+        </div>
+        <div id="lista-usuarios" class="lista-admin" aria-live="polite"></div>
+    </section>
+
+    <section class="admin-section" id="sessoes">
+        <div class="section-header">
+            <div>
+                <h2>Sessões ativas</h2>
+                <p>Encerre remotamente uma sessão sem precisar do computador do usuário.</p>
+            </div>
+            <button type="button" class="botao-secundario" id="botao-atualizar-sessoes">Atualizar</button>
+        </div>
+        <div id="lista-sessoes" class="lista-admin" aria-live="polite"></div>
+    </section>
+</main>
+
+<script src="global-temas.js?v=20261006"></script>
+<script src="admin-panel.js?v=20261006"></script>
+</body>
+</html>
