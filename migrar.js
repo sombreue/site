@@ -106,7 +106,9 @@ async function migrar() {
 
                 materia TEXT NOT NULL,
 
-                descricao TEXT NOT NULL,
+                descricao TEXT NOT NULL DEFAULT '',
+
+                subtitulo TEXT,
 
                 data_entrega TEXT
 
@@ -243,6 +245,7 @@ async function migrar() {
                         data,
                         materia,
                         descricao,
+                        subtitulo,
                         data_entrega
                     )
 
@@ -257,6 +260,8 @@ async function migrar() {
                     tarefa.materia,
 
                     tarefa.descricao,
+
+                    null,
 
                     tarefa.data
 
