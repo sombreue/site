@@ -180,7 +180,8 @@ async function criarTabelas() {
             id SERIAL PRIMARY KEY,
             data TEXT NOT NULL,
             materia TEXT NOT NULL,
-            descricao TEXT NOT NULL,
+            descricao TEXT NOT NULL DEFAULT '',
+            subtitulo TEXT,
             data_entrega TEXT
         );
     `);
@@ -195,6 +196,7 @@ async function criarTabelas() {
     `);
     await pool.query(`ALTER TABLE feira_equipes ADD COLUMN IF NOT EXISTS lider TEXT;`);
     await pool.query(`ALTER TABLE tarefas ADD COLUMN IF NOT EXISTS data_entrega TEXT;`);
+    await pool.query(`ALTER TABLE tarefas ADD COLUMN IF NOT EXISTS subtitulo TEXT;`);
     await pool.query(`
         CREATE TABLE IF NOT EXISTS feira_config (
             id SERIAL PRIMARY KEY,
@@ -485,7 +487,7 @@ app.delete("/api/temas-personalizados/:id", exigirLogin, async (req, res) => {
 
 app.get("/api/tarefas", exigirLogin, async (req, res) => {
     try {
-        const resultado = await pool.query("SELECT id, data, materia, descricao, data_entrega AS \"dataEntrega\" FROM tarefas ORDER BY data DESC, id DESC");
+        const resultado = await pool.query("SELECT id, data, materia, descricao, subtitulo, data_entrega AS \"dataEntrega\" FROM tarefas ORDER BY data DESC, id DESC");
         res.json({ sucesso: true, tarefas: resultado.rows });
     } catch (erro) {
         console.error("Erro ao buscar tarefas:", erro);
@@ -495,11 +497,14 @@ app.get("/api/tarefas", exigirLogin, async (req, res) => {
 
 app.post("/api/tarefas", exigirAdmin, async (req, res) => {
     try {
-        const { data, materia, descricao, dataEntrega = null } = req.body;
-        if (!data || !materia || !descricao) return res.status(400).json({ sucesso: false, mensagem: "Preencha todos os campos." });
+        const { data, materia, descricao = "", subtitulo = "", dataEntrega = null } = req.body;
+        const descricaoNormalizada = String(descricao ?? "").trim();
+        const subtituloNormalizado = String(subtitulo ?? "").trim();
+        if (!data || !materia || (!descricaoNormalizada && !subtituloNormalizado)) return res.status(400).json({ sucesso: false, mensagem: "Digite uma tarefa ou um subtítulo." });
+        const entregaNormalizada = descricaoNormalizada ? (dataEntrega || data) : null;
         const resultado = await pool.query(
-            "INSERT INTO tarefas (data, materia, descricao, data_entrega) VALUES ($1, $2, $3, $4) RETURNING id, data, materia, descricao, data_entrega AS \"dataEntrega\"",
-            [data, materia, descricao, dataEntrega || null]
+            "INSERT INTO tarefas (data, materia, descricao, subtitulo, data_entrega) VALUES ($1, $2, $3, $4, $5) RETURNING id, data, materia, descricao, subtitulo, data_entrega AS \"dataEntrega\"",
+            [data, materia, descricaoNormalizada, subtituloNormalizado || null, entregaNormalizada]
         );
         res.json({ sucesso: true, tarefa: resultado.rows[0] });
     } catch (erro) {
@@ -510,21 +515,24 @@ app.post("/api/tarefas", exigirAdmin, async (req, res) => {
 
 app.put("/api/tarefas/:id", exigirAdmin, async (req, res) => {
     try {
-        const { data, materia, descricao, dataEntrega = null } = req.body;
+        const { data, materia, descricao = "", subtitulo = "", dataEntrega = null } = req.body;
+        const descricaoNormalizada = String(descricao ?? "").trim();
+        const subtituloNormalizado = String(subtitulo ?? "").trim();
 
-        if (!data || !materia || !descricao) {
+        if (!data || !materia || (!descricaoNormalizada && !subtituloNormalizado)) {
             return res.status(400).json({
                 sucesso: false,
-                mensagem: "Preencha todos os campos."
+                mensagem: "Digite uma tarefa ou um subtítulo."
             });
         }
 
+        const entregaNormalizada = descricaoNormalizada ? (dataEntrega || data) : null;
         const resultado = await pool.query(
             `UPDATE tarefas
-             SET data = $1, materia = $2, descricao = $3, data_entrega = $4
-             WHERE id = $5
-             RETURNING id, data, materia, descricao, data_entrega AS \"dataEntrega\"`,
-            [data, materia, descricao, dataEntrega || null, req.params.id]
+             SET data = $1, materia = $2, descricao = $3, subtitulo = $4, data_entrega = $5
+             WHERE id = $6
+             RETURNING id, data, materia, descricao, subtitulo, data_entrega AS \"dataEntrega\"`,
+            [data, materia, descricaoNormalizada, subtituloNormalizado || null, entregaNormalizada, req.params.id]
         );
 
         if (!resultado.rows.length) {
