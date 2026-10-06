@@ -30,6 +30,18 @@
       <input type="hidden" id="tema-id">
       <label>Nome do tema<input id="tema-nome" maxlength="30" required placeholder="Ex.: Azul espacial"></label>
 
+      <div class="preview-editor">
+        <h2>Pré-visualização</h2>
+        <div id="preview-site" class="preview-site">
+          <div class="preview-topo"><img id="preview-logo" alt=""><div><strong>O SITE</strong><span>Central do site</span></div></div>
+          <div class="preview-conteudo">
+            <div class="preview-card"><small>Matemática</small><h3>Lista de exercícios</h3><p>Uma prévia de como seus cartões ficarão.</p></div>
+            <button type="button" class="preview-botao">Botão de exemplo</button>
+            <input class="preview-input" value="Campo de exemplo" readonly>
+          </div>
+        </div>
+      </div>
+
       <div class="cores-grid" id="cores-grid"></div>
 
       <div class="logo-area">
@@ -50,15 +62,6 @@
   </div>
 
   <div class="preview-tema painel-tema">
-    <h2>Pré-visualização</h2>
-    <div id="preview-site" class="preview-site">
-      <div class="preview-topo"><img id="preview-logo" alt=""><div><strong>O SITE</strong><span>Central do site</span></div></div>
-      <div class="preview-conteudo">
-        <div class="preview-card"><small>Matemática</small><h3>Lista de exercícios</h3><p>Uma prévia de como seus cartões ficarão.</p></div>
-        <button type="button" class="preview-botao">Botão de exemplo</button>
-        <input class="preview-input" value="Campo de exemplo" readonly>
-      </div>
-    </div>
     <div class="lista-meus-temas">
       <div class="lista-cabecalho"><h2>Temas salvos</h2><span id="lista-vazia">Nenhum tema criado.</span></div>
       <div id="lista-temas"></div>
