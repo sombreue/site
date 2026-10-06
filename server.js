@@ -159,6 +159,22 @@ async function criarTabelas() {
             tipo TEXT NOT NULL CHECK (tipo IN ('admin', 'usuario'))
         );
     `);
+
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS temas_personalizados (
+            id SERIAL PRIMARY KEY,
+            usuario_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
+            nome VARCHAR(30) NOT NULL,
+            cores VARCHAR(160) NOT NULL,
+            logo_data TEXT,
+            criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            atualizado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+    `);
+    await pool.query(`
+        CREATE INDEX IF NOT EXISTS temas_personalizados_usuario_idx
+        ON temas_personalizados (usuario_id);
+    `);
     await pool.query(`
         CREATE TABLE IF NOT EXISTS tarefas (
             id SERIAL PRIMARY KEY,
@@ -288,6 +304,168 @@ require("./tarefas-pessoais")(app, pool, exigirLogin);
 require("./notas")(app, pool, exigirLogin);
 require("./estudos")(app, pool, exigirLogin);
 require("./sticky-notes")(app, pool, exigirLogin);
+
+
+// =========================
+// TEMAS PERSONALIZADOS
+// =========================
+
+const CORES_TEMA_VALIDAS = 8;
+const MAX_TEMAS_POR_USUARIO = 3;
+const MAX_LOGO_DATA = 180000;
+
+function normalizarCoresTema(valor) {
+    if (typeof valor !== "string") return null;
+    const partes = valor.split(",");
+    if (partes.length !== CORES_TEMA_VALIDAS) return null;
+
+    const limpas = partes.map(cor => cor.trim().toLowerCase());
+    if (limpas.some(cor => !/^[0-9a-f]{6}$/.test(cor))) return null;
+
+    return limpas.join(",");
+}
+
+function validarNomeTema(nome) {
+    return typeof nome === "string" &&
+        nome.trim().length >= 1 &&
+        nome.trim().length <= 30;
+}
+
+function validarLogoData(logoData) {
+    if (logoData == null || logoData === "") return null;
+    if (typeof logoData !== "string" || logoData.length > MAX_LOGO_DATA) return false;
+    if (!/^data:image\/(webp|png|jpeg);base64,[A-Za-z0-9+/=]+$/.test(logoData)) return false;
+    return logoData;
+}
+
+app.get("/api/temas-personalizados", exigirLogin, async (req, res) => {
+    try {
+        const resultado = await pool.query(
+            `SELECT id, nome, cores, logo_data AS "logoData"
+             FROM temas_personalizados
+             WHERE usuario_id = $1
+             ORDER BY id ASC`,
+            [req.session.usuario.id]
+        );
+
+        res.set("Cache-Control", "no-store");
+        res.json({
+            sucesso: true,
+            temas: resultado.rows,
+            limite: MAX_TEMAS_POR_USUARIO
+        });
+    } catch (erro) {
+        console.error("Erro ao buscar temas personalizados:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao buscar seus temas." });
+    }
+});
+
+app.post("/api/temas-personalizados", exigirLogin, async (req, res) => {
+    try {
+        const usuarioId = req.session.usuario.id;
+        const { nome, cores, logoData } = req.body || {};
+
+        if (!validarNomeTema(nome)) {
+            return res.status(400).json({ sucesso: false, mensagem: "O nome do tema deve ter entre 1 e 30 caracteres." });
+        }
+
+        const coresNormalizadas = normalizarCoresTema(cores);
+        if (!coresNormalizadas) {
+            return res.status(400).json({ sucesso: false, mensagem: "As cores do tema são inválidas." });
+        }
+
+        const logoNormalizada = validarLogoData(logoData);
+        if (logoNormalizada === false) {
+            return res.status(400).json({ sucesso: false, mensagem: "A logo é inválida ou grande demais." });
+        }
+
+        const quantidade = await pool.query(
+            "SELECT COUNT(*)::int AS total FROM temas_personalizados WHERE usuario_id = $1",
+            [usuarioId]
+        );
+
+        if (quantidade.rows[0].total >= MAX_TEMAS_POR_USUARIO) {
+            return res.status(409).json({ sucesso: false, mensagem: "Você já atingiu o limite de 3 temas personalizados." });
+        }
+
+        const resultado = await pool.query(
+            `INSERT INTO temas_personalizados (usuario_id, nome, cores, logo_data)
+             VALUES ($1, $2, $3, $4)
+             RETURNING id, nome, cores, logo_data AS "logoData"`,
+            [usuarioId, nome.trim(), coresNormalizadas, logoNormalizada]
+        );
+
+        res.status(201).json({ sucesso: true, tema: resultado.rows[0] });
+    } catch (erro) {
+        console.error("Erro ao criar tema personalizado:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao salvar o tema." });
+    }
+});
+
+app.put("/api/temas-personalizados/:id", exigirLogin, async (req, res) => {
+    try {
+        const usuarioId = req.session.usuario.id;
+        const { nome, cores, logoData } = req.body || {};
+        const id = Number(req.params.id);
+
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({ sucesso: false, mensagem: "Tema inválido." });
+        }
+        if (!validarNomeTema(nome)) {
+            return res.status(400).json({ sucesso: false, mensagem: "O nome do tema deve ter entre 1 e 30 caracteres." });
+        }
+
+        const coresNormalizadas = normalizarCoresTema(cores);
+        if (!coresNormalizadas) {
+            return res.status(400).json({ sucesso: false, mensagem: "As cores do tema são inválidas." });
+        }
+
+        const logoNormalizada = validarLogoData(logoData);
+        if (logoNormalizada === false) {
+            return res.status(400).json({ sucesso: false, mensagem: "A logo é inválida ou grande demais." });
+        }
+
+        const resultado = await pool.query(
+            `UPDATE temas_personalizados
+             SET nome = $1, cores = $2, logo_data = $3, atualizado_em = NOW()
+             WHERE id = $4 AND usuario_id = $5
+             RETURNING id, nome, cores, logo_data AS "logoData"`,
+            [nome.trim(), coresNormalizadas, logoNormalizada, id, usuarioId]
+        );
+
+        if (!resultado.rows.length) {
+            return res.status(404).json({ sucesso: false, mensagem: "Tema não encontrado." });
+        }
+
+        res.json({ sucesso: true, tema: resultado.rows[0] });
+    } catch (erro) {
+        console.error("Erro ao editar tema personalizado:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao editar o tema." });
+    }
+});
+
+app.delete("/api/temas-personalizados/:id", exigirLogin, async (req, res) => {
+    try {
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({ sucesso: false, mensagem: "Tema inválido." });
+        }
+
+        const resultado = await pool.query(
+            "DELETE FROM temas_personalizados WHERE id = $1 AND usuario_id = $2",
+            [id, req.session.usuario.id]
+        );
+
+        if (!resultado.rowCount) {
+            return res.status(404).json({ sucesso: false, mensagem: "Tema não encontrado." });
+        }
+
+        res.json({ sucesso: true });
+    } catch (erro) {
+        console.error("Erro ao excluir tema personalizado:", erro);
+        res.status(500).json({ sucesso: false, mensagem: "Erro ao excluir o tema." });
+    }
+});
 
 app.get("/api/tarefas", exigirLogin, async (req, res) => {
     try {
