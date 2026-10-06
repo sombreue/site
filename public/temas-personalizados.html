@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meus temas</title>
+<link rel="icon" href="/imagens/favicon.ico">
+<link rel="stylesheet" href="global-temas-estilos.css">
+<link rel="stylesheet" href="temas-personalizados-estilos.css">
+<script>document.documentElement.dataset.theme=localStorage.getItem("agenda-auruda-tema")||"ruby";</script>
+</head>
+<body>
+<main class="temas-pagina">
+<header class="temas-header">
+  <a class="voltar-temas" href="/">← Voltar</a>
+  <div>
+    <h1>Meus temas</h1>
+    <p>Crie um tema do seu jeito e use-o em qualquer dispositivo.</p>
+  </div>
+</header>
+
+<section class="temas-layout">
+  <div class="editor-tema painel-tema">
+    <div class="titulo-linha">
+      <div><h2 id="titulo-editor">Criar tema</h2><p id="contador-temas">0/3 temas</p></div>
+      <button id="botao-novo" class="botao-secundario" type="button">Novo</button>
+    </div>
+
+    <form id="form-tema">
+      <input type="hidden" id="tema-id">
+      <label>Nome do tema<input id="tema-nome" maxlength="30" required placeholder="Ex.: Azul espacial"></label>
+
+      <div class="cores-grid" id="cores-grid"></div>
+
+      <div class="logo-area">
+        <div class="logo-cabecalho">
+          <div><h3>Logo</h3><p>Opcional. A imagem é comprimida no navegador antes de ser salva.</p></div>
+          <button type="button" id="remover-logo" class="botao-secundario">Remover</button>
+        </div>
+        <input id="logo-input" type="file" accept="image/png,image/jpeg,image/webp">
+        <div class="logo-upload-preview"><img id="logo-preview" alt="Prévia da logo"></div>
+      </div>
+
+      <div class="editor-acoes">
+        <button id="botao-salvar" type="submit">Salvar tema</button>
+        <button id="botao-excluir" class="botao-perigo" type="button" hidden>Excluir</button>
+      </div>
+      <p id="status-editor" class="status-editor" aria-live="polite"></p>
+    </form>
+  </div>
+
+  <div class="preview-tema painel-tema">
+    <h2>Pré-visualização</h2>
+    <div id="preview-site" class="preview-site">
+      <div class="preview-topo"><img id="preview-logo" alt=""><div><strong>O SITE</strong><span>Central do site</span></div></div>
+      <div class="preview-conteudo">
+        <div class="preview-card"><small>Matemática</small><h3>Lista de exercícios</h3><p>Uma prévia de como seus cartões ficarão.</p></div>
+        <button type="button" class="preview-botao">Botão de exemplo</button>
+        <input class="preview-input" value="Campo de exemplo" readonly>
+      </div>
+    </div>
+    <div class="lista-meus-temas">
+      <div class="lista-cabecalho"><h2>Temas salvos</h2><span id="lista-vazia">Nenhum tema criado.</span></div>
+      <div id="lista-temas"></div>
+    </div>
+  </div>
+</section>
+</main>
+<script src="global-temas.js"></script>
+<script src="temas-personalizados.js"></script>
+</body>
+</html>
