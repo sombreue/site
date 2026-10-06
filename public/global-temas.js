@@ -31,10 +31,13 @@
     ];
 
     const chave = "agenda-auruda-tema";
+    let temasPersonalizados = [];
+    let temaPersonalizadoAtivo = null;
     const ehQuartaFeira = () => new Date().getDay() === 3;
     const temaSalvo = localStorage.getItem(chave) || "ruby";
+    const customSalvo = localStorage.getItem("agenda-auruda-tema-custom");
     const temaInicial = ehQuartaFeira() ? "quarta-feira" : (temas.some(t => t.id === temaSalvo) ? temaSalvo : "ruby");
-    document.documentElement.dataset.theme = temaInicial;
+    document.documentElement.dataset.theme = customSalvo && temaSalvo.startsWith("custom-") ? temaSalvo : temaInicial;
 
     if (!document.querySelector('link[href*="global-temas-estilos.css"]')) {
         const link = document.createElement("link");
@@ -80,6 +83,13 @@
 
     function aplicarTema(id) {
         if(ehQuartaFeira()) id="quarta-feira";
+        if(id.startsWith("custom-")) {
+            const custom = temasPersonalizados.find(t => "custom-"+t.id === id);
+            if(custom) {
+                aplicarTemaPersonalizado(custom);
+                return;
+            }
+        }
         if(!temas.some(t=>t.id===id)) return;
         document.documentElement.classList.add("trocando-tema");
         document.documentElement.dataset.theme=id;
@@ -90,6 +100,85 @@
         const tema=temas.find(t=>t.id===id), nome=document.querySelector(".seletor-tema-nome");
         if(nome&&tema) nome.textContent=tema.nome;
         window.setTimeout(()=>document.documentElement.classList.remove("trocando-tema"),260);
+    }
+
+    function aplicarTemaPersonalizado(tema) {
+        temaPersonalizadoAtivo = tema;
+        const valores = tema.cores.split(",");
+        const nomes = ["--theme-bg","--theme-surface","--theme-surface-2","--theme-border","--theme-text","--theme-muted","--theme-accent","--theme-button"];
+        nomes.forEach((nome,i)=>document.documentElement.style.setProperty(nome,"#"+valores[i]));
+        document.documentElement.style.setProperty("--theme-surface-3","#"+valores[2]);
+        document.documentElement.style.setProperty("--theme-border-hover","#"+valores[3]);
+        document.documentElement.style.setProperty("--theme-accent-hover","#"+valores[6]);
+        document.documentElement.style.setProperty("--theme-accent-dark","#"+valores[6]);
+        document.documentElement.style.setProperty("--theme-button-hover","#"+valores[6]);
+        document.documentElement.style.setProperty("--theme-input","#"+valores[0]);
+        document.documentElement.style.setProperty("--theme-header","#"+valores[1]);
+        document.documentElement.style.setProperty("--theme-header-2","#"+valores[0]);
+        document.documentElement.dataset.theme = "custom-"+tema.id;
+        localStorage.setItem(chave,"custom-"+tema.id);
+        localStorage.setItem("agenda-auruda-tema-custom",JSON.stringify(tema));
+        document.querySelectorAll(".logo,.home-logo").forEach(logo=>{
+            if(!logo.dataset.logoOriginal) logo.dataset.logoOriginal=logo.getAttribute("src")||"";
+            if(tema.logoData) logo.src=tema.logoData;
+            logo.alt=tema.logoData ? tema.nome : "Logo";
+        });
+        document.querySelectorAll(".tema-opcao").forEach(botao=>botao.classList.toggle("ativo",botao.dataset.tema==="custom-"+tema.id));
+        const nome=document.querySelector(".seletor-tema-nome");
+        if(nome) nome.textContent=tema.nome;
+    }
+
+    async function carregarTemasPersonalizados() {
+        try {
+            const resposta = await fetch("/api/temas-personalizados",{credentials:"same-origin",cache:"no-store"});
+            if(!resposta.ok) return;
+            const dados = await resposta.json();
+            temasPersonalizados = dados.temas || [];
+            if(!temasPersonalizados.length) return;
+
+            const lista = document.querySelector(".seletor-tema-lista");
+            if(!lista) return;
+
+            const titulo=document.createElement("div");
+            titulo.className="tema-grupo-titulo";
+            titulo.textContent="Meus temas";
+
+            const grade=document.createElement("div");
+            grade.className="tema-grupo-grade";
+
+            temasPersonalizados.forEach(tema=>{
+                const opcao=document.createElement("button");
+                opcao.type="button";
+                opcao.className="tema-opcao";
+                opcao.dataset.tema="custom-"+tema.id;
+                opcao.setAttribute("role","menuitem");
+                const cor="#"+tema.cores.split(",")[6];
+                opcao.innerHTML=`<span class="tema-bolinha" style="--cor-tema:${cor}"></span><span class="tema-opcao-texto"><span class="tema-opcao-icone">🎨</span></span>`;
+                opcao.querySelector(".tema-opcao-texto").append(document.createTextNode(tema.nome));
+                opcao.addEventListener("click",()=>{
+                    aplicarTemaPersonalizado(tema);
+                    lista.hidden=true;
+                    document.querySelector(".seletor-tema-botao")?.setAttribute("aria-expanded","false");
+                });
+                grade.appendChild(opcao);
+            });
+
+            const editor=document.createElement("a");
+            editor.href="/temas-personalizados.html";
+            editor.className="tema-opcao";
+            editor.textContent="⚙ Personalizar temas";
+            editor.style.textDecoration="none";
+            grade.appendChild(editor);
+
+            lista.prepend(grade);
+            lista.prepend(titulo);
+
+            const salvo=localStorage.getItem(chave);
+            const custom=temasPersonalizados.find(t=>"custom-"+t.id===salvo);
+            if(custom) aplicarTemaPersonalizado(custom);
+        } catch (erro) {
+            console.warn("Não foi possível carregar temas personalizados:",erro);
+        }
     }
 
     function criarSeletor() {
@@ -125,6 +214,11 @@
         atualizarBloqueioQuarta();
     }
 
-    if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",criarSeletor); else criarSeletor();
+    if(document.readyState==="loading") {
+        document.addEventListener("DOMContentLoaded",()=>{ criarSeletor(); carregarTemasPersonalizados(); });
+    } else {
+        criarSeletor();
+        carregarTemasPersonalizados();
+    }
     setInterval(verificarQuarta,60000);
 })();
