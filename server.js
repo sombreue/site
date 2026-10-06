@@ -180,7 +180,8 @@ async function criarTabelas() {
             id SERIAL PRIMARY KEY,
             data TEXT NOT NULL,
             materia TEXT NOT NULL,
-            descricao TEXT NOT NULL
+            descricao TEXT NOT NULL,
+            data_entrega TEXT
         );
     `);
     await pool.query(`
@@ -193,6 +194,7 @@ async function criarTabelas() {
         );
     `);
     await pool.query(`ALTER TABLE feira_equipes ADD COLUMN IF NOT EXISTS lider TEXT;`);
+    await pool.query(`ALTER TABLE tarefas ADD COLUMN IF NOT EXISTS data_entrega TEXT;`);
     await pool.query(`
         CREATE TABLE IF NOT EXISTS feira_config (
             id SERIAL PRIMARY KEY,
