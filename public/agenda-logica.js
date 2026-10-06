@@ -318,6 +318,22 @@ function mostrarMateriasDoDia() {
         textarea.dataset.materia =
             materia;
 
+        const labelEntrega =
+            document.createElement("label");
+
+        labelEntrega.textContent =
+            "Data de entrega";
+
+        labelEntrega.className =
+            "label-data-entrega";
+
+        const dataEntrega =
+            document.createElement("input");
+
+        dataEntrega.type = "date";
+        dataEntrega.className = "data-entrega-tarefa";
+        dataEntrega.dataset.materia = materia;
+        dataEntrega.value = data;
 
         container.appendChild(
             label
@@ -325,6 +341,14 @@ function mostrarMateriasDoDia() {
 
         container.appendChild(
             textarea
+        );
+
+        container.appendChild(
+            labelEntrega
+        );
+
+        container.appendChild(
+            dataEntrega
         );
 
 
@@ -409,6 +433,8 @@ async function adicionarTarefasDoDia() {
         }
 
 
+        const campoEntrega = campo.parentElement?.querySelector(".data-entrega-tarefa");
+
         tarefas.push({
 
             data:
@@ -418,7 +444,10 @@ async function adicionarTarefasDoDia() {
                 campo.dataset.materia,
 
             descricao:
-                descricao
+                descricao,
+
+            dataEntrega:
+                campoEntrega?.value || data
 
         });
 
@@ -518,7 +547,8 @@ function criarTarefa(
     id,
     data,
     materia,
-    descricao
+    descricao,
+    dataEntrega = null
 ) {
 
     let dia =
@@ -592,6 +622,31 @@ function criarTarefa(
     novaTarefa.appendChild(tituloTarefa);
     novaTarefa.appendChild(descricaoTarefa);
 
+    if (dataEntrega) {
+        const entregaTarefa = document.createElement("small");
+        entregaTarefa.className = "data-entrega-tarefa-exibicao";
+
+        const entrega = new Date(`${dataEntrega}T00:00:00`);
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+
+        const diferenca = Math.round((entrega - hoje) / 86400000);
+
+        if (diferenca < 0) {
+            entregaTarefa.textContent = `Entrega: ${formatarData(dataEntrega)} · atrasada`;
+            entregaTarefa.classList.add("atrasada");
+        } else if (diferenca === 0) {
+            entregaTarefa.textContent = `Entrega: ${formatarData(dataEntrega)} · hoje`;
+            entregaTarefa.classList.add("hoje");
+        } else if (diferenca === 1) {
+            entregaTarefa.textContent = `Entrega: ${formatarData(dataEntrega)} · amanhã`;
+        } else {
+            entregaTarefa.textContent = `Entrega: ${formatarData(dataEntrega)}`;
+        }
+
+        novaTarefa.appendChild(entregaTarefa);
+    }
+
 
     /* =========================
        BOTÕES DO ADMIN
@@ -629,7 +684,8 @@ function criarTarefa(
                 id,
                 data,
                 materia,
-                descricao
+                descricao,
+                dataEntrega
             );
 
 
@@ -742,7 +798,9 @@ async function carregarTarefas() {
 
             tarefa.materia,
 
-            tarefa.descricao
+            tarefa.descricao,
+
+            tarefa.dataEntrega
 
         );
 
@@ -794,6 +852,11 @@ function criarModalEdicao() {
                 </label>
 
                 <label>
+                    Data de entrega
+                    <input type="date" id="editar-tarefa-data-entrega">
+                </label>
+
+                <label>
                     Descrição
                     <textarea id="editar-tarefa-descricao" required></textarea>
                 </label>
@@ -823,6 +886,7 @@ function criarModalEdicao() {
         const data = document.getElementById("editar-tarefa-data").value;
         const materia = document.getElementById("editar-tarefa-materia").value.trim();
         const descricao = document.getElementById("editar-tarefa-descricao").value.trim();
+        const dataEntrega = document.getElementById("editar-tarefa-data-entrega").value;
 
         if (!data || !materia || !descricao) {
             alert("Todos os campos são obrigatórios.");
@@ -846,7 +910,8 @@ function criarModalEdicao() {
                     body: JSON.stringify({
                         data,
                         materia,
-                        descricao
+                        descricao,
+                        dataEntrega: dataEntrega || data
                     })
                 }
             );
@@ -898,7 +963,8 @@ function abrirModalEdicao(
     id,
     dataAtual,
     materiaAtual,
-    descricaoAtual
+    descricaoAtual,
+    dataEntregaAtual = null
 ) {
 
     const modal = document.getElementById("modal-editar-tarefa");
@@ -907,6 +973,7 @@ function abrirModalEdicao(
     document.getElementById("editar-tarefa-data").value = dataAtual;
     document.getElementById("editar-tarefa-materia").value = materiaAtual;
     document.getElementById("editar-tarefa-descricao").value = descricaoAtual;
+    document.getElementById("editar-tarefa-data-entrega").value = dataEntregaAtual || dataAtual;
 
     modal.style.display = "flex";
 
@@ -928,14 +995,16 @@ function editarTarefa(
     id,
     dataAtual,
     materiaAtual,
-    descricaoAtual
+    descricaoAtual,
+    dataEntregaAtual
 ) {
 
     abrirModalEdicao(
         id,
         dataAtual,
         materiaAtual,
-        descricaoAtual
+        descricaoAtual,
+        dataEntregaAtual
     );
 
 }
