@@ -328,8 +328,17 @@ function mostrarMateriasDoDia() {
         subtitulo.placeholder = "O que estamos aprendendo? (não vira tarefa)";
         subtitulo.dataset.materia = materia;
 
-        const labelEntrega =
-            document.createElement("label");
+        const labelSubtitulo = document.createElement("label");
+        labelSubtitulo.textContent = "Subtítulo";
+        labelSubtitulo.className = "label-subtitulo";
+
+        const subtitulo = document.createElement("input");
+        subtitulo.type = "text";
+        subtitulo.className = "subtitulo-tarefa";
+        subtitulo.placeholder = "O que estamos aprendendo? (não vira tarefa)";
+        subtitulo.dataset.materia = materia;
+
+        const labelEntrega = document.createElement("label");
 
         labelEntrega.textContent =
             "Data de entrega";
