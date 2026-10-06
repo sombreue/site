@@ -16,7 +16,7 @@ console.log(`[START] Iniciando servidor | NODE_ENV=${process.env.NODE_ENV || "de
 // cookie de sessão com Secure corretamente.
 app.set("trust proxy", 1);
 
-app.use(express.json());
+app.use(express.json({ limit: "300kb" }));
 app.use(express.urlencoded({ extended: true }));
 
 if (!process.env.DATABASE_URL) {
