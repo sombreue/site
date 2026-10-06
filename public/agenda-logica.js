@@ -318,6 +318,16 @@ function mostrarMateriasDoDia() {
         textarea.dataset.materia =
             materia;
 
+        const labelSubtitulo = document.createElement("label");
+        labelSubtitulo.textContent = "Subtítulo";
+        labelSubtitulo.className = "label-subtitulo";
+
+        const subtitulo = document.createElement("input");
+        subtitulo.type = "text";
+        subtitulo.className = "subtitulo-tarefa";
+        subtitulo.placeholder = "O que estamos aprendendo? (não vira tarefa)";
+        subtitulo.dataset.materia = materia;
+
         const labelEntrega =
             document.createElement("label");
 
@@ -340,7 +350,11 @@ function mostrarMateriasDoDia() {
         );
 
         container.appendChild(
-            textarea
+            labelSubtitulo
+        );
+
+        container.appendChild(
+            subtitulo
         );
 
         container.appendChild(
@@ -424,14 +438,13 @@ async function adicionarTarefasDoDia() {
 
     campos.forEach(campo => {
 
-        const descricao =
-            campo.value.trim();
+        const descricao = campo.value.trim();
+        const campoSubtitulo = campo.parentElement?.querySelector(".subtitulo-tarefa");
+        const subtitulo = campoSubtitulo?.value.trim() || "";
 
-
-        if (!descricao) {
+        if (!descricao && !subtitulo) {
             return;
         }
-
 
         const campoEntrega = campo.parentElement?.querySelector(".data-entrega-tarefa");
 
@@ -446,8 +459,11 @@ async function adicionarTarefasDoDia() {
             descricao:
                 descricao,
 
+            subtitulo:
+                subtitulo,
+
             dataEntrega:
-                campoEntrega?.value || data
+                descricao ? (campoEntrega?.value || data) : null
 
         });
 
@@ -457,7 +473,7 @@ async function adicionarTarefasDoDia() {
     if (tarefas.length === 0) {
 
         alert(
-            "Digite pelo menos uma tarefa."
+            "Digite pelo menos uma tarefa ou subtítulo."
         );
 
         return;
@@ -548,7 +564,8 @@ function criarTarefa(
     data,
     materia,
     descricao,
-    dataEntrega = null
+    dataEntrega = null,
+    subtitulo = null
 ) {
 
     let dia =
@@ -616,11 +633,16 @@ function criarTarefa(
     const tituloTarefa = document.createElement("h3");
     tituloTarefa.textContent = materia;
 
+    const subtituloTarefa = document.createElement("small");
+    subtituloTarefa.className = "subtitulo-tarefa-exibicao";
+    subtituloTarefa.textContent = subtitulo || "";
+
     const descricaoTarefa = document.createElement("p");
-    descricaoTarefa.textContent = descricao;
+    descricaoTarefa.textContent = descricao || "";
 
     novaTarefa.appendChild(tituloTarefa);
-    novaTarefa.appendChild(descricaoTarefa);
+    if (subtitulo) novaTarefa.appendChild(subtituloTarefa);
+    if (descricao) novaTarefa.appendChild(descricaoTarefa);
 
     if (dataEntrega) {
         const entregaTarefa = document.createElement("small");
@@ -685,7 +707,8 @@ function criarTarefa(
                 data,
                 materia,
                 descricao,
-                dataEntrega
+                dataEntrega,
+                subtitulo
             );
 
 
@@ -800,7 +823,9 @@ async function carregarTarefas() {
 
             tarefa.descricao,
 
-            tarefa.dataEntrega
+            tarefa.dataEntrega,
+
+            tarefa.subtitulo
 
         );
 
@@ -852,6 +877,11 @@ function criarModalEdicao() {
                 </label>
 
                 <label>
+                    Subtítulo
+                    <input type="text" id="editar-tarefa-subtitulo" placeholder="O que estamos aprendendo? (não vira tarefa)">
+                </label>
+
+                <label>
                     Data de entrega
                     <input type="date" id="editar-tarefa-data-entrega">
                 </label>
@@ -886,10 +916,11 @@ function criarModalEdicao() {
         const data = document.getElementById("editar-tarefa-data").value;
         const materia = document.getElementById("editar-tarefa-materia").value.trim();
         const descricao = document.getElementById("editar-tarefa-descricao").value.trim();
+        const subtitulo = document.getElementById("editar-tarefa-subtitulo").value.trim();
         const dataEntrega = document.getElementById("editar-tarefa-data-entrega").value;
 
-        if (!data || !materia || !descricao) {
-            alert("Todos os campos são obrigatórios.");
+        if (!data || !materia || (!descricao && !subtitulo)) {
+            alert("Preencha a tarefa ou o subtítulo.");
             return;
         }
 
@@ -911,7 +942,8 @@ function criarModalEdicao() {
                         data,
                         materia,
                         descricao,
-                        dataEntrega: dataEntrega || data
+                        subtitulo,
+                        dataEntrega: descricao ? (dataEntrega || data) : null
                     })
                 }
             );
@@ -964,7 +996,8 @@ function abrirModalEdicao(
     dataAtual,
     materiaAtual,
     descricaoAtual,
-    dataEntregaAtual = null
+    dataEntregaAtual = null,
+    subtituloAtual = null
 ) {
 
     const modal = document.getElementById("modal-editar-tarefa");
@@ -972,7 +1005,8 @@ function abrirModalEdicao(
     document.getElementById("editar-tarefa-id").value = id;
     document.getElementById("editar-tarefa-data").value = dataAtual;
     document.getElementById("editar-tarefa-materia").value = materiaAtual;
-    document.getElementById("editar-tarefa-descricao").value = descricaoAtual;
+    document.getElementById("editar-tarefa-descricao").value = descricaoAtual || "";
+    document.getElementById("editar-tarefa-subtitulo").value = subtituloAtual || "";
     document.getElementById("editar-tarefa-data-entrega").value = dataEntregaAtual || dataAtual;
 
     modal.style.display = "flex";
