@@ -379,23 +379,37 @@ app.post("/api/temas-personalizados", exigirLogin, async (req, res) => {
             return res.status(400).json({ sucesso: false, mensagem: "A logo é inválida ou grande demais." });
         }
 
-        const quantidade = await pool.query(
-            "SELECT COUNT(*)::int AS total FROM temas_personalizados WHERE usuario_id = $1",
-            [usuarioId]
-        );
+        const cliente = await pool.connect();
+        try {
+            await cliente.query("BEGIN");
+            // Impede duas criações simultâneas de ultrapassarem o limite de 3.
+            await cliente.query("SELECT pg_advisory_xact_lock($1)", [usuarioId]);
 
-        if (quantidade.rows[0].total >= MAX_TEMAS_POR_USUARIO) {
-            return res.status(409).json({ sucesso: false, mensagem: "Você já atingiu o limite de 3 temas personalizados." });
+            const quantidade = await cliente.query(
+                "SELECT COUNT(*)::int AS total FROM temas_personalizados WHERE usuario_id = $1",
+                [usuarioId]
+            );
+
+            if (quantidade.rows[0].total >= MAX_TEMAS_POR_USUARIO) {
+                await cliente.query("ROLLBACK");
+                return res.status(409).json({ sucesso: false, mensagem: "Você já atingiu o limite de 3 temas personalizados." });
+            }
+
+            const resultado = await cliente.query(
+                `INSERT INTO temas_personalizados (usuario_id, nome, cores, logo_data)
+                 VALUES ($1, $2, $3, $4)
+                 RETURNING id, nome, cores, logo_data AS "logoData"`,
+                [usuarioId, nome.trim(), coresNormalizadas, logoNormalizada]
+            );
+
+            await cliente.query("COMMIT");
+            res.status(201).json({ sucesso: true, tema: resultado.rows[0] });
+        } catch (erroTransacao) {
+            await cliente.query("ROLLBACK").catch(() => {});
+            throw erroTransacao;
+        } finally {
+            cliente.release();
         }
-
-        const resultado = await pool.query(
-            `INSERT INTO temas_personalizados (usuario_id, nome, cores, logo_data)
-             VALUES ($1, $2, $3, $4)
-             RETURNING id, nome, cores, logo_data AS "logoData"`,
-            [usuarioId, nome.trim(), coresNormalizadas, logoNormalizada]
-        );
-
-        res.status(201).json({ sucesso: true, tema: resultado.rows[0] });
     } catch (erro) {
         console.error("Erro ao criar tema personalizado:", erro);
         res.status(500).json({ sucesso: false, mensagem: "Erro ao salvar o tema." });
