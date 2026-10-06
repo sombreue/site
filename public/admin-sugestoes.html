@@ -8,17 +8,71 @@
     <title>Sugestões e contas — Administração</title>
     <link rel="stylesheet" href="agenda-estilos.css?v=20260907">
     <link rel="stylesheet" href="admin-inicio-sugestoes-estilos.css?v=20260907-1">
+    <link rel="stylesheet" href="admin-sugestoes-estilos.css?v=20261005">
+    <script src="global-temas.js?v=20261005"></script>
+    <script src="agenda-temas-integracao.js?v=20261005"></script>
     <style>
-        .pedidos-conta-admin { margin-bottom:30px; padding:20px; border:1px solid var(--theme-border,#2c2c34); border-radius:16px; background:var(--theme-surface,#19191f); }
-        .pedido-conta-card { padding:16px; margin-top:12px; border:1px solid var(--theme-border,#2c2c34); border-radius:12px; background:var(--theme-surface-2,#202027); }
-        .pedido-conta-cabecalho { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-        .pedido-conta-cabecalho h3 { margin:0; }
-        .pedido-conta-data { color:var(--theme-muted,#a1a1aa); font-size:.9rem; }
-        .pedido-conta-acoes { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
-        .pedido-conta-acoes button { padding:9px 13px; border:0; border-radius:9px; color:#fff; font-weight:700; cursor:pointer; }
-        .botao-aceitar-conta { background:#16803c; }
-        .botao-recusar-conta { background:#a52a2a; }
-        .estado-vazio-contas { color:var(--theme-muted,#a1a1aa); padding:10px 0; }
+        .pedidos-conta-admin {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid var(--theme-border);
+            border-radius: 16px;
+            background: var(--theme-surface);
+        }
+
+        .pedido-conta-card {
+            padding: 16px;
+            margin-top: 12px;
+            border: 1px solid var(--theme-border);
+            border-radius: 12px;
+            background: var(--theme-surface-2);
+        }
+
+        .pedido-conta-cabecalho {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .pedido-conta-cabecalho h3 {
+            margin: 0;
+        }
+
+        .pedido-conta-data {
+            color: var(--theme-muted);
+            font-size: .9rem;
+        }
+
+        .pedido-conta-acoes {
+            display: flex;
+            gap: 8px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .pedido-conta-acoes button {
+            padding: 9px 13px;
+            border: 0;
+            border-radius: 9px;
+            color: #fff;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .botao-aceitar-conta {
+            background: #16803c;
+        }
+
+        .botao-recusar-conta {
+            background: #a52a2a;
+        }
+
+        .estado-vazio-contas {
+            color: var(--theme-muted);
+            padding: 10px 0;
+        }
     </style>
 </head>
 <body>
