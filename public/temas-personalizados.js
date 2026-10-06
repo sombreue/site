@@ -205,7 +205,21 @@
         reader.readAsDataURL(file);
     }
 
+    const dropzone = document.querySelector(".logo-upload-preview");
+
     $("logo-input").addEventListener("change",e=>lerLogo(e.target.files[0]));
+    ["dragenter","dragover"].forEach(evento=>dropzone.addEventListener(evento,e=>{
+        e.preventDefault(); e.stopPropagation(); dropzone.classList.add("arrastando");
+    }));
+    ["dragleave","drop"].forEach(evento=>dropzone.addEventListener(evento,e=>{
+        e.preventDefault(); e.stopPropagation(); dropzone.classList.remove("arrastando");
+    }));
+    dropzone.addEventListener("drop",e=>{
+        const arquivo=e.dataTransfer.files?.[0];
+        if(arquivo && ["image/png","image/jpeg","image/webp"].includes(arquivo.type)) lerLogo(arquivo);
+        else flash("Solte uma imagem PNG, JPG ou WebP.",true);
+    });
+    dropzone.addEventListener("click",()=>$("logo-input").click());
     $("remover-logo").onclick=()=>{logoAtual=null;$("logo-preview").src="";aplicarPreview();};
     $("form-tema").addEventListener("submit",salvar);
     $("botao-novo").onclick=()=>carregarEditor();
