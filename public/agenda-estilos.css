@@ -1183,3 +1183,7 @@ textarea {
 .data-entrega-tarefa-exibicao.atrasada {
     font-weight: 700;
 }
+
+.label-subtitulo{margin-top:10px;font-size:.88rem;color:var(--muted)}
+.subtitulo-tarefa{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);color:var(--text)}
+.subtitulo-tarefa-exibicao{display:block;margin:5px 0;color:var(--muted);font-style:italic}
