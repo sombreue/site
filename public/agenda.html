@@ -32,10 +32,13 @@
         @media (max-width:600px) { .seletor-materias { width:100%; min-width:0; } .filtro-agenda .filtro-campo { width:100%; } .filtro-agenda input[type="date"] { width:100%; } }
     </style>
 </head>
-<body>
-<header>
-<p>ve os coiso ai</p>
-    <a href="/" class="botao-expec">Início</a>
+<body><header class="site-header">
+<a href="/index.html" class="site-logo-link" aria-label="Ir para o Início"><img src="https://i.imgur.com/NKvDhdY.png" alt="Logo" class="site-logo"></a>
+<nav class="site-tabs" aria-label="Navegação principal">
+<a href="/hoje.html" >Hoje</a>
+<a href="/index.html">Início</a>
+<a href="/agenda.html" class="ativo" aria-current="page">Agenda</a>
+</nav>
 </header>
 <section id="horario-aulas" class="horario-aulas" aria-labelledby="titulo-horario">
     <div class="horario-cabecalho"><div class="horario-titulo"><h2 id="titulo-horario">Horário de aulas — 8º B</h2><p>Grade semanal de segunda a sexta</p></div><button type="button" id="botao-minimizar-horario" class="botao-minimizar-horario" aria-expanded="true" aria-controls="conteudo-horario-aulas" aria-label="Minimizar horário de aulas" title="Minimizar horário">−</button></div>
@@ -82,7 +85,6 @@
     <section id="lista-tarefas"></section>
     <section id="modal-senha" class="modal-senha"><div class="conteudo-modal"><h2>Alterar senha</h2><p id="usuario-senha"></p><input type="password" id="senha-alterada" placeholder="Digite a nova senha"><div class="botoes-modal"><button onclick="confirmarAlteracaoSenha()">Alterar senha</button><button class="cancelar" onclick="fecharModalSenha()">Cancelar</button></div></div></section>
 </main>
-<nav class="navegacao-site" aria-label="Navegação principal"><a href="/hoje.html" data-area="hoje"><strong>◷</strong><span>Hoje</span></a><a href="/agenda.html" data-area="agenda" class="ativo"><strong>▦</strong><span>Agenda</span></a></nav>
 <script src="agenda-logica.js?v=20260909-agenda-fix"></script><script src="global-temas.js?v=20260907-lightfix5"></script><script src="agenda-temas-integracao.js?v=20260907-3"></script><script src="agenda-painel-admin.js?v=20260907-1"></script><script src="agenda-horarios.js?v=20260907-1"></script><script src="global-notificacoes.js?v=20260918"></script>
 <script>
 (function () {
