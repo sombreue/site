@@ -11,21 +11,21 @@ function formatarData(data){
 }
 function criarCardTarefa(t){
   const el=document.createElement("article");
-  el.className="hoje-card";
+  el.className="hoje-card";\n  el.tabIndex=0;\n  el.setAttribute("role","link");\n  el.addEventListener("click",()=>{ window.location.href=`/agenda.html#tarefa-${encodeURIComponent(t.id)}`; });
   el.innerHTML="<div class=\"materia\"></div><h3></h3><p></p><small></small>";
   el.querySelector(".materia").textContent=t.materia;
   el.querySelector("h3").textContent="Entrega amanhã";
-  el.querySelector("p").textContent=t.descricao;
+  el.querySelector("p").textContent=t.descricao;\n  el.querySelector("p").style.whiteSpace="pre-line";
   el.querySelector("small").textContent="Prazo: "+formatarData(t.dataEntrega);
   return el;
 }
 function criarCardTrabalho(t){
   const el=document.createElement("article");
-  el.className="trabalho-hoje";
+  el.className="trabalho-hoje";\n  el.tabIndex=0;\n  el.setAttribute("role","link");\n  el.addEventListener("click",()=>{ window.location.href=`/trabalhos.html#trabalho-${encodeURIComponent(t.id)}`; });
   el.innerHTML="<div class=\"materia\"></div><h3></h3><p></p><small></small>";
   el.querySelector(".materia").textContent=t.materia||"Trabalho";
   el.querySelector("h3").textContent=t.titulo||"Sem título";
-  el.querySelector("p").textContent=t.descricao||"";
+  el.querySelector("p").textContent=t.descricao||"";\n  el.querySelector("p").style.whiteSpace="pre-line";
   el.querySelector("small").textContent=t.prazo?"Prazo: "+formatarData(t.prazo):"Sem prazo";
   return el;
 }
