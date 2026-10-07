@@ -737,7 +737,7 @@ function criarTarefa(
 
 
         botaoExcluir.onclick =
-            () => excluirTarefa(id);
+            () => abrirModalExclusao(id);
 
 
         areaBotoes.appendChild(
@@ -1093,68 +1093,131 @@ function editarTarefa(
    EXCLUIR TAREFA
 ========================= */
 
-async function excluirTarefa(id) {
+function criarModalExclusao() {
 
-    const confirmar =
-        confirm(
-            "Tem certeza que deseja excluir esta tarefa?"
-        );
-
-
-    if (!confirmar) {
+    if (document.getElementById("modal-excluir-tarefa")) {
         return;
     }
 
+    const modal = document.createElement("div");
+    modal.id = "modal-excluir-tarefa";
+    modal.className = "modal-excluir-tarefa";
+    modal.innerHTML = `
+        <div class="conteudo-modal-excluir" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-excluir">
+            <div class="modal-excluir-icone" aria-hidden="true">!</div>
+            <h2 id="titulo-modal-excluir">Excluir tarefa?</h2>
+            <p id="mensagem-modal-excluir">Tem certeza que deseja excluir esta tarefa?</p>
+
+            <div class="botoes-modal-excluir">
+                <button type="button" class="cancelar-exclusao" id="cancelar-exclusao-tarefa">Cancelar</button>
+                <button type="button" class="confirmar-exclusao" id="confirmar-exclusao-tarefa">Excluir</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    const fechar = () => {
+        modal.style.display = "none";
+    };
+
+    document.getElementById("cancelar-exclusao-tarefa").addEventListener("click", fechar);
+
+    modal.addEventListener("click", event => {
+        if (event.target === modal) {
+            fechar();
+        }
+    });
+
+    document.addEventListener("keydown", event => {
+        if (event.key === "Escape" && modal.style.display === "flex") {
+            fechar();
+        }
+    });
+}
+
+function abrirModalExclusao(id) {
+
+    criarModalExclusao();
+
+    const modal = document.getElementById("modal-excluir-tarefa");
+    const mensagem = document.getElementById("mensagem-modal-excluir");
+    const botoes = document.querySelector(".botoes-modal-excluir");
+    const confirmar = document.getElementById("confirmar-exclusao-tarefa");
+
+    modal.dataset.tarefaId = id;
+    modal.dataset.estado = "confirmacao";
+
+    mensagem.textContent = "Tem certeza que deseja excluir esta tarefa?";
+    confirmar.textContent = "Excluir";
+    confirmar.disabled = false;
+    botoes.innerHTML = `
+        <button type="button" class="cancelar-exclusao" id="cancelar-exclusao-tarefa">Cancelar</button>
+        <button type="button" class="confirmar-exclusao" id="confirmar-exclusao-tarefa">Excluir</button>
+    `;
+
+    document.getElementById("cancelar-exclusao-tarefa").onclick = () => {
+        modal.style.display = "none";
+    };
+
+    document.getElementById("confirmar-exclusao-tarefa").onclick = () => {
+        excluirTarefa(id);
+    };
+
+    modal.style.display = "flex";
+    document.getElementById("confirmar-exclusao-tarefa").focus();
+}
+
+async function excluirTarefa(id) {
+
+    criarModalExclusao();
+
+    const modal = document.getElementById("modal-excluir-tarefa");
+    const mensagem = document.getElementById("mensagem-modal-excluir");
+    const botoes = document.querySelector(".botoes-modal-excluir");
+
+    const confirmar = document.getElementById("confirmar-exclusao-tarefa");
+    if (!confirmar || confirmar.dataset.processando === "true") {
+        return;
+    }
+
+    confirmar.dataset.processando = "true";
+    confirmar.disabled = true;
+    confirmar.textContent = "Excluindo...";
 
     try {
+        const resposta = await fetch(`/api/tarefas/${id}`, {
+            method: "DELETE"
+        });
 
-        const resposta =
-            await fetch(
-                `/api/tarefas/${id}`,
-                {
-
-                    method: "DELETE"
-
-                }
-            );
-
-
-        const dados =
-            await resposta.json();
-
+        const dados = await resposta.json();
 
         if (!dados.sucesso) {
-
-            alert(
-                dados.mensagem
-            );
-
+            mensagem.textContent = dados.mensagem || "Não foi possível excluir a tarefa.";
+            confirmar.disabled = false;
+            confirmar.dataset.processando = "false";
+            confirmar.textContent = "Tentar novamente";
             return;
-
         }
-
 
         await carregarTarefas();
 
-
-        alert(
-            "Tarefa excluída!"
-        );
-
+        modal.dataset.estado = "sucesso";
+        mensagem.textContent = "Tarefa excluída com sucesso.";
+        botoes.innerHTML = `
+            <button type="button" class="confirmar-exclusao" id="fechar-modal-exclusao">Fechar</button>
+        `;
+        document.getElementById("fechar-modal-exclusao").onclick = () => {
+            modal.style.display = "none";
+        };
 
     } catch (erro) {
-
-        console.error(
-            "Erro ao excluir tarefa:",
-            erro
-        );
-
-        alert(
-            "Erro ao conectar ao servidor."
-        );
-
+        console.error("Erro ao excluir tarefa:", erro);
+        mensagem.textContent = "Erro ao conectar ao servidor.";
+        confirmar.disabled = false;
+        confirmar.dataset.processando = "false";
+        confirmar.textContent = "Tentar novamente";
     }
-
 }
 
 
