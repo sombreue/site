@@ -1228,3 +1228,9 @@ main{
 /* Espaçamento equilibrado: a Agenda continua ampla, mas sem parecer vazia. */
 main{width:min(100% - 48px,1180px);margin:32px auto 60px}
 .painel-admin{width:100%}
+
+
+/* Destaque ao abrir uma tarefa a partir do Hoje */
+.tarefa{scroll-margin-top:110px;scroll-margin-bottom:110px}
+.tarefa-destacada{animation:destacar-tarefa 2.2s ease}
+@keyframes destacar-tarefa{0%{transform:scale(1);box-shadow:0 0 0 0 color-mix(in srgb,var(--accent,#ef3340) 0%,transparent)}25%{transform:scale(1.015);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent,#ef3340) 35%,transparent)}70%{transform:scale(1.01);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent,#ef3340) 20%,transparent)}100%{transform:scale(1);box-shadow:0 0 0 0 transparent}}
