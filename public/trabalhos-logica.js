@@ -210,6 +210,34 @@ async function inicializar(){
     else preencherCatalogoMaterias();
     renderizar();
     await carregarTrabalhos();
+    abrirTrabalhoPeloHash();
 }
+
+function abrirTrabalhoPeloHash() {
+    const hash = window.location.hash;
+    if (!hash.startsWith("#trabalho-")) return;
+
+    const id = decodeURIComponent(hash.slice("#trabalho-".length));
+    const trabalho = document.getElementById(`trabalho-${id}`);
+    if (!trabalho) return;
+
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            trabalho.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+            trabalho.classList.remove("trabalho-destacado");
+            void trabalho.offsetWidth;
+            trabalho.classList.add("trabalho-destacado");
+
+            setTimeout(() => {
+                trabalho.classList.remove("trabalho-destacado");
+            }, 2200);
+        }, 80);
+    });
+}
+
+window.addEventListener("hashchange", abrirTrabalhoPeloHash);
 
 inicializar();
