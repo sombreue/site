@@ -1234,3 +1234,55 @@ main{width:min(100% - 48px,1180px);margin:32px auto 60px}
 .tarefa{scroll-margin-top:110px;scroll-margin-bottom:110px}
 .tarefa-destacada{animation:destacar-tarefa 2.2s ease}
 @keyframes destacar-tarefa{0%{transform:scale(1);box-shadow:0 0 0 0 color-mix(in srgb,var(--accent,#ef3340) 0%,transparent)}25%{transform:scale(1.015);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent,#ef3340) 35%,transparent)}70%{transform:scale(1.01);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent,#ef3340) 20%,transparent)}100%{transform:scale(1);box-shadow:0 0 0 0 transparent}}
+
+
+/* =========================================================
+   MODAL DE CONFIRMAÇÃO DE EXCLUSÃO
+   ========================================================= */
+.modal-excluir-tarefa{
+    display:none;
+    position:fixed;
+    inset:0;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    background:rgba(0,0,0,.78);
+    backdrop-filter:blur(5px);
+    z-index:1100;
+}
+.conteudo-modal-excluir{
+    width:min(100%,420px);
+    padding:28px;
+    text-align:center;
+    background:var(--surface-2);
+    color:var(--text);
+    border:1px solid var(--border);
+    border-radius:16px;
+    box-shadow:0 24px 70px rgba(0,0,0,.5);
+    animation:entrada-modal-excluir .16s ease-out;
+}
+.modal-excluir-icone{
+    width:44px;
+    height:44px;
+    margin:0 auto 14px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    background:color-mix(in srgb,var(--danger,#dc2626) 18%,transparent);
+    color:var(--danger,#ef4444);
+    border:1px solid color-mix(in srgb,var(--danger,#dc2626) 35%,transparent);
+    font-size:22px;
+    font-weight:800;
+}
+.conteudo-modal-excluir h2{margin:0 0 8px;color:var(--text)}
+#mensagem-modal-excluir{margin:0;color:var(--muted);line-height:1.5}
+.botoes-modal-excluir{display:flex;justify-content:center;gap:10px;margin-top:22px}
+.botoes-modal-excluir button{min-width:120px;padding:11px 16px;border-radius:10px;font-weight:700}
+.cancelar-exclusao{background:var(--surface-3);border:1px solid var(--border);color:var(--text)}
+.cancelar-exclusao:hover{background:var(--surface);border-color:var(--border-hover)}
+.confirmar-exclusao{background:var(--danger,#dc2626);border:1px solid var(--danger,#dc2626);color:#fff}
+.confirmar-exclusao:hover{filter:brightness(1.08)}
+.confirmar-exclusao:disabled{opacity:.65;cursor:wait}
+.modal-excluir-tarefa[data-estado="sucesso"] .modal-excluir-icone{background:color-mix(in srgb,#22c55e 16%,transparent);color:#22c55e;border-color:color-mix(in srgb,#22c55e 35%,transparent)}
+@keyframes entrada-modal-excluir{from{opacity:0;transform:translateY(5px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:700px){.conteudo-modal-excluir{padding:22px}.botoes-modal-excluir{flex-direction:column}.botoes-modal-excluir button{width:100%}}
