@@ -11,8 +11,14 @@
 <script>document.documentElement.dataset.theme=localStorage.getItem('agenda-auruda-tema')||'ruby';</script>
 </head>
 <body>
-<main class="hoje">
-<header class="hoje-cabecalho">
+<main class="hoje"><header class="site-header">
+<a href="/index.html" class="site-logo-link" aria-label="Ir para o Início"><img src="https://i.imgur.com/NKvDhdY.png" alt="Logo" class="site-logo"></a>
+<nav class="site-tabs" aria-label="Navegação principal">
+<a href="/hoje.html" class="ativo" aria-current="page">Hoje</a>
+<a href="/index.html">Início</a>
+<a href="/agenda.html" >Agenda</a>
+</nav>
+</header><header class="hoje-cabecalho">
 <h1>Hoje</h1>
 <p>O que merece sua atenção primeiro.</p>
 </header>
@@ -25,11 +31,6 @@
 <div id="trabalhos-proximos" class="hoje-lista"></div>
 </section>
 </main>
-<nav class="navegacao-site" aria-label="Navegação principal">
-  <a href="/hoje.html" data-area="hoje"><strong>◷</strong><span>Hoje</span></a>
-  <a href="/index.html" data-area="inicio"><strong>⌂</strong><span>Início</span></a>
-  <a href="/agenda.html" data-area="agenda"><strong>▦</strong><span>Agenda</span></a>
-</nav>
 <script src="global-temas.js?v=20261006"></script>
 <script src="global-notificacoes.js?v=20260918"></script>
 <script src="hoje-logica.js?v=20261006"></script>
