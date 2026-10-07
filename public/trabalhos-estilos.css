@@ -11,3 +11,9 @@
 .markdown-conteudo pre code{padding:0;background:none}
 .markdown-conteudo a{color:var(--theme-accent,#ef3340);font-weight:700}
 .markdown-conteudo hr{border:0;border-top:1px solid var(--theme-border,#2c2c34);margin:14px 0}
+
+
+/* Destaque ao abrir um trabalho a partir do Hoje */
+.trabalho{scroll-margin-top:110px;scroll-margin-bottom:110px}
+.trabalho-destacado{animation:destacar-trabalho 2.2s ease}
+@keyframes destacar-trabalho{0%{transform:scale(1);box-shadow:0 0 0 0 color-mix(in srgb,var(--theme-accent,#ef3340) 0%,transparent)}25%{transform:scale(1.015);box-shadow:0 0 0 4px color-mix(in srgb,var(--theme-accent,#ef3340) 35%,transparent)}70%{transform:scale(1.01);box-shadow:0 0 0 4px color-mix(in srgb,var(--theme-accent,#ef3340) 20%,transparent)}100%{transform:scale(1);box-shadow:0 0 0 0 transparent}}
