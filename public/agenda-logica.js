@@ -639,6 +639,7 @@ function criarTarefa(
 
     novaTarefa.dataset.id =
         id;
+    novaTarefa.id = `tarefa-${id}`;
 
 
     const tituloTarefa = document.createElement("h3");
@@ -761,6 +762,38 @@ function criarTarefa(
     );
 
 }
+
+
+/* =========================
+   NAVEGAR ATÉ UMA TAREFA
+========================= */
+
+function abrirTarefaPeloHash() {
+    const hash = window.location.hash;
+    if (!hash.startsWith("#tarefa-")) return;
+
+    const id = decodeURIComponent(hash.slice("#tarefa-".length));
+    const tarefa = document.getElementById(`tarefa-${id}`);
+    if (!tarefa) return;
+
+    requestAnimationFrame(() => {
+        setTimeout(() => {
+            tarefa.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+            tarefa.classList.remove("tarefa-destacada");
+            void tarefa.offsetWidth;
+            tarefa.classList.add("tarefa-destacada");
+
+            setTimeout(() => {
+                tarefa.classList.remove("tarefa-destacada");
+            }, 2200);
+        }, 80);
+    });
+}
+
+window.addEventListener("hashchange", abrirTarefaPeloHash);
 
 
 /* =========================
