@@ -137,7 +137,14 @@ app.use(express.static("public", { index: false }));
 
 app.get("/", (req, res) => {
     if (!req.session.usuario) return res.redirect("/login.html");
-    res.sendFile(path.join(__dirname, "public", "hoje.html"));
+
+    // No celular, a página inicial é o Hoje; no PC, é o Início.
+    // O detector considera apenas telefones, evitando tratar tablets como celular.
+    const userAgent = String(req.headers["user-agent"] || "");
+    const celular = /Mobi|Android.*Mobile|iPhone|iPod/i.test(userAgent);
+    const paginaInicial = celular ? "hoje.html" : "index.html";
+
+    res.sendFile(path.join(__dirname, "public", paginaInicial));
 });
 
 async function criarTabelas() {
