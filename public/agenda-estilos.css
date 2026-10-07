@@ -1187,3 +1187,40 @@ textarea {
 .label-subtitulo{margin-top:10px;font-size:.88rem;color:var(--muted)}
 .subtitulo-tarefa{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;background:var(--surface-2);color:var(--text)}
 .subtitulo-tarefa-exibicao{display:block;margin:5px 0;color:var(--muted);font-style:italic}
+
+/* =========================================================
+   LAYOUT AMPLO
+   ========================================================= */
+main{
+    width:min(100% - 48px, 1440px);
+    margin:40px auto 70px;
+}
+.painel-admin{
+    width:100%;
+    max-width:none;
+}
+.tarefas{
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+}
+.dia{
+    margin-bottom:52px;
+}
+.formulario{
+    padding:30px;
+}
+.filtro{
+    padding:20px;
+}
+.contador-feira,
+.decoracao-feira{
+    padding:34px;
+}
+#listaEquipes{
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+}
+@media(max-width:700px){
+    main{width:min(100% - 24px,1440px);margin-top:26px}
+    .tarefas{grid-template-columns:1fr;gap:12px}
+}
