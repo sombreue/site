@@ -309,6 +309,10 @@ function mostrarMateriasDoDia() {
             materia;
 
 
+        const labelTarefa = document.createElement("label");
+        labelTarefa.textContent = "Tarefa";
+        labelTarefa.className = "label-tarefa";
+
         const textarea =
             document.createElement("textarea");
 
@@ -346,6 +350,14 @@ function mostrarMateriasDoDia() {
 
         container.appendChild(
             label
+        );
+
+        container.appendChild(
+            labelTarefa
+        );
+
+        container.appendChild(
+            textarea
         );
 
         container.appendChild(
@@ -886,8 +898,8 @@ function criarModalEdicao() {
                 </label>
 
                 <label>
-                    Descrição
-                    <textarea id="editar-tarefa-descricao" required></textarea>
+                    Tarefa
+                    <textarea id="editar-tarefa-descricao" placeholder="Digite a tarefa..."></textarea>
                 </label>
 
                 <div class="botoes-modal-editar">
