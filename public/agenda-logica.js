@@ -842,6 +842,7 @@ async function carregarTarefas() {
 
     });
 
+    abrirTarefaPeloHash();
 
     } catch (erro) {
 
