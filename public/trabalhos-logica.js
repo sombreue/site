@@ -120,7 +120,7 @@ function renderizar(){
         const prioridade = calcularPrioridade(t.prazo);
         const valePonto = t.vale_ponto !== false;
         const controles = ehAdmin() ? `<div class="controles-trabalho"><button type="button" data-editar="${t.id}">Editar</button><button type="button" class="excluir" data-excluir="${t.id}">Excluir</button></div>` : '';
-        return `<article class="trabalho">
+        return `<article id="trabalho-${t.id}" class="trabalho">
             <div class="trabalho-topo"><div><div class="materia">${escaparHtml(t.materia)}</div><h2>${escaparHtml(t.titulo)}</h2></div><span class="prioridade ${prioridade.classe}">${prioridade.nome}</span></div>
             <div class="descricao markdown-conteudo">${renderizarMarkdown(t.descricao || '')}</div>
             <div class="meta"><span class="tag">Prazo: ${formatarData(t.prazo)}</span><span class="tag">${textoPrazo(t.prazo)}</span>${valePonto ? '<span class="tag">Vale ponto</span>' : ''}</div>
