@@ -1192,8 +1192,8 @@ textarea {
    LAYOUT AMPLO
    ========================================================= */
 main{
-    width:min(100% - 48px, 1440px);
-    margin:40px auto 70px;
+    width:min(100% - 48px, 1180px);
+    margin:32px auto 60px;
 }
 .painel-admin{
     width:100%;
@@ -1224,3 +1224,7 @@ main{
     main{width:min(100% - 24px,1440px);margin-top:26px}
     .tarefas{grid-template-columns:1fr;gap:12px}
 }
+
+/* Espaçamento equilibrado: a Agenda continua ampla, mas sem parecer vazia. */
+main{width:min(100% - 48px,1180px);margin:32px auto 60px}
+.painel-admin{width:100%}
