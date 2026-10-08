@@ -176,6 +176,14 @@
                     : "Nenhuma tarefa cadastrada.";
                 lista.appendChild(mensagem);
             }
+
+            // A lista é montada por este filtro depois que a sessão é verificada.
+            // Só então a tarefa do hash pode ser localizada e destacada.
+            if (typeof abrirTarefaPeloHash === "function") {
+                requestAnimationFrame(() => {
+                    abrirTarefaPeloHash();
+                });
+            }
         } catch (erro) {
             console.error("Erro ao filtrar tarefas:", erro);
         }
