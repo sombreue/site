@@ -623,6 +623,8 @@ app.delete("/api/admin/usuarios/:id", exigirAdmin, async (req, res) => {
             return res.status(404).json({ sucesso: false, mensagem: "Usuário não encontrado." });
         }
 
+        // Ao excluir uma conta, encerra também todas as sessões dela.
+        await pool.query("DELETE FROM sessoes WHERE sess->'usuario'->>'id' = $1::text", [String(id)]);
         await pool.query("DELETE FROM usuarios WHERE id = $1", [id]);
         res.json({ sucesso: true });
     } catch (erro) {
