@@ -81,7 +81,7 @@
                     </div>
                     <div class="usuario-acoes">
                         <button type="button" data-alterar-senha="${usuario.id}">Mudar senha</button>
-                        ${usuario.tipo === "admin" ? '<em>Administrador</em>' : usuario.id === atual ? '<em>Conta atual</em>' : `<button type="button" data-excluir-usuario="${usuario.id}">Excluir</button>`}
+                        ${usuario.id === atual ? '<em>Conta atual</em>' : `<button type="button" data-excluir-usuario="${usuario.id}">${usuario.tipo === "admin" ? "Excluir administrador" : "Excluir"}</button>`}
                     </div>
                 </article>`
             ).join("") || '<div class="estado-vazio">Nenhum usuário cadastrado.</div>';
@@ -135,10 +135,23 @@
             return;
         }
         const excluir = evento.target.closest("[data-excluir-usuario]");
-        if (!excluir || !confirm("Excluir este usuário?")) return;
+        if (!excluir) return;
+
+        const item = excluir.closest(".usuario-admin-item");
+        const nome = item?.querySelector("strong")?.textContent || "esta conta";
+        const meta = item?.querySelector(".item-meta")?.textContent || "";
+        const ehAdmin = meta === "Administrador";
+
+        if (!ehAdmin) {
+            if (!confirm('Excluir o usuário "' + nome + '"?')) return;
+        } else {
+            if (!confirm('ATENÇÃO: você está prestes a excluir o administrador "' + nome + '".\\n\\nTem certeza que deseja continuar?')) return;
+            if (!confirm('SEGUNDA CONFIRMAÇÃO\\n\\nA conta de administrador "' + nome + '" será excluída permanentemente.\\n\\nClique em OK somente se tiver certeza absoluta.')) return;
+        }
+
         try {
-            await json(await fetch(`/api/admin/usuarios/${excluir.dataset.excluirUsuario}`, {method:"DELETE", credentials:"same-origin"}));
-            status.textContent = "Usuário excluído.";
+            await json(await fetch('/api/admin/usuarios/' + excluir.dataset.excluirUsuario, {method:"DELETE", credentials:"same-origin"}));
+            status.textContent = ehAdmin ? "Administrador excluído." : "Usuário excluído.";
             carregarUsuarios();
             carregarSessoes();
         } catch (erro) { status.textContent = erro.message; }
