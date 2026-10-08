@@ -1286,3 +1286,15 @@ main{width:min(100% - 48px,1180px);margin:32px auto 60px}
 .modal-excluir-tarefa[data-estado="sucesso"] .modal-excluir-icone{background:color-mix(in srgb,#22c55e 16%,transparent);color:#22c55e;border-color:color-mix(in srgb,#22c55e 35%,transparent)}
 @keyframes entrada-modal-excluir{from{opacity:0;transform:translateY(5px) scale(.98)}to{opacity:1;transform:none}}
 @media(max-width:700px){.conteudo-modal-excluir{padding:22px}.botoes-modal-excluir{flex-direction:column}.botoes-modal-excluir button{width:100%}}
+
+/* Cards da Agenda mais compactos no celular */
+@media(max-width:600px){
+    .dia{margin-bottom:34px}
+    .dia h2{margin-bottom:12px;padding-bottom:7px;font-size:19px}
+    .tarefas{gap:8px}
+    .tarefa{padding:13px 14px;border-radius:11px}
+    .tarefa h3{margin-bottom:6px;font-size:16px}
+    .tarefa p{margin-bottom:9px;font-size:14px;line-height:1.45}
+    .subtitulo-tarefa-exibicao{margin:3px 0;font-size:14px}
+    .data-entrega-tarefa-exibicao{margin-top:6px;font-size:12px}
+}
