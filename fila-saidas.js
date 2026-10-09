@@ -6,14 +6,14 @@ module.exports = function registrarFilaSaidas(app, pool, exigirLogin, exigirAdmi
     function garantirTabelas() {
         if (!inicializacao) {
             inicializacao = (async () => {
-                await pool.query(\`
+                await pool.query(`
                     CREATE TABLE IF NOT EXISTS professores_fila (
                         usuario_id INTEGER PRIMARY KEY REFERENCES usuarios(id) ON DELETE CASCADE,
                         autorizado_por INTEGER REFERENCES usuarios(id) ON DELETE SET NULL,
                         criado_em TIMESTAMPTZ NOT NULL DEFAULT NOW()
                     )
-                \`);
-                await pool.query(\`
+                `);
+                await pool.query(`
                     CREATE TABLE IF NOT EXISTS filas_saidas (
                         id BIGSERIAL PRIMARY KEY,
                         professor_id INTEGER NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
@@ -22,12 +22,12 @@ module.exports = function registrarFilaSaidas(app, pool, exigirLogin, exigirAdmi
                         criada_em TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                         encerrada_em TIMESTAMPTZ
                     )
-                \`);
-                await pool.query(\`
+                `);
+                await pool.query(`
                     CREATE UNIQUE INDEX IF NOT EXISTS filas_saidas_uma_ativa_por_turma
                     ON filas_saidas (professor_id, LOWER(turma)) WHERE ativa = TRUE
-                \`);
-                await pool.query(\`
+                `);
+                await pool.query(`
                     CREATE TABLE IF NOT EXISTS fila_saidas_pedidos (
                         id BIGSERIAL PRIMARY KEY,
                         fila_id BIGINT NOT NULL REFERENCES filas_saidas(id) ON DELETE CASCADE,
@@ -39,11 +39,11 @@ module.exports = function registrarFilaSaidas(app, pool, exigirLogin, exigirAdmi
                         saiu_em TIMESTAMPTZ,
                         voltou_em TIMESTAMPTZ
                     )
-                \`);
-                await pool.query(\`
+                `);
+                await pool.query(`
                     CREATE INDEX IF NOT EXISTS fila_saidas_pedidos_ordem
                     ON fila_saidas_pedidos (fila_id, criado_em, id)
-                \`);
+                `);
             })().catch(erro => {
                 inicializacao = null;
                 throw erro;
@@ -116,14 +116,14 @@ module.exports = function registrarFilaSaidas(app, pool, exigirLogin, exigirAdmi
 
     app.get("/api/fila/admin/professores", exigirAdmin, middlewareTabelas, async (req, res) => {
         try {
-            const r = await pool.query(\`
+            const r = await pool.query(`
                 SELECT u.id, u.usuario, u.tipo,
                        (p.usuario_id IS NOT NULL OR u.tipo = 'admin') AS autorizado,
                        p.criado_em AS "autorizadoEm"
                 FROM usuarios u
                 LEFT JOIN professores_fila p ON p.usuario_id = u.id
                 ORDER BY u.usuario ASC
-            \`);
+            `);
             res.json({ sucesso: true, usuarios: r.rows });
         } catch (erro) {
             console.error("Erro ao listar permissões da fila:", erro);
@@ -165,20 +165,20 @@ module.exports = function registrarFilaSaidas(app, pool, exigirLogin, exigirAdmi
                 return res.status(400).json({ sucesso: false, mensagem: "Informe uma turma válida." });
             }
             const fila = await pool.query(
-                \`SELECT id, professor_id AS "professorId", turma, ativa,
+                `SELECT id, professor_id AS "professorId", turma, ativa,
                         criada_em AS "criadaEm", encerrada_em AS "encerradaEm"
                  FROM filas_saidas
                  WHERE professor_id = $1 AND LOWER(turma) = LOWER($2) AND ativa = TRUE
-                 ORDER BY id DESC LIMIT 1\`,
+                 ORDER BY id DESC LIMIT 1`,
                 [req.session.usuario.id, turma]
             );
             if (!fila.rowCount) return res.json({ sucesso: true, fila: null, pedidos: [] });
             const pedidos = await pool.query(
-                \`SELECT id, aluno, motivo, estado, criado_em AS "criadoEm",
+                `SELECT id, aluno, motivo, estado, criado_em AS "criadoEm",
                         saiu_em AS "saiuEm", voltou_em AS "voltouEm"
                  FROM fila_saidas_pedidos
                  WHERE fila_id = $1 AND estado <> 'cancelado'
-                 ORDER BY criado_em ASC, id ASC\`,
+                 ORDER BY criado_em ASC, id ASC`,
                 [fila.rows[0].id]
             );
             res.set("Cache-Control", "no-store");
@@ -196,12 +196,12 @@ module.exports = function registrarFilaSaidas(app, pool, exigirLogin, exigirAdmi
         }
         try {
             const r = await pool.query(
-                \`INSERT INTO filas_saidas (professor_id, turma)
+                `INSERT INTO filas_saidas (professor_id, turma)
                  VALUES ($1, $2)
                  ON CONFLICT (professor_id, LOWER(turma)) WHERE ativa = TRUE
                  DO UPDATE SET turma = EXCLUDED.turma
                  RETURNING id, professor_id AS "professorId", turma, ativa,
-                           criada_em AS "criadaEm"\`,
+                           criada_em AS "criadaEm"`,
                 [req.session.usuario.id, turma]
             );
             res.status(201).json({ sucesso: true, fila: r.rows[0] });
@@ -226,9 +226,9 @@ module.exports = function registrarFilaSaidas(app, pool, exigirLogin, exigirAdmi
             );
             if (!fila.rowCount) return res.status(404).json({ sucesso: false, mensagem: "Fila ativa não encontrada." });
             const r = await pool.query(
-                \`INSERT INTO fila_saidas_pedidos (fila_id, aluno, motivo)
+                `INSERT INTO fila_saidas_pedidos (fila_id, aluno, motivo)
                  VALUES ($1, $2, $3)
-                 RETURNING id, aluno, motivo, estado, criado_em AS "criadoEm", saiu_em AS "saiuEm", voltou_em AS "voltouEm"\`,
+                 RETURNING id, aluno, motivo, estado, criado_em AS "criadoEm", saiu_em AS "saiuEm", voltou_em AS "voltouEm"`,
                 [filaId, aluno, motivo]
             );
             res.status(201).json({ sucesso: true, pedido: r.rows[0] });
@@ -324,9 +324,9 @@ module.exports = function registrarFilaSaidas(app, pool, exigirLogin, exigirAdmi
         }
         try {
             const r = await pool.query(
-                \`UPDATE filas_saidas SET ativa = FALSE, encerrada_em = NOW()
+                `UPDATE filas_saidas SET ativa = FALSE, encerrada_em = NOW()
                  WHERE id = $1 AND professor_id = $2 AND ativa = TRUE
-                 RETURNING id\`,
+                 RETURNING id`,
                 [filaId, req.session.usuario.id]
             );
             if (!r.rowCount) return res.status(404).json({ sucesso: false, mensagem: "Fila ativa não encontrada." });
