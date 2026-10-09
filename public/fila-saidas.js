@@ -37,9 +37,9 @@
     function renderizarFila() {
         const fora = pedidosAtuais.find(p => p.estado === "fora");
         $("aluno-fora").hidden = !fora;
-        $("aluno-fora").innerHTML = fora ? \`<strong>Fora da sala: \${escapar(fora.aluno)}</strong><span class="detalhe-aluno">\${fora.motivo === "agua" ? "Beber água" : "Banheiro"} · saiu às \${hora(fora.saiuEm)}</span><div class="acoes"><button type="button" data-acao="voltou" data-id="\${fora.id}">Registrar retorno</button></div>\` : "";
+        $("aluno-fora").innerHTML = fora ? `<strong>Fora da sala: ${escapar(fora.aluno)}</strong><span class="detalhe-aluno">${fora.motivo === "agua" ? "Beber água" : "Banheiro"} · saiu às ${hora(fora.saiuEm)}</span><div class="acoes"><button type="button" data-acao="voltou" data-id="${fora.id}">Registrar retorno</button></div>` : "";
         const aguardando = pedidosAtuais.filter(p => p.estado === "aguardando");
-        $("lista-fila").innerHTML = aguardando.map((p, i) => \`<li class="item-fila"><span class="numero-fila">\${i + 1}º</span><div class="dados-aluno"><strong>\${escapar(p.aluno)}</strong><span class="detalhe-aluno">Entrou às \${hora(p.criadoEm)}</span><span class="motivo">\${p.motivo === "agua" ? "Beber água" : "Banheiro"}</span></div><div class="acoes"><button type="button" data-acao="fora" data-id="\${p.id}" \${fora || i !== 0 ? "disabled" : ""}>\${i === 0 ? "Liberar saída" : "Aguardar"}</button><button type="button" class="botao-cancelar" data-acao="cancelado" data-id="\${p.id}">Remover</button></div></li>\`).join("");
+        $("lista-fila").innerHTML = aguardando.map((p, i) => `<li class="item-fila"><span class="numero-fila">${i + 1}º</span><div class="dados-aluno"><strong>${escapar(p.aluno)}</strong><span class="detalhe-aluno">Entrou às ${hora(p.criadoEm)}</span><span class="motivo">${p.motivo === "agua" ? "Beber água" : "Banheiro"}</span></div><div class="acoes"><button type="button" data-acao="fora" data-id="${p.id}" ${fora || i !== 0 ? "disabled" : ""}>${i === 0 ? "Liberar saída" : "Aguardar"}</button><button type="button" class="botao-cancelar" data-acao="cancelado" data-id="${p.id}">Remover</button></div></li>`).join("");
         const voltaram = pedidosAtuais.filter(p => p.estado === "voltou");
         $("fila-vazia").hidden = aguardando.length > 0 || !!fora;
         if (voltaram.length) {
@@ -48,7 +48,7 @@
             resumo.textContent = "Já retornaram nesta aula: " + voltaram.map(p => p.aluno).join(", ");
             $("lista-fila").appendChild(resumo);
         }
-        $("resumo-fila").textContent = filaAtual ? \`\${aguardando.length} aguardando · \${fora ? "1 aluno fora" : "ninguém fora"}\` : "";
+        $("resumo-fila").textContent = filaAtual ? `${aguardando.length} aguardando · ${fora ? "1 aluno fora" : "ninguém fora"}` : "";
     }
 
     $("form-turma").addEventListener("submit", async e => {
