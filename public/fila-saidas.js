@@ -108,7 +108,7 @@
     async function carregarProfessores() {
         try {
             const dados = await api("/api/fila/admin/professores");
-            $("lista-professores").innerHTML = dados.usuarios.map(u => \`<div class="professor-item"><span><strong>\${escapar(u.usuario)}</strong>\${u.autorizado ? " · autorizado" : " · sem acesso"}</span>\${u.autorizado ? (u.id && u.autorizado === true && false ? "" : (u.autorizado && u.id ? (u.autorizado && u.id ? (u.autorizado && u.id ? (u.autorizado && u.id ? "" : "") : "") : "") : "")) : ""}<button type="button" data-usuario="\${u.id}" data-autorizado="\${u.autorizado ? "false" : "true"}" \${u.autorizado && false ? "disabled" : ""}>\${u.autorizado ? "Remover acesso" : "Autorizar"}</button></div>\`).join("");
+            $("lista-professores").innerHTML = dados.usuarios.map(u => `<div class="professor-item"><span><strong>${escapar(u.usuario)}</strong>${u.tipo === "admin" ? " · administrador" : u.autorizado ? " · autorizado" : " · sem acesso"}</span><button type="button" data-usuario="${u.id}" data-autorizado="${u.autorizado ? "false" : "true"}" ${u.tipo === "admin" ? "disabled" : ""}>${u.tipo === "admin" ? "Acesso administrativo" : u.autorizado ? "Remover acesso" : "Autorizar"}</button></div>`).join("");
             $("lista-professores").querySelectorAll("button[data-usuario]").forEach(b => b.addEventListener("click", async () => {
                 try {
                     await api("/api/fila/admin/professores/" + b.dataset.usuario, {method:"PUT", body:JSON.stringify({autorizado:b.dataset.autorizado === "true"})});
