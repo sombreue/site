@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#151518">
+<link rel="icon" href="/imagens/favicon.ico">
+<title>Fila de saídas</title>
+<link rel="stylesheet" href="/global-temas-estilos.css?v=20261003">
+<link rel="stylesheet" href="/navegacao-site.css?v=20261006">
+<link rel="stylesheet" href="/fila-saidas.css?v=20261009">
+<script>document.documentElement.dataset.theme = localStorage.getItem('agenda-auruda-tema') || 'ruby';</script>
+</head>
+<body>
+<header class="site-header">
+<a href="/index.html" class="site-logo-link" aria-label="Ir para o Início"><img src="/imagens/logo.png" alt="Logo" class="site-logo" onerror="this.onerror=null;this.src='https://i.imgur.com/NKvDhdY.png';"></a>
+<nav class="site-tabs" aria-label="Navegação principal">
+<a href="/index.html">Início</a><a href="/hoje.html">Hoje</a><a href="/agenda.html">Agenda</a>
+</nav>
+</header>
+<main class="fila-main">
+<section class="fila-intro">
+<p class="eyebrow">FERRAMENTA DO PROFESSOR</p>
+<h1>Fila de saídas</h1>
+<p>Organize quem vai ao banheiro ou beber água. A ordem é registrada automaticamente e apenas você vê a fila da sua turma.</p>
+</section>
+<p id="aviso" class="aviso" role="status" aria-live="polite"></p>
+<section id="area-fila" hidden>
+<form id="form-turma" class="painel turma-form">
+<label for="turma">Turma</label>
+<div class="linha-form"><input id="turma" name="turma" maxlength="80" placeholder="Ex.: 8º B" autocomplete="off" required><button type="submit">Abrir fila</button></div>
+<p class="ajuda">Cada professor tem suas próprias filas. A fila é única para banheiro e água.</p>
+</form>
+<section id="painel-ativa" class="painel" hidden>
+<div class="cabecalho-fila">
+<div><p class="eyebrow">FILA ATIVA</p><h2 id="titulo-turma">Turma</h2><p id="resumo-fila" class="ajuda"></p></div>
+<button id="encerrar-fila" class="botao-secundario" type="button">Encerrar aula</button>
+</div>
+<form id="form-aluno" class="adicionar-form">
+<div class="campo"><label for="aluno">Nome do aluno</label><input id="aluno" maxlength="100" placeholder="Digite o nome" autocomplete="off" required></div>
+<div class="campo"><label for="motivo">Vai para</label><select id="motivo"><option value="banheiro">Banheiro</option><option value="agua">Beber água</option></select></div>
+<button type="submit">Adicionar à fila</button>
+</form>
+<div class="fila-status-linha"><h3>Ordem de saída</h3><button type="button" id="atualizar-fila" class="botao-secundario">Atualizar</button></div>
+<div id="aluno-fora" class="aluno-fora" hidden></div>
+<ol id="lista-fila" class="lista-fila"></ol>
+<p id="fila-vazia" class="vazio">Ninguém na fila ainda. Adicione o primeiro aluno quando ele pedir para sair.</p>
+</section>
+</section>
+<section id="area-admin" class="painel painel-admin" hidden>
+<div><p class="eyebrow">ADMINISTRAÇÃO</p><h2>Acesso dos professores</h2><p class="ajuda">Autorize somente contas de professores. As contas autorizadas poderão gerenciar apenas as próprias filas.</p></div>
+<div id="lista-professores" class="lista-professores"></div>
+</section>
+</main>
+<script src="/global-temas.js?v=20261003"></script>
+<script src="/fila-saidas.js?v=20261009"></script>
+</body>
+</html>
