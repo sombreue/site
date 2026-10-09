@@ -44,3 +44,12 @@ a{color:inherit;text-decoration:none}
 @media(max-width:768px){body{padding:12px}.site-header{top:8px;gap:10px;min-height:58px;padding:6px 8px;margin-bottom:4px;border-radius:15px}.site-logo{width:42px;height:42px}.site-tabs{flex:1;display:grid;grid-template-columns:repeat(3,1fr)}.site-tabs a{padding:9px 5px;text-align:center;font-size:.82rem}.home-header{padding-top:28px}.home-logo{width:260px;height:260px;margin-bottom:-4px}.pagina-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pagina-card{min-height:145px;padding:15px;border-radius:14px}.pagina-icone{font-size:1.35rem;margin-bottom:9px}.pagina-card h2{font-size:1rem;margin-bottom:5px}.pagina-card p{font-size:.78rem;line-height:1.35}.pagina-link{padding-top:10px;font-size:.8rem}.form-criar-usuario-index{grid-template-columns:1fr}.usuario-admin-item div{align-items:flex-start;flex-direction:column;gap:3px}}
 :root[data-theme="fantastic-four"] .atalho,:root[data-theme="fantastic-four"] .atalho-admin-index{color:#1557a8}
 :root[data-theme="punisher"] .atalho,:root[data-theme="punisher"] .atalho-admin-index{color:#111}
+
+
+/* A fila só aparece para quem tem permissão; com ela visível, os dois últimos cards
+   compartilham a última linha para não deixar um card isolado no grid. */
+.pagina-card[hidden]{display:none!important}
+@media(min-width:1101px){
+  .pagina-grid.tem-fila-saidas .pagina-card:nth-child(4),
+  .pagina-grid.tem-fila-saidas .pagina-card:nth-child(5){grid-column:span 6}
+}
