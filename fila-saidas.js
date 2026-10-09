@@ -117,7 +117,7 @@ module.exports = function registrarFilaSaidas(app, pool, exigirLogin, exigirAdmi
     app.get("/api/fila/admin/professores", exigirAdmin, middlewareTabelas, async (req, res) => {
         try {
             const r = await pool.query(\`
-                SELECT u.id, u.usuario,
+                SELECT u.id, u.usuario, u.tipo,
                        (p.usuario_id IS NOT NULL OR u.tipo = 'admin') AS autorizado,
                        p.criado_em AS "autorizadoEm"
                 FROM usuarios u
