@@ -2,6 +2,8 @@
     const usuarioLogado = document.getElementById("usuario-logado-index");
     const botaoLogout = document.getElementById("botao-logout-index");
     const linkAdmin = document.getElementById("link-admin-index");
+    const cardFilaSaidas = document.getElementById("card-fila-saidas-index");
+    const gradePaginas = document.querySelector(".pagina-grid");
 
     async function sair() {
         try {
@@ -27,6 +29,24 @@
             }
 
             const usuario = dados.usuario;
+
+            // A fila só aparece para administradores e professores autorizados.
+            try {
+                const respostaFila = await fetch("/api/fila/status", {
+                    credentials: "same-origin",
+                    cache: "no-store"
+                });
+                if (respostaFila.ok) {
+                    const acessoFila = await respostaFila.json();
+                    if (acessoFila.sucesso && acessoFila.autorizado && cardFilaSaidas) {
+                        cardFilaSaidas.hidden = false;
+                        gradePaginas?.classList.add("tem-fila-saidas");
+                    }
+                }
+            } catch (erroFila) {
+                console.warn("Não foi possível verificar o acesso à fila de saídas:", erroFila);
+            }
+
             usuarioLogado.textContent = `Logado como: ${usuario.usuario}${usuario.tipo === "admin" ? " (administrador)" : ""}`;
             if (botaoLogout) botaoLogout.hidden = false;
 
